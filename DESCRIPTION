@@ -17,6 +17,8 @@ Imports: Rcpp (>= 1.0.3),
 		 dplyr,
 		 rlang,
 		 data.table
+Suggests: optimx,
+		  minqa
 LinkingTo: Rcpp
 RoxygenNote: 7.1.1
 Encoding: UTF-8
