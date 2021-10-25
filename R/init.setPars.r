@@ -15,7 +15,7 @@ init.setPars <- function(){
   parTable[6,]  <- c("maxCanopyStoragePerLAI", 0.3)
   parTable[7,]  <- c("canopyEvapoExp", 2/3)
   parTable[8,]  <- c("runoffFracBuiltUp", 0.5)
-  parTable[9,]  <- c("k_g", 0.1)
+  parTable[9,]  <- c("k_g", 0.01)
   
   
   #parTable[9,]  <- c("openWaterAlbedo", 0.08)
