@@ -36,6 +36,14 @@ void runWarmUp(DateVector timestring, int nYears){
 	double RiverInflow;
 	double RoutedOutflowCell;
 	
+	//fill up all waterbodies 
+	setLakeWetlandToMaximum(S_locLakeStorage, S_locWetlandStorage, 
+							S_gloLakeStorage, S_ResStorage, S_gloWetlandStorage);
+	
+	//have to use routing order to be consistent 
+	numbers =  findUniqueValues(routeOrder); //finding unique values in route order (ascending) => routingSteps
+	numbersSorted = sortIt(numbers);
+	
 	if (nYears <=0) {
 		// Rcout << "no warm-up period defined \n";
 		return;

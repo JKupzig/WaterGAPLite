@@ -55,8 +55,9 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 	
 	CheckResType();
 	
-	setLakeWetlandToMaximum(S_locLakeStorage, S_locWetlandStorage, 
-							S_gloLakeStorage, S_ResStorage, S_gloWetlandStorage);
+	//is now done in runWarmUp()
+	//setLakeWetlandToMaximum(S_locLakeStorage, S_locWetlandStorage, 
+	//						S_gloLakeStorage, S_ResStorage, S_gloWetlandStorage);
 	
 	double out_loclake;
 	double out_locwet;
