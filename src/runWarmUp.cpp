@@ -53,16 +53,16 @@ void runWarmUp(DateVector timestring, int nYears){
 	
 	Date StartDate = timestring[0];
 	int StartYear = StartDate.getYear();
-	Date LastDate = Date(12,31,StartYear);
-	int DOYofYear = LastDate.getYearday();
+	Date LastDate = Date(12,31,StartYear); 
+	int DOYofYear = LastDate.getYearday(); //366 or 365
 	int ndays = DOYofYear*nYears;
 		
-	int count=0;
+	int count=-1;
 	for (int time = 0; time < ndays; time++){
 		
 		count++;
-		if (count==DOYofYear+1){
-			count=1; //zurücksetzen auf 1. Tag des Jahres
+		if (count==DOYofYear){
+			count=0; //zurücksetzen auf 1. Tag des Jahres
 		}
 		
 		Date SimDate = timestring[count];
@@ -93,18 +93,18 @@ void runWarmUp(DateVector timestring, int nYears){
 		
 		
 		//determine PET (because it is also dependend on G_snow)
-		NumericVector PETw_day = dailyEvaporation2(time, "water",G_snow, G_PETnetShort,G_PETnetLong, DOY);
-		NumericVector PET_day = dailyEvaporation2(time, "land",G_snow,G_PETnetShort,G_PETnetLong, DOY);
+		NumericVector PETw_day = dailyEvaporation2(count, "water",G_snow, G_PETnetShort,G_PETnetLong, DOY);
+		NumericVector PET_day = dailyEvaporation2(count, "land",G_snow,G_PETnetShort,G_PETnetLong, DOY);
 
 		//interception 
-		dailyInterception(time, G_canopyWaterContent, 
+		dailyInterception(count, G_canopyWaterContent, 
 					   daily_prec_to_soil,  
 					   dailySoilPET,
 					   dailyCanopyEvapo, PET_day);  //G_canopyWaterContent, daily_prec_to_soil, dailyCanopyEvapo
 
 		
 		//snow processes create
-		dailySnow(time, daily_prec_to_soil, G_snow, G_snowWaterEquivalent,
+		dailySnow(count, daily_prec_to_soil, G_snow, G_snowWaterEquivalent,
 					dailySnowMelt, dailySnowEvapo, thresh_elev, dailyEffPrec,
 					dailySoilPET);
 		
@@ -117,7 +117,7 @@ void runWarmUp(DateVector timestring, int nYears){
 				G_soilWaterContent, dailyAET, daily_runoff, soil_water_overflow);
 		
 		//splitting of run-off
-		dailySplitRunOff(time, SimDate, daily_runoff, soil_water_overflow,immediate_runoff,
+		dailySplitRunOff(count, SimDate, daily_runoff, soil_water_overflow,immediate_runoff,
 				daily_gw_recharge, G_groundwater, G_dailyLocalSurfaceRunoff, 
 				G_dailyLocalGWRunoff, G_dailyUseGW, dailyUse);
 				
@@ -138,7 +138,7 @@ void runWarmUp(DateVector timestring, int nYears){
 				float InflowUpstream = 0.0;
 				
 				
-				const double PrecWater = Prec(time, cell);
+				const double PrecWater = Prec(count, cell);
 				const double PETWater = PETw_day[cell]; //calculated in daily above
 				const double LandInflow = (G_dailyLocalGWRunoff[cell] + G_dailyLocalSurfaceRunoff[cell])* GAREA[cell] * landfrac[cell]; // mm * km²
 				
@@ -180,7 +180,7 @@ void runWarmUp(DateVector timestring, int nYears){
 				
 				//reserviors
 				if (G_RESAREA[cell] > 0) {
-					out_res = routingResHanasaki(time, cell, SimDate, PETWater, PrecWater, out_glolake, 
+					out_res = routingResHanasaki(count, cell, SimDate, PETWater, PrecWater, out_glolake, 
 							Res_outflow, Res_overflow, S_ResStorage, Res_evapo, Res_inflow,
 							dailyUse, MeanDemand);
 				} else {

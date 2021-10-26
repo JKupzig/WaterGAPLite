@@ -13,7 +13,7 @@ using namespace Rcpp;
 //' @param SimPeriod Period to simulate (usually defines as model[["SimPeriod"]] where model is object returned from basin.prepareRun())
 //' @param ListConst list with all required information regarding basin and input (usually, object returned by basin.prepareRun())
 //' @param Settings vector that is used to define settings
-//' @param nYears number of years defined as warm-up (first year is then simulated n times, before starting with the actual simulation period)
+//' @param nYears number of years defined as warm-up (first year is then simulated n times, before starting with the actual simulation)
 //' @export
 // [[Rcpp::export]]
 List runModel(DateVector SimPeriod, List ListConst, NumericVector Settings, int nYears){
