@@ -158,3 +158,7 @@ void initializeModel(){
 	G_actualUse=NumericVector (array_size);
 	
 }
+
+
+
+

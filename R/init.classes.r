@@ -23,7 +23,9 @@ init.classes <- function(){
              DataDir="character",
              BaseDir="character",
              OutputDir="character",
-             climateShortcut="character"),
+             climateShortcut="character",
+             SystemValues="character"),
+           
              where = class_cache
            )
   

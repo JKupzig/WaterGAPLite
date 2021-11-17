@@ -21,10 +21,14 @@ extern int WaterUseAllocationType;
 extern int ReservoirType;
 extern int splitType;
 extern int calcLong; 
+extern int useSystemVals;
 
 extern void defSettings(NumericVector Settings);
 extern NumericMatrix getLAIdaily(NumericVector LAI_min, NumericVector LAI_max, NumericVector initDays, 
 					    const NumericMatrix Temp, const NumericMatrix Prec, const IntegerVector aridType, const NumericVector GLCT);
+
+extern String SystemValues;
+extern int id;
 
 extern NumericMatrix Temp; 
 extern NumericMatrix Rs;

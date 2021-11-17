@@ -27,7 +27,8 @@ init.initCont <- function(cont, path2base){ # options: sa, eu, af, au, na, sa ..
                  DataDir=path2use[["DataDir"]],
                  BaseDir=path2use[["BaseDir"]],
                  OutputDir=path2use[["OutputDir"]],
-                 climateShortcut=path2use[["climateShortcut"]])
+                 climateShortcut=path2use[["climateShortcut"]],
+                 SystemValues=path2use[["SystemValues"]])
   
   
   return(newCont)

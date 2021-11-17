@@ -19,8 +19,13 @@ int WaterUseAllocationType;
 int ReservoirType;
 int splitType;
 int calcLong;
+int useSystemVals;
 
 //CONSTANT FILES
+
+String SystemValues;
+int id; 
+
 NumericMatrix Temp; 
 NumericMatrix Rs;
 NumericMatrix Rl;
@@ -109,6 +114,7 @@ void defSettings(NumericVector Settings){
 	ReservoirType = Settings[4];
 	splitType = Settings[5];
 	calcLong = Settings[6];
+	useSystemVals = Settings[7];
 }
 
 //' @title detLAIdaily
@@ -232,7 +238,10 @@ NumericMatrix getLAIdaily(NumericVector LAI_min, NumericVector LAI_max, NumericV
 //' @param ListConst that is defined in R 
 //' @export
 void initModel(List ListConst){
-
+    
+	SystemValues = as<String>(ListConst["SystemValuesPath"]);
+	id = as<int>(ListConst["id"]);
+	
 	Temp = as<NumericMatrix>(ListConst["temp"]);
 	Rs = as<NumericMatrix>(ListConst["shortwave"]);
 	Rl = as<NumericMatrix>(ListConst["longwave"]);

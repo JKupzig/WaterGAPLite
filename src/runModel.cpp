@@ -1,6 +1,7 @@
 #include <Rcpp.h>
 #include "initModel.h"
 #include "initializeModel.h"
+#include "initialStorages.h"
 #include "daily.h"
 #include "routing.h"
 #include "runWarmUp.h"
@@ -21,6 +22,15 @@ List runModel(DateVector SimPeriod, List ListConst, NumericVector Settings, int 
 	defSettings(Settings); //defines Settings
 	initModel(ListConst); // defines Variables and Input data
 	initializeModel(); // initializes Vectors that defines fluxes and states in Model
+	
+	if ((useSystemVals == 1) || (useSystemVals == 3)){
+		setStorages(SimPeriod); //initial values will be read into the system
+	}
+	
+	if ( ((useSystemVals == 1) || (useSystemVals == 3)) & (nYears > 0)) {
+		stop("'nyears' should be equal to 0 when using using SystemValues to define initial storages!");
+	}
+	
 	runWarmUp(SimPeriod, nYears); // simulating the first year nTimes to define fluxes and states in Model
 	
 	List WaterBalanceOutput = createWaterBalance(SimPeriod); //calculates WaterBalance
@@ -32,7 +42,11 @@ List runModel(DateVector SimPeriod, List ListConst, NumericVector Settings, int 
 		
 	
 	List RoutingOutput = routing(SimPeriod, surfaceRunoff, GroundwaterRunoff, PETw, Prec); // is quite slow - mm/day - excecutes routing
-	
 	List L = List::create(Named("daily") = WaterBalanceOutput, Named("routing") = RoutingOutput);
+	
+	if ((useSystemVals == 2) || (useSystemVals == 3)){
+		writeStorages(SimPeriod); //system values will be write out
+	}
+	
 	return(L);
 }

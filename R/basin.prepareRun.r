@@ -18,6 +18,9 @@ basin.prepareRun <- function(basinObject,
   }
 
   ListConst = list() #list to pass to wgl
+  
+  ListConst[["SystemValuesPath"]] = basinObject@cont@SystemValues
+  ListConst[["id"]] = basinObject@id
 
   ListConst[["SimPeriod"]] <- simPeriodDate
   ListConst[["temp"]] = climateObject@temp

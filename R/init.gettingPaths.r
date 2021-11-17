@@ -19,7 +19,8 @@ init.gettingPaths <- function(cont, base=NULL){
   DataDir <- file.path(base, "data")
   OutputDir <- file.path(base, "output", cont)
   climateShortcut <- file.path(DataDir, "climateShortCut", cont)
+  SystemValues <- file.path(DataDir, "SystemValues", cont)
 
   
-  return(list("BaseDir"=BaseDir, "DataDir"=DataDir, "OutputDir"=OutputDir, "climateShortcut"=climateShortcut))
+  return(list("BaseDir"=BaseDir, "DataDir"=DataDir, "OutputDir"=OutputDir, "climateShortcut"=climateShortcut, "SystemValues"=SystemValues))
 }

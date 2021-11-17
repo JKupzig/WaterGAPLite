@@ -37,8 +37,13 @@ void runWarmUp(DateVector timestring, int nYears){
 	double RoutedOutflowCell;
 	
 	//fill up all waterbodies 
-	setLakeWetlandToMaximum(S_locLakeStorage, S_locWetlandStorage, 
-							S_gloLakeStorage, S_ResStorage, S_gloWetlandStorage);
+	if ((useSystemVals != 1) & (useSystemVals != 3)) {
+		// if no System Values are used waterbody storages are filled up at the beginning of simulation
+		setLakeWetlandToMaximum(S_locLakeStorage, S_locWetlandStorage, 
+								S_gloLakeStorage, S_ResStorage, S_gloWetlandStorage);
+	}
+	
+
 	
 	//have to use routing order to be consistent 
 	numbers =  findUniqueValues(routeOrder); //finding unique values in route order (ascending) => routingSteps
