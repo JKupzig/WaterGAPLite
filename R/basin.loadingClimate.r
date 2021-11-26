@@ -30,7 +30,7 @@ basin.loadingClimate <- function(cont, grdc_number, basinIndex, transMatrix, sim
     index2read <- simPeriodDate %in% timeperiod
   }
 
-  if ( (sum(index2read)==0) | (readNewly==T) | (!file.exists(fileName)) )  {  #cheking if timeseries needs to be read as whole
+  if ( (sum(index2read)==0) | (readNewly==T) | (!file.exists(fileName)) )  {  #timeseries needs to be read in as whole
 
     if (ClimateFormat=="global"){
       var <- basin.loadingClimateEWEMBI(name=typeName, basinIndex, transMatrix,
@@ -52,6 +52,16 @@ basin.loadingClimate <- function(cont, grdc_number, basinIndex, transMatrix, sim
     Date2write <- as.Date(rownames(var))
     var2write <- cbind(Date2write, var)
     rownames(var2write)=NULL; colnames(var2write) <- NULL
+    
+    ##### #Special cases #####################################################################################
+    # data is read in in to 31.12.1979 and exists already from 1980.01.01 on
+    if (min(timeperiod) == max(Date2write)+1){
+      var2write <- rbind(var2write, tmp)
+    # data is read in in from 01.01.1980 and exists already til 31.12.1979   
+    } else if (max(timeperiod) == min(Date2write)-1) {
+      var2write <- rbind(tmp, var2write) 
+    } 
+    
     saveRDS(var2write, file = fileName)
     
     #basin.writeClimate4Basin(var, typeName, basinIndex, grdc_number, climateShortcut)
