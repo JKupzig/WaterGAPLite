@@ -206,7 +206,7 @@ getRiverVelocity <- function(Type, cell, inflow) {
 #' @param SimPeriod Period to simulate (usually defines as model[["SimPeriod"]] where model is object returned from basin.prepareRun())
 #' @param ListConst list with all required information regarding basin and input (usually, object returned by basin.prepareRun())
 #' @param Settings vector that is used to define settings
-#' @param nYears number of years defined as warm-up (first year is then simulated n times, before starting with the actual simulation period)
+#' @param nYears number of years defined as warm-up (first year is then simulated n times, before starting with the actual simulation)
 #' @export
 runModel <- function(SimPeriod, ListConst, Settings, nYears) {
     .Call('_WaterGAPLite_runModel', PACKAGE = 'WaterGAPLite', SimPeriod, ListConst, Settings, nYears)

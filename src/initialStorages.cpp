@@ -185,7 +185,7 @@ void writeStorages(DateVector SimPeriod){
 String getLastEntry(DateVector vector2examine){
   
   int n = vector2examine.size();
-  int n_zero = 2;
+
   Date date2return = vector2examine[n-1];
   date2return = date2return + 1; //increase Date because end of day is beginning of next date
   
@@ -211,8 +211,11 @@ String getLastEntry(DateVector vector2examine){
 String fillWithZeros(String string2fill, int n_zero){
     const char* string2fill_c = string2fill.get_cstring();
     int n = strlen(string2fill_c);
-                  
-	std::string new_str = std::string(2 - std::min(2, n), '0') + string2fill_c;
+    
+	// check if filling is possible otherwise thow an error
+	if (n > n_zero) { Rcpp::stop("Error, string cannot be defined properly with filled zeros!");}
+	
+	std::string new_str = std::string(n_zero - std::min(n_zero, n), '0') + string2fill_c;
 	String string2return(new_str);
 	
 	return(string2return);
@@ -276,6 +279,7 @@ void writeFile(const char* file, NumericMatrix matrix2write){
 
 NumericVector readFile(const char* file){
   
+  NumericVector vector2read_rcpp;
   FILE *file_ptr;
   unsigned long lSize;
 
@@ -293,17 +297,23 @@ NumericVector readFile(const char* file){
   std::vector<double> vector2read(elem);
  
   //reading & closing
-  fread(&vector2read[0], sizeof(double), elem, file_ptr);
+  size_t result = fread(&vector2read[0], sizeof(double), elem, file_ptr);
   fclose(file_ptr);
-  
-  NumericVector vector2read_rcpp = wrap(vector2read); // wrap x into an R object
-  
+  if (result > 0) {
+	  vector2read_rcpp = wrap(vector2read); // wrap x into an R object
+  } else {
+	  Rcpp::stop("File Error: %s File is empty", file);
+  }
+   
   return(vector2read_rcpp);
   
 }
 
 //for matrix
 NumericMatrix readFile(const char* file, int rows){
+  
+  NumericMatrix matrix2read;
+  NumericVector vector2read_rcpp;
   
   FILE *file_ptr;
   unsigned long lSize;
@@ -322,12 +332,15 @@ NumericMatrix readFile(const char* file, int rows){
   std::vector<double> vector2read(elem);
   
     //reading & closing
-  fread(&vector2read[0], sizeof(double), elem, file_ptr);
+  size_t result = fread(&vector2read[0], sizeof(double), elem, file_ptr);
   fclose(file_ptr);
-  
-  NumericVector vector2read_rcpp = wrap(vector2read); // wrap x into an R object
-  vector2read_rcpp.attr("dim") = Dimension(rows, elem/rows);
-  NumericMatrix matrix2read = as<NumericMatrix>(vector2read_rcpp);
+  if (result > 0) {
+	  vector2read_rcpp = wrap(vector2read); // wrap x into an R object
+	  vector2read_rcpp.attr("dim") = Dimension(rows, elem/rows);
+	  matrix2read = as<NumericMatrix>(vector2read_rcpp);
+  } else {
+	  Rcpp::stop("File Error: %s File is empty", file);
+  }
   
   return(matrix2read);
   
