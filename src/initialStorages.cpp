@@ -17,6 +17,9 @@ String getLastEntry(DateVector vector2examine);
 String getFirstEntry(DateVector vector2examine);
 String fillWithZeros(String string2fill, int n_zero);
 
+NumericVector changeVals(NumericVector v2change, NumericVector v2use); // sets values safely
+NumericMatrix changeVals(NumericMatrix v2change, NumericMatrix v2use);  // sets values safely
+
 void setStorages(DateVector SimPeriod){
 	//beginning of the day
 	NumericVector dummy;
@@ -30,79 +33,87 @@ void setStorages(DateVector SimPeriod){
 	String pathCanopy = combineStrings(SystemValues, nameCanopy, "/");
 	const char* pathCanopy_char = pathCanopy.get_cstring();
 	dummy = readFile(pathCanopy_char);
-	G_canopyWaterContent = dummy; 
+	G_canopyWaterContent=changeVals(G_canopyWaterContent, dummy);
+
 	
 	//reading snow
 	String nameSnow = combineStrings(prefix, "G_snow.bin", "_");
 	String pathSnow = combineStrings(SystemValues, nameSnow, "/");
 	const char* pathSnow_char = pathSnow.get_cstring();
 	dummy = readFile(pathSnow_char);
-	G_snow = dummy;
+	G_snow=changeVals(G_snow, dummy);
 	
 	//writing snowMatrix 
 	String nameSnowWE = combineStrings(prefix, "G_snowWaterEquivalent.bin", "_");
 	String pathSnowWE = combineStrings(SystemValues, nameSnowWE, "/");
 	const char* pathSnowWE_char = pathSnowWE.get_cstring();
 	dummy2 = readFile(pathSnowWE_char, 25);
-	G_snowWaterEquivalent = dummy2;
-	
+	G_snowWaterEquivalent=changeVals(G_snowWaterEquivalent, dummy2);
 	
 	//writing soil
 	String nameSoil = combineStrings(prefix, "G_soilWaterContent.bin", "_");
 	String pathSoil = combineStrings(SystemValues, nameSoil, "/");
 	const char* pathSoil_char = pathSoil.get_cstring();
 	dummy = readFile(pathSoil_char);
-	G_soilWaterContent = dummy;
-	
+	G_soilWaterContent=changeVals(G_soilWaterContent, dummy);
 	
 	//writing groundwater
 	String nameGW = combineStrings(prefix, "G_groundwater.bin", "_");
 	String pathGW = combineStrings(SystemValues, nameGW, "/");
 	const char* pathGW_char = pathGW.get_cstring();
 	dummy = readFile(pathGW_char);
-	G_groundwater = dummy;
-	
+	G_groundwater=changeVals(G_groundwater, dummy);
+
 	//writing river
 	String nameRiver = combineStrings(prefix, "S_river.bin", "_");
 	String pathRiver = combineStrings(SystemValues, nameRiver, "/");
 	const char* pathRiver_char = pathRiver.get_cstring();
 	dummy = readFile(pathRiver_char);
-	S_river = dummy;
+	S_river=changeVals(S_river, dummy);
 	
 	//writing S_locLakeStorage
 	String nameLocLak = combineStrings(prefix, "S_locLakeStorage.bin", "_");
 	String pathLocLak = combineStrings(SystemValues, nameLocLak, "/");
 	const char* pathLocLak_char = pathLocLak.get_cstring();
 	dummy = readFile(pathLocLak_char);
-	S_locLakeStorage = dummy;
+	S_locLakeStorage=changeVals(S_locLakeStorage, dummy);
 	
 	//writing S_locWetlandStorage
 	String nameLocWet = combineStrings(prefix, "S_locWetlandStorage.bin", "_");
 	String pathLocWet = combineStrings(SystemValues, nameLocWet, "/");
 	const char* pathLocWet_char = pathLocWet.get_cstring();
 	dummy = readFile(pathLocWet_char);
-	S_locWetlandStorage = dummy;
+	S_locWetlandStorage=changeVals(S_locWetlandStorage, dummy);
 	
 	//writing S_gloLakeStorage
 	String nameGloLak = combineStrings(prefix, "S_gloLakeStorage.bin", "_");
 	String pathGloLak = combineStrings(SystemValues, nameGloLak, "/");
 	const char* pathGloLak_char = pathGloLak.get_cstring();
 	dummy = readFile(pathGloLak_char);
-	S_gloLakeStorage = dummy;
+	S_gloLakeStorage=changeVals(S_gloLakeStorage, dummy);
 	
 	//writing S_ResStorage
 	String nameRes = combineStrings(prefix, "S_ResStorage.bin", "_");
 	String pathRes = combineStrings(SystemValues, nameRes, "/");
 	const char* pathRes_char = pathRes.get_cstring();
 	dummy = readFile(pathRes_char);
-	S_ResStorage = dummy;
+	S_ResStorage=changeVals(S_ResStorage, dummy);
 	
 	//writing S_gloWetlandStorage
 	String nameGloWet = combineStrings(prefix, "S_gloWetlandStorage.bin", "_");
 	String pathGloWet = combineStrings(SystemValues, nameGloWet, "/");
 	const char* pathGloWet_char = pathGloWet.get_cstring();
 	dummy = readFile(pathGloWet_char);
-	S_gloWetlandStorage = dummy;
+	S_gloWetlandStorage=changeVals(S_gloWetlandStorage, dummy);
+	
+	//deletign everything (to avoid memory heap)
+	//delete (pathCanopy_char); pathCanopy_char=NULL;
+	//delete (pathSnow_char); pathSnow_char=NULL;
+	//delete (pathRiver_char); pathRiver_char=NULL; 
+	//delete (pathLocLak_char); pathLocLak_char=NULL;
+	//delete (pathGloWet_char); pathGloWet_char=NULL;
+	//delete (pathGloLak_char); pathGloLak_char=NULL;
+	//delete (pathLocWet_char); pathLocWet_char=NULL;
 	
 }
 
@@ -179,6 +190,13 @@ void writeStorages(DateVector SimPeriod){
 	const char* pathGloWet_char = pathGloWet.get_cstring();
 	writeFile(pathGloWet_char, S_gloWetlandStorage);
 	
+	//delete (pathCanopy_char); pathCanopy_char=NULL;
+	//delete (pathSnow_char); pathSnow_char = NULL;
+	//delete (pathRiver_char); pathRiver_char=NULL;
+	//delete (pathLocLak_char); pathLocLak_char = NULL;
+	//delete (pathGloWet_char); pathGloWet_char=NULL;
+	//delete (pathGloLak_char);pathGloLak_char=NULL;
+	//delete (pathLocWet_char);pathLocWet_char=NULL;
 }
 
 
@@ -217,6 +235,8 @@ String fillWithZeros(String string2fill, int n_zero){
 	
 	std::string new_str = std::string(n_zero - std::min(n_zero, n), '0') + string2fill_c;
 	String string2return(new_str);
+	
+	//delete(string2fill_c); string2fill_c=NULL; //deleting pointer
 	
 	return(string2return);
 }
@@ -305,6 +325,8 @@ NumericVector readFile(const char* file){
 	  Rcpp::stop("File Error: %s File is empty", file);
   }
    
+  //delete[] vector2read; vector2read = NULL;
+   
   return(vector2read_rcpp);
   
 }
@@ -356,3 +378,30 @@ String combineStrings(String string1, String string2, String String2insert){
 	return(string3);
 }
 
+NumericMatrix changeVals(NumericMatrix v2change, NumericMatrix v2use) {
+	int nRow1 = v2change.nrow(); 
+	int nCol1 = v2change.ncol(); 
+	
+	int nRow2 = v2use.nrow(); 
+	int nCol2 = v2use.ncol(); 
+	
+	if ((nRow2 != nRow1) | (nCol2 != nCol1)) {
+	  stop("Matrices are not compatible!");
+	} else {
+	  v2change = v2use; //changes also length!
+	}
+	return(v2change);
+}
+
+
+NumericVector changeVals(NumericVector v2change, NumericVector v2use) {
+	int n1 = v2change.length(); 
+	int n2 = v2use.length();
+	if (n1 != n2){
+	  stop("Vectors are not compatible!");
+	} else {
+	  v2change = v2use; //changes also length!
+	}
+	return(v2change);
+}
+            
