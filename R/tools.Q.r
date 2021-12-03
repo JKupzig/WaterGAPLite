@@ -74,22 +74,95 @@ Q.convert_mmday_m3s <- function(timeseries, area){
 }
 
 ###############################################################################################################################
-#' @title Calculating Benchmark
-#' @description Function to calculate several benchmarks to compare simulated and observed discharge. NA or negative values in observed data are omitted.
-#' @param df_obs data.frame of observed discharge with ("Date" and "Value" columns)
-#' @param df_sim data.frame of simulated discharge with ("Date" and "Sim" Columns)
-#' @param Type string (QmeanAbs, NSE, logNSE, KGE or SFDCE)
-#' @return named list with benchmarks
+#' @title Calculating Signature Indices
+#' @description Function to calculate several Signature Indices from simulated flow
+#' @param df dataframe of simulated discharge with (at least) 'Date' and 'Sim' column
+#' @param Type string (FDC.Slope, ...) \cr
+#' \itemize{
+#'   \item FDC.Slope: flow duration curve slope calculated as described in Kapangaziwiri et al. 2012
+#'   \item maxTiming: mean julian date of each annual 1-day maximum (Richter et al. 1996)
+#'   \item minTiming: mean julian date of each annual 7-day minimum (modified, based on Richter et al. 1996)
+#' }
+#' @return value (as float)
 #' @importFrom stats cor
 #' @importFrom stats sd 
 #' @export
 #'  
-Q.calcQuality <- function(df_obs, df_sim, Type="NSE"){
+Q.calcSI <- function(df, Type="FDC.Slope"){
+  
+  if (Type == "FDC.Slope"){
+    
+    Q90 <- as.numeric(quantile(df$Sim, 0.1))
+    if (Q90 == 0){
+      Q90 <- min(df$Sim[df$Sim > 0]) #replacement with min != 0
+    }
+    Q10 <- as.numeric(quantile(df$Sim, 0.9))
+    val <- (log(Q90) - log(Q10)) / 80
+    
+  } else  if (Type == "maxTiming"){
+   
+    df$year <- format(df$Date, "%Y")
+    minYear <- min(df$year); maxYear <- max(df$year)
+    DOY <- lapply(minYear:maxYear, function(x) { which(df$Sim[df$year==x] == max(df$Sim[df$year==x]))} )  
+    val <- mean(unlist(DOY))
+   
+   } else  if (Type == "minTiming"){
+     
+     ma <- function(x, n = 7){ stats::filter(x, rep(1 / n, n), sides = 2)}
+     
+     df$rollmean <- ma(df$Sim)
+     df$year <- format(df$Date, "%Y")
+     minYear <- min(df$year); maxYear <- max(df$year)
+     DOY <- lapply(minYear:maxYear, function(x) { which(df$rollmean[df$year==x] == min(df$rollmean[df$year==x], na.rm=T) )} )  
+     val <- mean(unlist(DOY))
+     
+  } else {
+    stop('Type is not defined. Please chose between the options as defined in the description of the function!')
+  }
+  
+  return(val)
+
+}
+###############################################################################################################################
+#' @title Calculating Benchmark
+#' @description Function to calculate several benchmarks to compare simulated and observed discharge. NA or negative values in observed data are omitted.
+#' @param df_obs data.frame of observed discharge with "Date" and "Value" columns
+#' @param df_sim data.frame of simulated discharge with "Date" and "Sim" Columns
+#' @param Type string (QmeanAbs, NSE, logNSE, KGE or pBias)
+#' \itemize{
+#'   \item QmeanAbs: absolute differenc between mean values of sim and obs
+#'   \item NSE: Nash-Sutcliff-Efficiency
+#'   \item logNSE: NSE of logarithmic values 
+#'   \item KGE: Kling-Gupta-efficiency and its components
+#'   \item pBias:  relative bias as described in van Werkhoven et al. 2008
+#'   \item deltaSD: not implemented yet! 
+#' }
+#' @param minData minimum on available observed data in examined timeperiod, \cr 
+#' e.g. 0.5 for 50 percent (default)
+#' @return named list with benchmarks
+#' @importFrom stats cor
+#' @importFrom stats sd 
+#' @export
+Q.calcQuality <- function(df_obs, df_sim, Type="NSE", minData=0.5){
 
   df_all <- merge(df_sim, df_obs, by="Date", all.x=T)
   df_all$Sim[is.na(df_all$Value)] <- NA
-  val = NA
 
+  #check if it is enough data
+  if (sum(is.na(df_all$Sim)) > minData * length(df_all$Sim)) {
+    if (Type == "QmeanAbs"){
+      val <- list("QmeanAbs" = NA)
+    } else if (Type == "NSE"){
+      val <- list("NSE" = NA)
+    } else if (Type == "logNSE"){
+      val = list("logNSE"=NA)
+    } else if (Type == "pBias") {
+      val = list("pBias"=NA)
+    } else if (Type=="KGE"){
+      val = list("KGE"=NA, "b"=NA, "a"=NA, "r"=NA)
+    }
+  }
+  
   df_all_diff <- df_all$Value - df_all$Sim
   df_all_diff2 <- df_all_diff^2
   df_all_obsdiff <- df_all$Value - mean(df_all$Value, na.rm=T)
@@ -97,7 +170,7 @@ Q.calcQuality <- function(df_obs, df_sim, Type="NSE"){
   if (Type == "QmeanAbs"){
     meanObs <- mean(df_all$Value, na.rm=T)
     meanSim <- mean(df_all$Sim, na.rm=T)
-    val <- abs(meanObs - meanSim)
+    val <- list("QmeanAbs" = abs(meanObs - meanSim))
 
   } else if (Type == "NSE"){
     NSE <- 1 - (mean(df_all_diff2, na.rm=T) / mean(df_all_obsdiff^2, na.rm=T))
@@ -114,15 +187,15 @@ Q.calcQuality <- function(df_obs, df_sim, Type="NSE"){
     NSE <- 1 - (mean(df_all_diff2, na.rm=T) / mean(df_all_obsdiff^2, na.rm=T))
     val = list("logNSE"=NSE)
 
-  } else if (Type == "SFDCE"){
-    obs <- df_all$Value
-    sim <- df_all$Sim
-
-    SFDCE = as.numeric( abs( ( (stats::quantile(sim, 0.7, na.rm=T) - stats::quantile(sim, 0.3, na.rm=T) ) / 40) -
-                   ( (stats::quantile(obs, 0.7, na.rm=T) - stats::quantile(obs, 0.3, na.rm=T) ) / 40) ) )
-    #wenn alle Werte +x sind, dann liefert SFDCE trotzdem gut Ergebnisse, da nur Unterschied betrachtet wird zwischen Q30 und Q70
-
-
+  } else if (Type == "pBias"){
+    
+    #df_all$diff <- df_all$Sim - df_all$Value
+    #bias <- mean(df_all$diff, na.rm=T)
+    df_all$Value[df_all$Value == 0] <- 0.00000001
+    pBias <- mean((df_all$Sim - df_all$Value)/df_all$Value, na.rm=T)
+    
+    val = list("pBias"=pBias)
+   
   }  else if (Type == "KGE"){
     b = sd(df_all$Sim, na.rm=T)/sd(df_all$Value, na.rm=T)
     a = mean(df_all$Sim, na.rm=T)/mean(df_all$Value, na.rm=T)
@@ -134,6 +207,9 @@ Q.calcQuality <- function(df_obs, df_sim, Type="NSE"){
   } else {
     print("Type is not specified, chose one of the following: QmeanAbs, NSE, logNSE, KGE or SFDCE (from Werkhoven et al. 2008)")
   }
+  # SFDCE = as.numeric( abs( ( (stats::quantile(sim, 0.7, na.rm=T) - stats::quantile(sim, 0.3, na.rm=T) ) / 40) -
+  #                ( (stats::quantile(obs, 0.7, na.rm=T) - stats::quantile(obs, 0.3, na.rm=T) ) / 40) ) )
+  # #wenn alle Werte +x sind, dann liefert SFDCE trotzdem gut Ergebnisse, da nur Unterschied betrachtet wird zwischen Q30 und Q70
   return(val)
 }
 
