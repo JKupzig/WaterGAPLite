@@ -53,14 +53,17 @@ basin.loadingClimate <- function(cont, grdc_number, basinIndex, transMatrix, sim
     var2write <- cbind(Date2write, var)
     rownames(var2write)=NULL; colnames(var2write) <- NULL
     
-    ##### #Special cases #####################################################################################
+    ###### Special cases #####################################################################################
     # data is read in in to 31.12.1979 and exists already from 1980.01.01 on
-    if (min(timeperiod) == max(Date2write)+1){
-      var2write <- rbind(var2write, tmp)
-    # data is read in in from 01.01.1980 and exists already til 31.12.1979   
-    } else if (max(timeperiod) == min(Date2write)-1) {
-      var2write <- rbind(tmp, var2write) 
-    } 
+    if (file.exists(fileName)){
+      if (min(timeperiod) == max(Date2write)+1){
+        var2write <- rbind(var2write, tmp)
+      # data is read in in from 01.01.1980 and exists already til 31.12.1979   
+      } else if (max(timeperiod) == min(Date2write)-1) {
+        var2write <- rbind(tmp, var2write) 
+      } 
+    }
+    ##########################################################################################################
     
     saveRDS(var2write, file = fileName)
     
