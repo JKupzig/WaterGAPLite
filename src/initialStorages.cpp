@@ -19,6 +19,8 @@ String fillWithZeros(String string2fill, int n_zero);
 
 NumericVector changeVals(NumericVector v2change, NumericVector v2use); // sets values safely
 NumericMatrix changeVals(NumericMatrix v2change, NumericMatrix v2use);  // sets values safely
+NumericVector changeVals(NumericVector v2change, NumericVector v2use, const char* Filename); // sets values safely
+NumericMatrix changeVals(NumericMatrix v2change, NumericMatrix v2use, const char* Filename);  // sets values safely
 
 void setStorages(DateVector SimPeriod){
 	//beginning of the day
@@ -33,7 +35,7 @@ void setStorages(DateVector SimPeriod){
 	String pathCanopy = combineStrings(SystemValues, nameCanopy, "/");
 	const char* pathCanopy_char = pathCanopy.get_cstring();
 	dummy = readFile(pathCanopy_char);
-	G_canopyWaterContent=changeVals(G_canopyWaterContent, dummy);
+	G_canopyWaterContent=changeVals(G_canopyWaterContent, dummy, pathCanopy_char);
 
 	
 	//reading snow
@@ -41,79 +43,70 @@ void setStorages(DateVector SimPeriod){
 	String pathSnow = combineStrings(SystemValues, nameSnow, "/");
 	const char* pathSnow_char = pathSnow.get_cstring();
 	dummy = readFile(pathSnow_char);
-	G_snow=changeVals(G_snow, dummy);
+	G_snow=changeVals(G_snow, dummy, pathSnow_char);
 	
-	//writing snowMatrix 
+	//reading snowMatrix 
 	String nameSnowWE = combineStrings(prefix, "G_snowWaterEquivalent.bin", "_");
 	String pathSnowWE = combineStrings(SystemValues, nameSnowWE, "/");
 	const char* pathSnowWE_char = pathSnowWE.get_cstring();
 	dummy2 = readFile(pathSnowWE_char, 25);
-	G_snowWaterEquivalent=changeVals(G_snowWaterEquivalent, dummy2);
+	G_snowWaterEquivalent=changeVals(G_snowWaterEquivalent, dummy2, pathSnowWE_char);
 	
-	//writing soil
+	//reading soil
 	String nameSoil = combineStrings(prefix, "G_soilWaterContent.bin", "_");
 	String pathSoil = combineStrings(SystemValues, nameSoil, "/");
 	const char* pathSoil_char = pathSoil.get_cstring();
 	dummy = readFile(pathSoil_char);
-	G_soilWaterContent=changeVals(G_soilWaterContent, dummy);
+	G_soilWaterContent=changeVals(G_soilWaterContent, dummy, pathSoil_char);
 	
 	//writing groundwater
 	String nameGW = combineStrings(prefix, "G_groundwater.bin", "_");
 	String pathGW = combineStrings(SystemValues, nameGW, "/");
 	const char* pathGW_char = pathGW.get_cstring();
 	dummy = readFile(pathGW_char);
-	G_groundwater=changeVals(G_groundwater, dummy);
+	G_groundwater=changeVals(G_groundwater, dummy, pathGW_char);
 
 	//writing river
 	String nameRiver = combineStrings(prefix, "S_river.bin", "_");
 	String pathRiver = combineStrings(SystemValues, nameRiver, "/");
 	const char* pathRiver_char = pathRiver.get_cstring();
 	dummy = readFile(pathRiver_char);
-	S_river=changeVals(S_river, dummy);
+	S_river=changeVals(S_river, dummy, pathRiver_char);
 	
 	//writing S_locLakeStorage
 	String nameLocLak = combineStrings(prefix, "S_locLakeStorage.bin", "_");
 	String pathLocLak = combineStrings(SystemValues, nameLocLak, "/");
 	const char* pathLocLak_char = pathLocLak.get_cstring();
 	dummy = readFile(pathLocLak_char);
-	S_locLakeStorage=changeVals(S_locLakeStorage, dummy);
+	S_locLakeStorage=changeVals(S_locLakeStorage, dummy, pathLocLak_char);
 	
 	//writing S_locWetlandStorage
 	String nameLocWet = combineStrings(prefix, "S_locWetlandStorage.bin", "_");
 	String pathLocWet = combineStrings(SystemValues, nameLocWet, "/");
 	const char* pathLocWet_char = pathLocWet.get_cstring();
 	dummy = readFile(pathLocWet_char);
-	S_locWetlandStorage=changeVals(S_locWetlandStorage, dummy);
+	S_locWetlandStorage=changeVals(S_locWetlandStorage, dummy, pathLocWet_char);
 	
 	//writing S_gloLakeStorage
 	String nameGloLak = combineStrings(prefix, "S_gloLakeStorage.bin", "_");
 	String pathGloLak = combineStrings(SystemValues, nameGloLak, "/");
 	const char* pathGloLak_char = pathGloLak.get_cstring();
 	dummy = readFile(pathGloLak_char);
-	S_gloLakeStorage=changeVals(S_gloLakeStorage, dummy);
+	S_gloLakeStorage=changeVals(S_gloLakeStorage, dummy, pathGloLak_char);
 	
 	//writing S_ResStorage
 	String nameRes = combineStrings(prefix, "S_ResStorage.bin", "_");
 	String pathRes = combineStrings(SystemValues, nameRes, "/");
 	const char* pathRes_char = pathRes.get_cstring();
 	dummy = readFile(pathRes_char);
-	S_ResStorage=changeVals(S_ResStorage, dummy);
+	S_ResStorage=changeVals(S_ResStorage, dummy, pathRes_char);
 	
 	//writing S_gloWetlandStorage
 	String nameGloWet = combineStrings(prefix, "S_gloWetlandStorage.bin", "_");
 	String pathGloWet = combineStrings(SystemValues, nameGloWet, "/");
 	const char* pathGloWet_char = pathGloWet.get_cstring();
 	dummy = readFile(pathGloWet_char);
-	S_gloWetlandStorage=changeVals(S_gloWetlandStorage, dummy);
-	
-	//deletign everything (to avoid memory heap)
-	//delete (pathCanopy_char); pathCanopy_char=NULL;
-	//delete (pathSnow_char); pathSnow_char=NULL;
-	//delete (pathRiver_char); pathRiver_char=NULL; 
-	//delete (pathLocLak_char); pathLocLak_char=NULL;
-	//delete (pathGloWet_char); pathGloWet_char=NULL;
-	//delete (pathGloLak_char); pathGloLak_char=NULL;
-	//delete (pathLocWet_char); pathLocWet_char=NULL;
+	S_gloWetlandStorage=changeVals(S_gloWetlandStorage, dummy, pathGloWet_char);
 	
 }
 
@@ -189,16 +182,7 @@ void writeStorages(DateVector SimPeriod){
 	String pathGloWet = combineStrings(SystemValues, nameGloWet, "/");
 	const char* pathGloWet_char = pathGloWet.get_cstring();
 	writeFile(pathGloWet_char, S_gloWetlandStorage);
-	
-	//delete (pathCanopy_char); pathCanopy_char=NULL;
-	//delete (pathSnow_char); pathSnow_char = NULL;
-	//delete (pathRiver_char); pathRiver_char=NULL;
-	//delete (pathLocLak_char); pathLocLak_char = NULL;
-	//delete (pathGloWet_char); pathGloWet_char=NULL;
-	//delete (pathGloLak_char);pathGloLak_char=NULL;
-	//delete (pathLocWet_char);pathLocWet_char=NULL;
 }
-
 
 String getLastEntry(DateVector vector2examine){
   
@@ -274,6 +258,9 @@ void writeFile(const char* file, NumericVector vector2write){
   std::vector<double> vector2write_std(n);
   vector2write_std = as<std::vector<double> >(vector2write);
   
+  if (vector2write_std.size() == 0){
+	  Rcpp::warning("Warning: information to write to file %s is empty", file);}
+	  
   fwrite(&vector2write_std[0], sizeof(double), vector2write_std.size(), file_ptr);
   fclose(file_ptr);
 }
@@ -291,6 +278,9 @@ void writeFile(const char* file, NumericMatrix matrix2write){
   file_ptr = fopen(file, "wb");
   if (file_ptr == NULL) { Rcpp::stop("File Error: %s not found", file);}
   
+    if (vector2write_std.size() == 0){
+	   Rcpp::warning("Warning: information to write to file %s is empty", file);}
+	  
   fwrite(&vector2write_std[0], sizeof(double), vector2write_std.size(), file_ptr);
   fclose(file_ptr); 
 }
@@ -311,21 +301,20 @@ NumericVector readFile(const char* file){
   fseek (file_ptr , 0 , SEEK_END); //goes to the end
   lSize = ftell (file_ptr); // tells number
   rewind (file_ptr); // goes to the front
-  static const size_t elem = lSize/sizeof(double);
+  //static const size_t elem1 = lSize/sizeof(double);
+  size_t elem2 = lSize/sizeof(double);
   
   //defining vector to store read input
-  std::vector<double> vector2read(elem);
+  std::vector<double> vector2read(elem2);
  
   //reading & closing
-  size_t result = fread(&vector2read[0], sizeof(double), elem, file_ptr);
+  size_t result = fread(&vector2read[0], sizeof(double), elem2, file_ptr);
   fclose(file_ptr);
   if (result > 0) {
 	  vector2read_rcpp = wrap(vector2read); // wrap x into an R object
   } else {
 	  Rcpp::stop("File Error: %s File is empty", file);
   }
-   
-  //delete[] vector2read; vector2read = NULL;
    
   return(vector2read_rcpp);
   
@@ -348,17 +337,18 @@ NumericMatrix readFile(const char* file, int rows){
   fseek (file_ptr , 0 , SEEK_END); //goes to the end
   lSize = ftell (file_ptr); // tells number
   rewind (file_ptr); // goes to the front
-  static const size_t elem = lSize/sizeof(double);
+  //static const size_t elem1 = lSize/sizeof(double);
+  size_t elem2 = lSize/sizeof(double);
   
   //defining vector to store read input
-  std::vector<double> vector2read(elem);
+  std::vector<double> vector2read(elem2);
   
     //reading & closing
-  size_t result = fread(&vector2read[0], sizeof(double), elem, file_ptr);
+  size_t result = fread(&vector2read[0], sizeof(double), elem2, file_ptr);
   fclose(file_ptr);
   if (result > 0) {
 	  vector2read_rcpp = wrap(vector2read); // wrap x into an R object
-	  vector2read_rcpp.attr("dim") = Dimension(rows, elem/rows);
+	  vector2read_rcpp.attr("dim") = Dimension(rows, elem2/rows);
 	  matrix2read = as<NumericMatrix>(vector2read_rcpp);
   } else {
 	  Rcpp::stop("File Error: %s File is empty", file);
@@ -386,7 +376,7 @@ NumericMatrix changeVals(NumericMatrix v2change, NumericMatrix v2use) {
 	int nCol2 = v2use.ncol(); 
 	
 	if ((nRow2 != nRow1) | (nCol2 != nCol1)) {
-	  stop("Matrices are not compatible!");
+	  Rcpp::stop("Matrices are not compatible! object to change has size (%u,%u) and object to use for change as size (%u,%u)", nRow1, nCol1, nRow2, nCol2);
 	} else {
 	  v2change = v2use; //changes also length!
 	}
@@ -398,10 +388,41 @@ NumericVector changeVals(NumericVector v2change, NumericVector v2use) {
 	int n1 = v2change.length(); 
 	int n2 = v2use.length();
 	if (n1 != n2){
-	  stop("Vectors are not compatible!");
+	  Rcpp::stop("Vectors are not compatible! object to change has size %u and object to use for change as size %u", n1, n2);
 	} else {
 	  v2change = v2use; //changes also length!
 	}
 	return(v2change);
 }
-            
+
+NumericMatrix changeVals(NumericMatrix v2change, NumericMatrix v2use, const char* Filename) {
+	
+	//const char* Filename_c = Filename.get_cstring();
+	int nRow1 = v2change.nrow(); 
+	int nCol1 = v2change.ncol(); 
+	
+	int nRow2 = v2use.nrow(); 
+	int nCol2 = v2use.ncol(); 
+	
+	if ((nRow2 != nRow1) | (nCol2 != nCol1)) {
+	  Rcpp::stop("Matrices are not compatible for file %s! object to change has size (%u,%u) and object to use for change as size (%u,%u)", Filename, nRow1, nCol1, nRow2, nCol2);
+	} else {
+	  v2change = v2use; //changes also length!
+	}
+	return(v2change);
+}
+
+
+NumericVector changeVals(NumericVector v2change, NumericVector v2use, const char* Filename) {
+	
+	//const char* Filename_c = Filename.get_cstring();
+	
+	int n1 = v2change.length(); 
+	int n2 = v2use.length();
+	if (n1 != n2){
+	  Rcpp::stop("Vectors are not compatible for file %s! object to change has size %u and object to use for change as size %u", Filename, n1, n2);
+	} else {
+	  v2change = v2use; //changes also length!
+	}
+	return(v2change);
+}
