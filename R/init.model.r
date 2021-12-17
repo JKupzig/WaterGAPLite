@@ -18,6 +18,7 @@ init.model <- function(grdc_number, lat, long, cont, base){
                        lat=lat, long=long)
   
   
+  #hallo probe
    Basin <- basin.defBasin(Basin) #creates arraysize, basinIndex, grcrWithout..
    Basin <- basin.getBasinInfo(Basin)
    Basin <- basin.getRoutingInfo(Basin)
