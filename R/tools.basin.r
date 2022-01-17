@@ -50,7 +50,7 @@ basin.createAverage <- function(input, basinObject, Type="land"){
   GAREA <- basinObject@GAREA
   array_size <- length(GAREA)
 
-  frac = switch(Type, "land" = landfrac, "WB"= 1-landfrac, "all" = 1/GAREA) #NULL if Type is not defined
+  frac = switch(Type, "land" = landfrac, "WB"= 1-landfrac, "all" = 1) #NULL if Type is not defined
 
   if (is.vector(input) & length(input) == array_size){
       #calculation of Volume for landinput (given in mm) - for rest 1* is applied
