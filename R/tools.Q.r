@@ -76,7 +76,7 @@ Q.convert_mmday_m3s <- function(timeseries, area){
 ###############################################################################################################################
 #' @title Calculating Signature Indices
 #' @description Function to calculate several Signature Indices from simulated flow
-#' @param df dataframe of simulated discharge with (at least) 'Date' and 'Sim' column
+#' @param df dataframe of simulated discharge with (at least) 'Date' and 'Sim' (or 'Value') column
 #' @param Type string (FDC.Slope, ...) \cr
 #' \itemize{
 #'   \item FDC.Slope: flow duration curve slope calculated as described in Kapangaziwiri et al. 2012
@@ -88,22 +88,27 @@ Q.convert_mmday_m3s <- function(timeseries, area){
 #' @importFrom stats sd 
 #' @export
 #'  
+
 Q.calcSI <- function(df, Type="FDC.Slope"){
+  
+  #change name of "value column in obs data.frame - so it can be also used for other discharges
+  i <- which(names(df) == "Value")
+  if (length(i)==1) {names(df)[i]="Sim"}
   
   if (Type == "FDC.Slope"){
     
-    Q90 <- as.numeric(quantile(df$Sim, 0.1))
+    Q90 <- as.numeric(quantile(df$Sim, 0.1, na.rm=T))
     if (Q90 == 0){
       Q90 <- min(df$Sim[df$Sim > 0]) #replacement with min != 0
     }
-    Q10 <- as.numeric(quantile(df$Sim, 0.9))
+    Q10 <- as.numeric(quantile(df$Sim, 0.9, na.rm=T))
     val <- (log(Q90) - log(Q10)) / 80
     
   } else  if (Type == "maxTiming"){
    
     df$year <- format(df$Date, "%Y")
     minYear <- min(df$year); maxYear <- max(df$year)
-    DOY <- lapply(minYear:maxYear, function(x) { which(df$Sim[df$year==x] == max(df$Sim[df$year==x]))} )  
+    DOY <- lapply(minYear:maxYear, function(x) { which(df$Sim[df$year==x] == max(df$Sim[df$year==x], na.rm=T))} )  
     val <- mean(unlist(DOY))
    
    } else  if (Type == "minTiming"){
