@@ -6,11 +6,20 @@
 #' @return raster or matrix with specified information (2D information of Basin) 
 #' @export
 basin.createRaster <- function(input, basinObject, spatialReference = T){
-
-  GR <- basinObject@GR
-  GC <- basinObject@GC
-  corCol <- basinObject@cont@corCol
-  corRow <- basinObject@cont@corRow
+  
+  if (is.list(basinObject)) {
+    GR <- basinObject$GR
+    GC <- basinObject$GC
+    if (isTRUE(spatialReference)) {
+      warning("basinObject is list so spatialReference cannot be calculated \n
+              raster without spatial reference is returned!")
+      spatialReference <- F
+    }
+  } else {
+    GR <- basinObject@GR
+    GC <- basinObject@GC
+  }
+  
   array_size <- length(GC)
 
   arr <- matrix(NA, nrow=max(GR)-min(GR)+1, ncol=max(GC)-min(GC)+1)
@@ -21,7 +30,10 @@ basin.createRaster <- function(input, basinObject, spatialReference = T){
   }
 
   if (spatialReference==T){
-
+    
+    corCol <- basinObject@cont@corCol
+    corRow <- basinObject@cont@corRow
+    #maybe here is a minor bug...that raster is shifted by one 
     xMin = (min(GC)+corCol-1)/12 - 180 #- 1/12
     xMax = (max(GC)+corCol-1)/12 - 180 + 1/12
     yMin = -((max(GR) + corRow - 1)/12 - 90) - 1/12
