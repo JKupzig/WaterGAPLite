@@ -335,7 +335,7 @@ Q.createMonthlyPlot <- function(df_obs, df_sim){
     geom_line(data = df_all_m, aes(x = DATE, y = sum_Qobs, color="Qobs")) +
     geom_line(data = df_all_m, aes(x = DATE, y = sum_Qsim, color="Qsim")) +
     #geom_col fpr precipitation
-    labs(subtitle = paste0("NSE:",as.character(round(NSE,3)), "   b:",as.character(round(b,3)),
+    labs(subtitle = paste0("KGE:",as.character(round(KGE,3)), "   b:",as.character(round(b,3)),
                            "   a:",as.character(round(a,3)), "   r:",as.character(round(r,3))),
          caption = "only days within simulation period and with observation data are considered")   +
     xlab('Dates') +
