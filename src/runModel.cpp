@@ -22,7 +22,7 @@ using namespace Rcpp;
 //'   \item 5th entry: reservoir algorithm     -> 0 (Hanasaki), 1 (global lake)
 //'   \item 6th entry: splitting factor        -> 0 (original version), 1 (set as parameter) - only used for development purposes
 //'   \item 7th entry: long wave radiation     -> 0 (reading), 1 (calculating)
-//'   \item 8th entry: warm up period          -> 0 (no system values), 1 (system values are read), 2 (system values are written), 3 (system values are read and written)
+//'   \item 8th entry: warm up period          -> 0 (no system values), 1 (system values are read), 2 (system values are written), 3 (system values are read and written) }
 //' @param nYears number of years defined as warm-up (first year is then simulated n times, before starting with the actual simulation)
 //' @export
 // [[Rcpp::export]]
