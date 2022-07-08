@@ -8,7 +8,7 @@
 #' @return indices of number in vector (0=1st entry of vector) 
 #' @export
 findNumberInVector <- function(number, vec) {
-    .Call('_WaterGAPLite_findNumberInVector', PACKAGE = 'WaterGAPLite', number, vec)
+    .Call(`_WaterGAPLite_findNumberInVector`, number, vec)
 }
 
 #' @title findUniqueValues
@@ -17,7 +17,7 @@ findNumberInVector <- function(number, vec) {
 #' @return Vector with values in vector without duplicates
 #' @export
 findUniqueValues <- function(vec) {
-    .Call('_WaterGAPLite_findUniqueValues', PACKAGE = 'WaterGAPLite', vec)
+    .Call(`_WaterGAPLite_findUniqueValues`, vec)
 }
 
 #' @title sortIt
@@ -26,7 +26,7 @@ findUniqueValues <- function(vec) {
 #' @return sorted vector
 #' @export
 sortIt <- function(vec) {
-    .Call('_WaterGAPLite_sortIt', PACKAGE = 'WaterGAPLite', vec)
+    .Call(`_WaterGAPLite_sortIt`, vec)
 }
 
 #' @title sumVector
@@ -35,7 +35,7 @@ sortIt <- function(vec) {
 #' @return sum of vector as double
 #' @export
 sumVector <- function(vec) {
-    .Call('_WaterGAPLite_sumVector', PACKAGE = 'WaterGAPLite', vec)
+    .Call(`_WaterGAPLite_sumVector`, vec)
 }
 
 #' @title numberOfDaysInMonth
@@ -44,7 +44,7 @@ sumVector <- function(vec) {
 #' @param year as integer 
 #' @return number of days of specified month in specified year as integer
 numberOfDaysInMonth <- function(month, year) {
-    .Call('_WaterGAPLite_numberOfDaysInMonth', PACKAGE = 'WaterGAPLite', month, year)
+    .Call(`_WaterGAPLite_numberOfDaysInMonth`, month, year)
 }
 
 #' @title numberOfDaysInYear
@@ -52,7 +52,7 @@ numberOfDaysInMonth <- function(month, year) {
 #' @param year as integer 
 #' @return number of days of specified year as integer
 numberOfDaysInYear <- function(year) {
-    .Call('_WaterGAPLite_numberOfDaysInYear', PACKAGE = 'WaterGAPLite', year)
+    .Call(`_WaterGAPLite_numberOfDaysInYear`, year)
 }
 
 #' @title WaterUseConsumGW
@@ -63,7 +63,7 @@ numberOfDaysInYear <- function(year) {
 #' @return GWdailyuse abstracted groundwater (if there is no landfraction in cell, no water can be abstracted from groundwater)
 #' @export
 WaterUseConsumGW <- function(cell, GroundwaterStorage, dailyUse) {
-    .Call('_WaterGAPLite_WaterUseConsumGW', PACKAGE = 'WaterGAPLite', cell, GroundwaterStorage, dailyUse)
+    .Call(`_WaterGAPLite_WaterUseConsumGW`, cell, GroundwaterStorage, dailyUse)
 }
 
 #' @title WaterUseCalcMeanDemandDaily
@@ -73,7 +73,7 @@ WaterUseConsumGW <- function(cell, GroundwaterStorage, dailyUse) {
 #' @return G_mean_demand as numericVector for the sepcified year in [mm*km²/day]
 #' @export
 WaterUseCalcMeanDemandDaily <- function(year, GapYearType) {
-    .Call('_WaterGAPLite_WaterUseCalcMeanDemandDaily', PACKAGE = 'WaterGAPLite', year, GapYearType)
+    .Call(`_WaterGAPLite_WaterUseCalcMeanDemandDaily`, year, GapYearType)
 }
 
 #' @title WaterUseCalcDaily
@@ -88,7 +88,7 @@ WaterUseCalcMeanDemandDaily <- function(year, GapYearType) {
 #' @param Info_TF read water use information for transport to cities
 #' @export
 WaterUseCalcDaily <- function(waterUseType, dailyUse, year, month, StartYear, Info_GW, Info_SW, Info_TF) {
-    invisible(.Call('_WaterGAPLite_WaterUseCalcDaily', PACKAGE = 'WaterGAPLite', waterUseType, dailyUse, year, month, StartYear, Info_GW, Info_SW, Info_TF))
+    invisible(.Call(`_WaterGAPLite_WaterUseCalcDaily`, waterUseType, dailyUse, year, month, StartYear, Info_GW, Info_SW, Info_TF))
 }
 
 #' @title Calculating waterbalance of basin
@@ -102,7 +102,7 @@ WaterUseCalcDaily <- function(waterUseType, dailyUse, year, month, StartYear, In
 #' @return List Vwith daily water balance for whole simulaiton period as output
 #' @export
 createWaterBalance <- function(timestring) {
-    .Call('_WaterGAPLite_createWaterBalance', PACKAGE = 'WaterGAPLite', timestring)
+    .Call(`_WaterGAPLite_createWaterBalance`, timestring)
 }
 
 #' @title Calculate longwave radiation
@@ -114,7 +114,7 @@ createWaterBalance <- function(timestring) {
 #' @return net_long_wave_rad net longwave radiation in W/m²
 #' @export
 dailyEstimateLongwave <- function(n, DOY, dailyTempC, dailyShortWave) {
-    .Call('_WaterGAPLite_dailyEstimateLongwave', PACKAGE = 'WaterGAPLite', n, DOY, dailyTempC, dailyShortWave)
+    .Call(`_WaterGAPLite_dailyEstimateLongwave`, n, DOY, dailyTempC, dailyShortWave)
 }
 
 #' @title Calculate shortwave radiation
@@ -127,7 +127,7 @@ dailyEstimateLongwave <- function(n, DOY, dailyTempC, dailyShortWave) {
 #' @return ShortwaveDownMatrix Matrix with estimated shortwave radiation in W/m²
 #' @export
 dailyEstimateShortwave <- function(SimDates, TempC, Sunshine, GR, cor_row) {
-    .Call('_WaterGAPLite_dailyEstimateShortwave', PACKAGE = 'WaterGAPLite', SimDates, TempC, Sunshine, GR, cor_row)
+    .Call(`_WaterGAPLite_dailyEstimateShortwave`, SimDates, TempC, Sunshine, GR, cor_row)
 }
 
 #' @title snow storage interpolation
@@ -143,7 +143,7 @@ dailyEstimateShortwave <- function(SimDates, TempC, Sunshine, GR, cor_row) {
 #' @param dailySoilPET energy for PET which is left for soil
 #' @export
 dailySnow <- function(day, daily_prec_to_soil, G_snow, G_snowWaterEquivalent, dailySnowMelt, dailySnowEvapo, thresh_elev, dailyEffPrec, dailySoilPET) {
-    invisible(.Call('_WaterGAPLite_dailySnow', PACKAGE = 'WaterGAPLite', day, daily_prec_to_soil, G_snow, G_snowWaterEquivalent, dailySnowMelt, dailySnowEvapo, thresh_elev, dailyEffPrec, dailySoilPET))
+    invisible(.Call(`_WaterGAPLite_dailySnow`, day, daily_prec_to_soil, G_snow, G_snowWaterEquivalent, dailySnowMelt, dailySnowEvapo, thresh_elev, dailyEffPrec, dailySoilPET))
 }
 
 #' @title routing
@@ -155,14 +155,14 @@ dailySnow <- function(day, daily_prec_to_soil, G_snow, G_snowWaterEquivalent, da
 #' @param Prec Precipitation as NumericMatrix in mm/d
 #' @export
 routing <- function(SimPeriod, surfaceRunoff, GroundwaterRunoff, PETw, Prec) {
-    .Call('_WaterGAPLite_routing', PACKAGE = 'WaterGAPLite', SimPeriod, surfaceRunoff, GroundwaterRunoff, PETw, Prec)
+    .Call(`_WaterGAPLite_routing`, SimPeriod, surfaceRunoff, GroundwaterRunoff, PETw, Prec)
 }
 
 #' @title CheckResType
 #' @description function to simulate reservoirs as global lakes, when res_type is zero, so unknown
 #' @export
 CheckResType <- function() {
-    invisible(.Call('_WaterGAPLite_CheckResType', PACKAGE = 'WaterGAPLite'))
+    invisible(.Call(`_WaterGAPLite_CheckResType`))
 }
 
 #' @title setLakeWetlandToMaximum
@@ -174,7 +174,7 @@ CheckResType <- function() {
 #' @param S_gloWetlandStorage global wetland storage
 #' @export
 setLakeWetlandToMaximum <- function(S_locLakeStorage, S_locWetlandStorage, S_gloLakeStorage, S_ResStorage, S_gloWetlandStorage) {
-    invisible(.Call('_WaterGAPLite_setLakeWetlandToMaximum', PACKAGE = 'WaterGAPLite', S_locLakeStorage, S_locWetlandStorage, S_gloLakeStorage, S_ResStorage, S_gloWetlandStorage))
+    invisible(.Call(`_WaterGAPLite_setLakeWetlandToMaximum`, S_locLakeStorage, S_locWetlandStorage, S_gloLakeStorage, S_ResStorage, S_gloWetlandStorage))
 }
 
 #' @title routingRiver
@@ -187,7 +187,7 @@ setLakeWetlandToMaximum <- function(S_locLakeStorage, S_locWetlandStorage, S_glo
 #' @return transportedVolume in [mm*km²/d]
 #' @export
 routingRiver <- function(cell, riverVelocity, RiverInflow, G_riverOutflow, S_river) {
-    .Call('_WaterGAPLite_routingRiver', PACKAGE = 'WaterGAPLite', cell, riverVelocity, RiverInflow, G_riverOutflow, S_river)
+    .Call(`_WaterGAPLite_routingRiver`, cell, riverVelocity, RiverInflow, G_riverOutflow, S_river)
 }
 
 #' @title getRiverVelocity
@@ -198,18 +198,27 @@ routingRiver <- function(cell, riverVelocity, RiverInflow, G_riverOutflow, S_riv
 #' @return riverVelocity in km/day
 #' @export
 getRiverVelocity <- function(Type, cell, inflow) {
-    .Call('_WaterGAPLite_getRiverVelocity', PACKAGE = 'WaterGAPLite', Type, cell, inflow)
+    .Call(`_WaterGAPLite_getRiverVelocity`, Type, cell, inflow)
 }
 
 #' @title runModel
 #' @description run whole model including model initializing, warm-up period, water balance and routing and returns list with states and fluxes 
 #' @param SimPeriod Period to simulate (usually defines as model[["SimPeriod"]] where model is object returned from basin.prepareRun())
 #' @param ListConst list with all required information regarding basin and input (usually, object returned by basin.prepareRun())
-#' @param Settings vector that is used to define settings
+#' @param Settings vector of length 8 that is used to define settings:
+#'  \itemize{
+#'   \item 1st entry: water use               -> 0 (off), 1 (on), 2 (on, including water transport to cities)
+#'   \item 2nd entry: water use allocation    -> 0 (temporal & spatial distr.), 1 (spatial distr.), 2 (temporal distr.)
+#'   \item 3rd entry: flow velocity           -> 0 (constant), 1 (variable)
+#'   \item 4th entry: gap year                -> 0 (including 29.02), 1 (without 29.02)
+#'   \item 5th entry: reservoir algorithm     -> 0 (Hanasaki), 1 (global lake)
+#'   \item 6th entry: splitting factor        -> 0 (original version), 1 (set as parameter) - only used for development purposes
+#'   \item 7th entry: long wave radiation     -> 0 (reading), 1 (calculating)
+#'   \item 8th entry: warm up period          -> 0 (no system values), 1 (system values are read), 2 (system values are written), 3 (system values are read and written) }
 #' @param nYears number of years defined as warm-up (first year is then simulated n times, before starting with the actual simulation)
 #' @export
 runModel <- function(SimPeriod, ListConst, Settings, nYears) {
-    .Call('_WaterGAPLite_runModel', PACKAGE = 'WaterGAPLite', SimPeriod, ListConst, Settings, nYears)
+    .Call(`_WaterGAPLite_runModel`, SimPeriod, ListConst, Settings, nYears)
 }
 
 #' @title tools_DefDrainageCells
@@ -220,7 +229,7 @@ runModel <- function(SimPeriod, ListConst, Settings, nYears) {
 #' @return IntegerVector with GCRC-IDs that are part of basin
 #' @export
 tools_DefDrainageCells <- function(Outlet, GCRC, OutflowMatrix) {
-    .Call('_WaterGAPLite_tools_DefDrainageCells', PACKAGE = 'WaterGAPLite', Outlet, GCRC, OutflowMatrix)
+    .Call(`_WaterGAPLite_tools_DefDrainageCells`, Outlet, GCRC, OutflowMatrix)
 }
 
 #' @title tools_InterpolateValues
@@ -231,6 +240,6 @@ tools_DefDrainageCells <- function(Outlet, GCRC, OutflowMatrix) {
 #' @return NumericVector with interpolated output
 #' @export
 tools_InterpolateValues <- function(VectorIn, Table_x, Table_y) {
-    .Call('_WaterGAPLite_tools_InterpolateValues', PACKAGE = 'WaterGAPLite', VectorIn, Table_x, Table_y)
+    .Call(`_WaterGAPLite_tools_InterpolateValues`, VectorIn, Table_x, Table_y)
 }
 
