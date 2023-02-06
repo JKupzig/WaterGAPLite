@@ -8,5 +8,5 @@ output: html_document
 ## README
 
 Repository for WaterGAPLite which is the surrogate model of WaterGAP3, i.e. working with a reduced set of options 
-and only on basin scale (but using the original continental model input in UNF format - at the moment).
+and only on basin scale (using the original continental model input in UNF format). Example data is added to run the model without the continental UNF-File, that are very specific in reading (binary format and structure).
 
