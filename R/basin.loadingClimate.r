@@ -26,7 +26,6 @@ basin.loadingClimate <- function(cont, grdc_number, basinIndex, transMatrix, sim
   if (file.exists(fileName) & readNewly==F) {
     tmp <- readRDS(fileName)
     timeperiod <- (as.Date(tmp[,1], origin ="1970-01-01")) #first column are dates
-    #timeperiod <- seq(as.Date(readLines(fileName, n=2)[1], format="%Y-%m-%d"), as.Date(readLines(fileName, n=2)[2], format="%Y-%m-%d"),1)
     index2read <- simPeriodDate %in% timeperiod
   }
 
@@ -67,12 +66,8 @@ basin.loadingClimate <- function(cont, grdc_number, basinIndex, transMatrix, sim
     
     saveRDS(var2write, file = fileName)
     
-    #basin.writeClimate4Basin(var, typeName, basinIndex, grdc_number, climateShortcut)
-
   } else if (sum(index2read)==length(index2read)) {  #checking if timeseries is already completely written out
 
-    #var <- basin.readClimate4Basin(typeName, array_size, grdc_number, climateShortcut)
-    #rownames(var) <- as.character(timeperiod)
     var <- readRDS(fileName)
     timeperiod <- (as.Date(var[,1], origin ="1970-01-01")) #first column are dates
     var <- var[,2:ncol(var)]
@@ -146,9 +141,6 @@ basin.loadingClimate <- function(cont, grdc_number, basinIndex, transMatrix, sim
     var <- var[,2:ncol(var)]
     rownames(var) <- as.character(timeperiod_r)
     
-    #var <- basin.readClimate4Basin(typeName, array_size, grdc_number, climateShortcut)
-    #rownames(var) <- as.character(timeperiod)
-
     #combine everything
     var <- rbind(var_start, var)
     var <- rbind(var, var_end)
@@ -160,7 +152,6 @@ basin.loadingClimate <- function(cont, grdc_number, basinIndex, transMatrix, sim
     rownames(var2write)=NULL; colnames(var2write) <- NULL
     saveRDS(var2write, file = fileName)
     
-    #basin.writeClimate4Basin(var, typeName, basinIndex, grdc_number, climateShortcut)
 
     #selecting only period that is needed for simulation
     extentedTimePeriod <-  c(simPeriodDate_1, timeperiod, simPeriodDate_2)

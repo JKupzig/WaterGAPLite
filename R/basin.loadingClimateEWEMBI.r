@@ -58,10 +58,6 @@ basin.loadingClimateEWEMBI <- function(name="prec",basIndex, transMatrix,
 
   file2read <- sprintf("GPREC_%d_%d.31.UNF0", Years[1], Months[1])
   StorageSize <- file.info(file.path(root, file2read))$size/(4*31)
-  # if (!exists("G_WG3_WG2WITH5MIN")) {
-  #   stop("Information to translate global climate to continent grid is required!
-  #        Please first load basin Info to get land mask info!")
-  # }
 
   maskInfo <- G_WG3_WG2WITH5MIN #by default
   if (StorageSize == 67420) { maskInfo <- G_WG3_WATCH } #DATEIEN IN FOLDER SOLLTEN ALLE GLEICHE GRÖßE HABEN!
@@ -89,17 +85,12 @@ basin.loadingClimateEWEMBI <- function(name="prec",basIndex, transMatrix,
     Size <- getInfoFile(filepath)[[2]]
     Type <- getInfoFile(filepath)[[3]]
 
-    #not necessary because defined above
-    #year <- as.numeric(regmatches(f, regexpr("\\d{4}", f, perl=TRUE)))
-    #month <- regmatches(f, regexpr('_([1-9]|1[012])\\.', f))  #https://www.regextester.com/96992
-    #month <- as.numeric(substr(month, 2, nchar(month)-1))
 
     indexYear <- which(as.numeric(format(simPeriodDate, "%Y")) == year)
     indexMonth <- which(as.numeric(format(simPeriodDate[indexYear], "%m")) == month)
     RowMatrix <- indexYear[indexMonth]
 
     ###separating layers from climate data
-    #ClimateData_arr <- list() #defining it as list for every day
     for (j in 1:length(RowMatrix)){
       ClimateData_day <- sapply(1:(length(ClimateData)/nLayerClimate),
                                 function(x) ClimateData[(nLayerClimate*(x-1))+j])

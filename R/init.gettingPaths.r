@@ -10,8 +10,6 @@ init.gettingPaths <- function(cont, base=NULL){
   #rstudio own function to determine baseDir based on location of excecued script
   if (is.null(base)){
     stop("basePath not defined")
-    #file_dir <- rstudioapi::getSourceEditorContext()$path
-    #base <- dirname(dirname(dirname(file_dir)))
   }
   
   #print(base)

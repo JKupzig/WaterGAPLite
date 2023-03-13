@@ -104,7 +104,5 @@ basin.prepareRun <- function(basinObject,
   ListConst[["Info_TF"]] = waterUseObject@Info_TF
   ListConst[["G_NUs_7100"]] = waterUseObject@G_NUs_7100
 
-  #ListConst[["G_startMonth_index"]] = G_startMonth_index
-
   return(ListConst)
 }

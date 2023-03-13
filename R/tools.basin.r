@@ -33,7 +33,7 @@ basin.createRaster <- function(input, basinObject, spatialReference = T){
     
     corCol <- basinObject@cont@corCol
     corRow <- basinObject@cont@corRow
-    #maybe here is a minor bug...that raster is shifted by one 
+    #TODO: maybe here is a minor bug...that raster is shifted by one 
     xMin = (min(GC)+corCol-1)/12 - 180 #- 1/12
     xMax = (max(GC)+corCol-1)/12 - 180 + 1/12
     yMin = -((max(GR) + corRow - 1)/12 - 90) - 1/12

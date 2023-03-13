@@ -22,6 +22,7 @@ extern int ReservoirType;
 extern int splitType;
 extern int calcLong; 
 extern int useSystemVals;
+extern int routing_type;
 
 extern void defSettings(NumericVector Settings);
 extern NumericMatrix getLAIdaily(NumericVector LAI_min, NumericVector LAI_max, NumericVector initDays, 

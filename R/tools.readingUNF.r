@@ -102,8 +102,7 @@ readingUNF <- function(file2read, DataDir, transMatrix=NULL, basIndex, name="bas
 
     } else if ((file2read != "G_ELEV_RANGE.26.UNF2") & (nlayers > 1)) {
 
-      #nlayers = getInfoFile(filepath)[[1]][1]
-      mat = matrix(NA, nlayers,length(Vals)/nlayers)
+      mat = matrix(NA, nlayers, length(Vals)/nlayers)
       for (j in 1:nlayers){
         mat[j,] = sapply(1:(length(Vals)/nlayers), function(x) Vals[(x-1)*nlayers+j])
         mat[j,] =  mat[j,][transMatrix] #have to check if transformation is needed!
@@ -118,7 +117,6 @@ readingUNF <- function(file2read, DataDir, transMatrix=NULL, basIndex, name="bas
 
     } else if (file2read == "G_ELEV_RANGE.26.UNF2") {
 
-      #nlayers = getInfoFile(filepath)[[1]][1]
       mat = matrix(NA, nlayers,ng)
       #sepcial case because all cells with gcrc-ID > ng_land are not considered here
       for (j in 1:nlayers){

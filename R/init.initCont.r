@@ -9,7 +9,6 @@ init.initCont <- function(cont, path2base){ # options: sa, eu, af, au, na, sa ..
   #readin infoFile (could be part of package data!):
   path2use <- init.gettingPaths(cont, base=path2base)
   info <- read.csv(file.path(path2use[["DataDir"]], "ContinentInfo.csv"), sep=";")
-  #print(info)
   
   newCont <- new("Continent", 
                  contName = as.character(cont),

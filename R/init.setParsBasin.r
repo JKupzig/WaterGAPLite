@@ -16,8 +16,6 @@ init.SetParsBasin <-function(basinObject, LAI_info, LCT_info) {
   #LAI table
   GLCT <- basinObject@GLCT
   basinObject@LAI_max <- unlist(LAI_info[GLCT,2],use.names = FALSE)
-  #kc_min <- unlist(LAI_info[GLCT,7],use.names = FALSE)
-  #kc_max <- unlist(LAI_info[GLCT,6],use.names = FALSE)
   basinObject@initDays <- unlist(LAI_info[GLCT,5],use.names = FALSE)
   red_frDecPlant <- unlist(LAI_info[GLCT,4],use.names = FALSE)
   frDecPlant <- unlist(LAI_info[GLCT,3],use.names = FALSE)

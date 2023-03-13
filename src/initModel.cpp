@@ -20,6 +20,7 @@ int ReservoirType;
 int splitType;
 int calcLong;
 int useSystemVals;
+int routing_type;
 
 //CONSTANT FILES
 
@@ -115,6 +116,7 @@ void defSettings(NumericVector Settings){
 	splitType = Settings[5];
 	calcLong = Settings[6];
 	useSystemVals = Settings[7];
+	routing_type = Settings[8];
 }
 
 //' @title detLAIdaily

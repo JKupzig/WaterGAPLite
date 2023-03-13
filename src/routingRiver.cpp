@@ -17,7 +17,7 @@ using namespace std;
 //' @export
 // [[Rcpp::export]]
 double routingRiver(int cell, double riverVelocity, double RiverInflow,
-					NumericVector G_riverOutflow, NumericVector S_river) {
+					NumericVector G_riverOutflow, NumericVector S_river, int routing_type) {
 	
 	double K;
 	double G_riverStoragePrevStep;
@@ -25,12 +25,20 @@ double routingRiver(int cell, double riverVelocity, double RiverInflow,
 	
 	K = G_riverLength[cell] / riverVelocity; // [km / (km/d)] = [d]  
 	G_riverStoragePrevStep = S_river[cell]; //[mm * km²]
-	S_river[cell] = ( G_riverStoragePrevStep * exp(-1./ K) )
+
+	if (routing_type == 1){
+		S_river[cell] = ( G_riverStoragePrevStep * exp(-1./ K) )
 						+ (RiverInflow * K * (1. - exp(-1./K)));
 	
-	transportedVolume = RiverInflow + G_riverStoragePrevStep - S_river[cell]; //[mm * km²/d]
+		transportedVolume = RiverInflow + G_riverStoragePrevStep - S_river[cell]; //[mm * km²/d]
 	
-	G_riverOutflow[cell] = transportedVolume;
+		G_riverOutflow[cell] = transportedVolume;
+	} else {
+		transportedVolume = G_riverOutflow[cell] + (RiverInflow - G_riverOutflow[cell])*(1. - exp(-1./K));
+		G_riverOutflow[cell] = transportedVolume;
+		S_river[cell] = RiverInflow - transportedVolume
+	}
+
 	
 	return(transportedVolume);
 }

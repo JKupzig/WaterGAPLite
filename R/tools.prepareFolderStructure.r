@@ -37,4 +37,3 @@ tools.prepareFolderStructur <- function(base){
   
 }
 
-#tools.prepareFolderStructur(base)
