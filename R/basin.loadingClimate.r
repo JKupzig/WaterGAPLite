@@ -13,21 +13,21 @@
 #' @param read_newly information if climate data is forced to be read newly (T) or not (F, ClimateShortCut will be used)
 #' @param climate_format defining format of climate (global, continental or basin)
 #' @return Matrix with climate data (nrow=days, ncol=cells of basin)
-basin.loadingClimate <- function(cont, grdc_number, basin_index, trans_matrix,
+basin.loading_climate <- function(cont, grdc_number, basin_index, trans_matrix,
                                sim_period_date, climate_shortcut, data_dir,
                                 wg2with5min_mask, watch_mask,
                                 type_name = "prec",
                                 read_newly = FALSE, climate_format) {
 
-  # first: check if there exists already prepared timeseries 
+  # first: check if there exists already prepared timeseries
   # or if function is forced to prepare all timeseries new
-  fileName <- file.path(climate_shortcut, 
+  fileName <- file.path(climate_shortcut,
                   paste0(as.character(grdc_number),"_", type_name, ".rds"))
 
   index2read <- 0
   if (file.exists(fileName) && read_newly == FALSE) {
     tmp <- readRDS(fileName)
-    timeperiod <- (as.Date(tmp[,1], origin ="1970-01-01"))
+    timeperiod <- (as.Date(tmp[, 1], origin = "1970-01-01"))
     index2read <- sim_period_date %in% timeperiod
   }
 
@@ -40,7 +40,7 @@ basin.loadingClimate <- function(cont, grdc_number, basin_index, trans_matrix,
                                           wg2with5min_mask, watch_mask,
                                           sim_period_date
                                           )
-    
+
     } else if (climate_format == "continental") {
       var <- basin.loading_climate_continental(name = type_name, basin_index,
                                        trans_matrix, data_dir,
@@ -53,23 +53,23 @@ basin.loadingClimate <- function(cont, grdc_number, basin_index, trans_matrix,
                                         sim_period_date
                                         )
     } else {
-      stop("ClimateFormat not specified properly - use 'global' or 
-            'continental' or 'basin', when specified global: 
-            data in data/climate/global is used, when specified 
-            continental: data in data/climate/continental/[cont] is used, 
+      stop("ClimateFormat not specified properly - use 'global' or
+            'continental' or 'basin', when specified global:
+            data in data/climate/global is used, when specified
+            continental: data in data/climate/continental/[cont] is used,
             when specified basin: data in data/climate/basin/id_
             climatetype.rds is used"
             )
     }
-    
+
     date2write <- as.Date(rownames(var))
     var2write <- cbind(date2write, var)
     rownames(var2write) <- NULL
     colnames(var2write) <- NULL
-    
+
     ###### Special cases ##################################
     # data is read in in to 31.12.1979 and exists already from 1980.01.01 on
-    if (file.exists(fileName)){
+    if (file.exists(fileName) && read_newly == FALSE) {
       if (min(timeperiod) == max(date2write) + 1) {
         var2write <- rbind(var2write, tmp)
       # data is read in in from 01.01.1980 and exists already til 31.12.1979
@@ -93,11 +93,11 @@ basin.loadingClimate <- function(cont, grdc_number, basin_index, trans_matrix,
 
   # at least some overlapping exists
   } else {
-    warning("Please make sure that data in climateShortcut 
-            correspondent to used climateFormat. If not sure, 
-            better use force2read=T to ensure that meteorological 
+    warning("Please make sure that data in climateShortcut
+            correspondent to used climateFormat. If not sure,
+            better use force2read=T to ensure that meteorological
             data has same origin (data is read entirely new with this option).")
-    
+
     #checking if timeseries needs to be extended in the beginning:
     var_start <- NA
     sim_period_date_1 <- NA
@@ -105,31 +105,31 @@ basin.loadingClimate <- function(cont, grdc_number, basin_index, trans_matrix,
       #getting simperiod that needs to be read in
       id <- which(index2read[2:length(index2read)] != data.table::shift(index2read,1)[2:length(index2read)])[1]
       sim_period_date_1 <- sim_period_date[1:id]
-      
+
       #reading data that is missing form climate file
       if (climate_format == "global"){
         var_start <- basin.loading_climate_ewembi(name = type_name, basin_index,
-                                                  trans_matrix, data_dir, 
-                                                  wg2with5min_mask, 
+                                                  trans_matrix, data_dir,
+                                                  wg2with5min_mask,
                                                   watch_mask, sim_period_date_1)
 
       } else if (climate_format == "continental") {
-        var_start <- basin.loading_climate_continental(name = type_name, 
+        var_start <- basin.loading_climate_continental(name = type_name,
                                                       basin_index,
                                                       trans_matrix, data_dir,
                                                       sim_period_date_1, cont)
-      
+
       } else if (climate_format == "basin") {
         var_start <- basin.loading_climate_basin(name="prec", grdc_number,
                                                 basin_index, data_dir,
                                                 sim_period_date_1)
       } else {
-        stop("ClimateFormat not specified properly - 
+        stop("ClimateFormat not specified properly -
               use 'global' or 'continental' or 'basin' ,
-              when specified global: data in data/climate/global is used, 
-              when specified continental: data in 
-              data/climate/continental/[cont] is used, 
-              when specified basin: data in 
+              when specified global: data in data/climate/global is used,
+              when specified continental: data in
+              data/climate/continental/[cont] is used,
+              when specified basin: data in
               data/climate/basin/id_climatetype.rds is used"
               )
       }
@@ -144,7 +144,7 @@ basin.loadingClimate <- function(cont, grdc_number, basin_index, trans_matrix,
       id <- which(index2read[2:length(index2read)] != data.table::shift(index2read,1)[2:length(index2read)])
       id <- id[length(id)]
       sim_period_date_2 <- sim_period_date[(id + 1):length(sim_period_date)]
-      
+
       #reading data that is missing form climate file
       if (climate_format == "global") {
         var_end <- basin.loading_climate_ewembi(name = type_name, basin_index,
@@ -152,7 +152,7 @@ basin.loadingClimate <- function(cont, grdc_number, basin_index, trans_matrix,
                                                 data_dir, wg2with5min_mask,
                                                 watch_mask,
                                                 sim_period_date_2)
-      
+
       } else if (climate_format == "continental") {
         var_end <- basin.loading_climate_continental(name = type_name,
                                                      basin_index,
@@ -160,19 +160,19 @@ basin.loadingClimate <- function(cont, grdc_number, basin_index, trans_matrix,
                                                      data_dir,
                                                      sim_period_date_2,
                                                      cont)
-      
+
       } else if (climate_format=="basin") {
         var_end <- basin.loading_climate_basin(name = "prec", grdc_number,
                                                 basin_index,
                                                 data_dir, sim_period_date_2)
-      
+
       } else {
-        stop("ClimateFormat not specified properly - 
+        stop("ClimateFormat not specified properly -
               use 'global' or 'continental' or 'basin' ,
-              when specified global: data in data/climate/global is used, 
-              when specified continental: data in 
-              data/climate/continental/[cont] is used, 
-              when specified basin: data in 
+              when specified global: data in data/climate/global is used,
+              when specified continental: data in
+              data/climate/continental/[cont] is used,
+              when specified basin: data in
               data/climate/basin/id_climatetype.rds is used"
               )
       }

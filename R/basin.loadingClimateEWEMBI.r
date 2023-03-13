@@ -1,4 +1,4 @@
-#' @title Loading worldwide EWEMBI data 
+#' @title Loading worldwide EWEMBI data
 #' @description Function to read worldwide (EWEMBI) climate data for basin
 #' @param name name of variable to be read
 #' @param basin_index basinIndex to define which cells of continental raster belong to basin
@@ -55,7 +55,9 @@ basin.loading_climate_ewembi <- function(name = "prec", basin_index, trans_matri
   storage_size <- file.info(file.path(root, file2read))$size / (4 * 31)
 
   mask_info <- wg2with5min_mask #by default
-  if (storage_size == 67420) { maskInfo <- watch_mask } #DATEIEN IN FOLDER SOLLTEN ALLE GLEICHE GRÖßE HABEN!
+  if (storage_size == 67420) {
+    mask_info <- watch_mask
+  }
 
   if (name == "prec") {
     filename <- "GPREC_%d_%d.31.UNF0"
