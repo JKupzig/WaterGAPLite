@@ -167,9 +167,9 @@ CheckResType <- function() {
 
 #' @title setLakeWetlandToMaximum
 #' @description function that sets storage of all surface water bodies to max; is implemented in original model version (actually because of this, warm-up-period should be quite long > 2a)
-#' @param S_locLakeStorage local lake storage 
+#' @param S_locLakeStorage local lake storage
 #' @param S_locWetlandStorage local wetland storage
-#' @param S_gloLakeStorage global lake storage 
+#' @param S_gloLakeStorage global lake storage
 #' @param S_ResStorage reservoir storage
 #' @param S_gloWetlandStorage global wetland storage
 #' @export
@@ -179,7 +179,7 @@ setLakeWetlandToMaximum <- function(S_locLakeStorage, S_locWetlandStorage, S_glo
 
 #' @title routingRiver
 #' @description function that defines routing through river - note: uses original model code with bug in ELS equation
-#' @param cell cell that is simulated 
+#' @param cell cell that is simulated
 #' @param riverVelocity river velocity in km/d
 #' @param RiverInflow inflow to river network [mm*km²/d]
 #' @param G_riverOutflow transportedVolume in [mm*km²/d]
@@ -194,7 +194,7 @@ routingRiver <- function(cell, riverVelocity, RiverInflow, G_riverOutflow, S_riv
 #' @description function that defines river velocity for routing (variable or constant)
 #' @param Type 0 (constant) or 1 (variable)
 #' @param cell cell that is simulated
-#' @param inflow inflow to river in mm*km²/day 
+#' @param inflow inflow to river in mm*km²/day
 #' @return riverVelocity in km/day
 #' @export
 getRiverVelocity <- function(Type, cell, inflow) {
@@ -232,14 +232,14 @@ tools_DefDrainageCells <- function(Outlet, GCRC, OutflowMatrix) {
     .Call(`_WaterGAPLite_tools_DefDrainageCells`, Outlet, GCRC, OutflowMatrix)
 }
 
-#' @title tools_InterpolateValues
+#' @title tools_interpolate
 #' @description rcpp function for interpolation of a vector (alternative could be using r function and apply)
 #' @param VectorIn vector as base for interpolation
-#' @param Table_x Table_x of values 
-#' @param Table_y Table_y of values 
+#' @param Table_x Table_x of values
+#' @param Table_y Table_y of values
 #' @return NumericVector with interpolated output
 #' @export
-tools_InterpolateValues <- function(VectorIn, Table_x, Table_y) {
-    .Call(`_WaterGAPLite_tools_InterpolateValues`, VectorIn, Table_x, Table_y)
+tools_interpolate <- function(VectorIn, Table_x, Table_y) {
+    .Call(`_WaterGAPLite_tools_interpolate`, VectorIn, Table_x, Table_y)
 }
 

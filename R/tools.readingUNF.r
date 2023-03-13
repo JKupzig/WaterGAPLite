@@ -13,7 +13,7 @@
 #Note: ELEV_RANGE.26 (ng_land) and GAREA (nrow) Mean_Inflow.12 (multiple layers) have different construction!
 #source("_getInfoFile.r")
 
-readingUNF <- function(file2read, DataDir, transMatrix=NULL, basIndex, name="basinInfo", ng_land=NULL, TypeClimate=0, cont=NULL) {
+reading_unf <- function(file2read, DataDir, transMatrix=NULL, basIndex, name="basinInfo", ng_land=NULL, TypeClimate=0, cont=NULL) {
   #ng_land only used to read ELEV_range
   ng <- length(transMatrix)
 
@@ -73,7 +73,7 @@ readingUNF <- function(file2read, DataDir, transMatrix=NULL, basIndex, name="bas
   } else {
     filepath <- file.path(DataDir, name, cont, file2read)
     filetype <- substr(file2read,  nchar(file2read)-3, nchar(file2read))
-    nlayers = getInfoFile(filepath)[[1]][1]
+    nlayers = get_info_file(filepath)[[1]][1]
 
     to.read = file(filepath, "rb")
     if (filetype == "UNF0") {

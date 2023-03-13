@@ -1,104 +1,98 @@
 #' @title Loading worldwide EWEMBI data 
 #' @description Function to read worldwide (EWEMBI) climate data for basin
 #' @param name name of variable to be read
-#' @param basIndex basinIndex to define which cells of continental raster belong to basin
-#' @param transMatrix transformation Matrix to transform global data to basinwide data (not sure if this is correct)
-#' @param DataDir filepath to data-folder - usually ...base/data
-#' @param G_WG3_WG2WITH5MIN transformation information to get basinwide information from global met. data
-#' @param G_WG3_WATCH transformation information to get basinwide information from global met. data
-#' @param simPeriodDate DateVector defining the simulation period
+#' @param basin_index basinIndex to define which cells of continental raster belong to basin
+#' @param trans_matrix transformation Matrix to transform global data to basinwide data (not sure if this is correct)
+#' @param data_dir filepath to data-folder - usually ...base/data
+#' @param wg2with5min_mask transformation information to get basinwide information from global met. data
+#' @param watch_mask transformation information to get basinwide information from global met. data
+#' @param sim_period_date DateVector defining the simulation period
 #' @return Matrix with climate data (nrow=days, ncol=cells of basin)
+basin.loading_climate_ewembi <- function(name = "prec", basin_index, trans_matrix,
+                                         data_dir, wg2with5min_mask, watch_mask,
+                                         sim_period_date) {
 
-
-basin.loadingClimateEWEMBI <- function(name="prec",basIndex, transMatrix,
-                                       DataDir, G_WG3_WG2WITH5MIN, G_WG3_WATCH,
-                                       simPeriodDate){
-
-  array_size <- length(basIndex)
+  array_size <- length(basin_index)
   #only climatedata for basin is read to save memory
-  MatrixOut <- matrix(data=NA, nrow=length(simPeriodDate), ncol=array_size)
+  matrix_out <- matrix(data = NA, nrow = length(sim_period_date),
+                      ncol = array_size)
 
-  root = file.path(DataDir, "climate", "global")
+  root <- file.path(data_dir, "climate", "global")
 
-  startYear <- as.numeric(format(min(simPeriodDate), "%Y"))
-  endYear <- as.numeric(format(max(simPeriodDate), "%Y"))
+  start_year <- as.numeric(format(min(sim_period_date), "%Y"))
+  end_year <- as.numeric(format(max(sim_period_date), "%Y"))
 
-  startMonth <- as.numeric(format(min(simPeriodDate), "%m"))
-  endMonth <- as.numeric(format(max(simPeriodDate), "%m"))
+  start_month <- as.numeric(format(min(sim_period_date), "%m"))
+  end_month <- as.numeric(format(max(sim_period_date), "%m"))
 
-  startDay <- as.numeric(format(min(simPeriodDate), "%d")) #not used at the moment
-  endDay <- as.numeric(format(max(simPeriodDate), "%d")) #not used at the moment
+  months <- seq(1, 12, 1)
+  years <- rep(start_year, 12)
 
-  #special condition, when only one year needs to be read in
-  if (startYear == endYear){
-    Months <- seq(1,12,1)
-    Years <- rep(startYear, 12)
-  } else if (startYear== (endYear-1)) {
+  if (start_year == (end_year - 1)) {
 
-    uniqueYears <- seq(startYear, endYear, 1)
-    FirstMonths <- seq(startMonth,12,1)
-    LastMonths <- seq(1,endMonth,1)
+    unique_years <- seq(start_year, end_year, 1)
+    first_months <- seq(start_month, 12, 1)
+    last_months <- seq(1, end_month, 1)
 
-    Months <- c(FirstMonths,rep(1:12,length(uniqueYears)-2), LastMonths)
+    months <- c(first_months, rep(1:12, length(unique_years) - 2), last_months)
 
-    Years = c(rep(uniqueYears[1], length(FirstMonths)),
-              rep(uniqueYears[length(uniqueYears)], length(LastMonths)))
+    years = c(rep(unique_years[1], length(first_months)),
+              rep(unique_years[length(unique_years)], length(last_months)))
 
   } else {
-    uniqueYears <- seq(startYear, endYear, 1)
-    FirstMonths <- seq(startMonth,12,1)
-    LastMonths <- seq(1,endMonth,1)
+    unique_years <- seq(start_year, end_year, 1)
+    first_months <- seq(start_month, 12, 1)
+    last_months <- seq(1, end_month, 1)
 
-    Months <- c(FirstMonths,rep(1:12,length(uniqueYears)-2), LastMonths)
+    months <- c(first_months, rep(1:12, length(unique_years) - 2), last_months)
 
-    Years = c(rep(uniqueYears[1], length(FirstMonths)),
-              sort(rep(uniqueYears[2]:uniqueYears[length(uniqueYears)-1], 12)),
-              rep(uniqueYears[length(uniqueYears)], length(LastMonths)))
+    years = c(rep(unique_years[1], length(first_months)),
+              sort(rep(unique_years[2]:unique_years[length(unique_years)-1], 12)),
+              rep(unique_years[length(unique_years)], length(last_months)))
   }
 
-  file2read <- sprintf("GPREC_%d_%d.31.UNF0", Years[1], Months[1])
-  StorageSize <- file.info(file.path(root, file2read))$size/(4*31)
+  file2read <- sprintf("GPREC_%d_%d.31.UNF0", years[1], months[1])
+  storage_size <- file.info(file.path(root, file2read))$size / (4 * 31)
 
-  maskInfo <- G_WG3_WG2WITH5MIN #by default
-  if (StorageSize == 67420) { maskInfo <- G_WG3_WATCH } #DATEIEN IN FOLDER SOLLTEN ALLE GLEICHE GRÖßE HABEN!
+  mask_info <- wg2with5min_mask #by default
+  if (storage_size == 67420) { maskInfo <- watch_mask } #DATEIEN IN FOLDER SOLLTEN ALLE GLEICHE GRÖßE HABEN!
 
-  if (name == "prec"){
-    Stringname = "GPREC_%d_%d.31.UNF0"
-  } else if (name == "shortwave"){
-    Stringname = "GSHORTWAVE_%d_%d.31.UNF0"
-  } else if (name == "longwave"){
-    Stringname = "GLONGWAVE_DOWN_%d_%d.31.UNF0"
-  } else if (name == "temp"){
-    Stringname = "GTEMP_%d_%d.31.UNF0"
+  if (name == "prec") {
+    filename <- "GPREC_%d_%d.31.UNF0"
+  } else if (name == "shortwave") {
+    filename <- "GSHORTWAVE_%d_%d.31.UNF0"
+  } else if (name == "longwave") {
+    filename <- "GLONGWAVE_DOWN_%d_%d.31.UNF0"
+  } else if (name == "temp") {
+    filename <- "GTEMP_%d_%d.31.UNF0"
   }
 
-  for (i in 1:length(Months)) {
+  for (i in 1:length(months)) {
 
-    month = Months[i]
-    year = Years[i]
-    f = sprintf(Stringname, year, month)
+    month <- months[i]
+    year <- years[i]
+    file <- sprintf(filename, year, month)
 
-    ClimateData <- readingUNF(f, DataDir, transMatrix=NULL, basIndex=NULL, name="climate", TypeClimate=1)
+    climate_data <- reading_unf(file, data_dir,
+                                transMatrix = NULL, basIndex = NULL,
+                                name = "climate", TypeClimate = 1)
 
-    filepath <- file.path(root, f)
-    nLayerClimate <- getInfoFile(filepath)[[1]]
-    Size <- getInfoFile(filepath)[[2]]
-    Type <- getInfoFile(filepath)[[3]]
+    filepath <- file.path(root, file)
+    nlayer_climate <- get_info_file(filepath)[[1]]
 
-
-    indexYear <- which(as.numeric(format(simPeriodDate, "%Y")) == year)
-    indexMonth <- which(as.numeric(format(simPeriodDate[indexYear], "%m")) == month)
-    RowMatrix <- indexYear[indexMonth]
+    index_year <- which(as.numeric(format(sim_period_date, "%Y")) == year)
+    index_month <- which(as.numeric(format(sim_period_date[index_year], "%m")) == month)
+    row_matrix <- index_year[index_month]
 
     ###separating layers from climate data
-    for (j in 1:length(RowMatrix)){
-      ClimateData_day <- sapply(1:(length(ClimateData)/nLayerClimate),
-                                function(x) ClimateData[(nLayerClimate*(x-1))+j])
-      MatrixOut[RowMatrix[j],] = ClimateData_day[maskInfo]
+    for (j in 1:length(row_matrix)){
+      climate_data_day <- sapply(1:(length(climate_data)/nlayer_climate),
+                                function(x) climate_data[(nlayer_climate * (x - 1)) + j])
+      matrix_out[row_matrix[j], ] <- climate_data_day[mask_info]
     }
   }
 
-  rownames(MatrixOut) <- as.character(simPeriodDate)
+  rownames(matrix_out) <- as.character(sim_period_date)
+  return(matrix_out)
 
-  return(MatrixOut)
 }

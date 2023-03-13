@@ -7,12 +7,15 @@
 #' @param basinObject_cont continent as string (au, af, as, na, eu, sa)
 #' @param start start data as date to read GRDC data
 #' @param end end date as date to read GRDC data
-#' @param useFolder if defined another folder than data/calibration/cont can be set to look for discharge data (GRDC-like data)
-#' @return dataframe with Date and Q as given in GRDC-file with name "(grdc_number)_Q_Day.Cmd.txt"
+#' @param useFolder if defined another folder than data/calibration/cont can be
+#' set to look for discharge data (GRDC-like data)
+#' @return dataframe with Date and Q as given in GRDC-file with name
+#' "(grdc_number)_Q_Day.Cmd.txt"
 #' @importFrom utils read.csv2
 #' @export
 
-Q.readGRDC <- function(basinObject_id, basinObject_DataDir, basinObject_cont,  start, end, useFolder=NULL){
+Q.read_grdc <- function(basinObject_id, basinObject_DataDir, basinObject_cont,
+                        start, end, useFolder=NULL){
 
   start <- as.Date(start, "%d.%m.%Y")
   end <- as.Date(end, "%d.%m.%Y")
@@ -46,11 +49,11 @@ Q.readGRDC <- function(basinObject_id, basinObject_DataDir, basinObject_cont,  s
 ###############################################################################################################################
 #' @title m³/s to mm/d
 #' @description Functions to convert m³/s to mm/d
-#' @param timeseries vector/matrix of data that needs to be converted 
+#' @param timeseries vector/matrix of data that needs to be converted
 #' @param area GAREA information of basin, can be obtained grom GAREA of basinObject
 #' @return changed timeseries
 #' @export
-#' 
+#'
 Q.convert_m3s_mmday <- function(timeseries, area){
 
   timeseries = timeseries*60*60*24/area/1000 #area must be in km²!
@@ -62,7 +65,7 @@ Q.convert_m3s_mmday <- function(timeseries, area){
 ###############################################################################################################################
 #' @title mm/d to m³/s
 #' @description Functions to convertmm/d to m³/s
-#' @param timeseries vector/matrix of data that needs to be converted 
+#' @param timeseries vector/matrix of data that needs to be converted
 #' @param area GAREA information of basin, can be obtained grom GAREA of basinObject
 #' @return changed timeseries
 #' @export
@@ -82,18 +85,18 @@ Q.convert_mmday_m3s <- function(timeseries, area){
 #' \itemize{
 #'   \item QmeanAbs: absolute differenc between mean values of sim and obs
 #'   \item NSE: Nash-Sutcliff-Efficiency
-#'   \item logNSE: NSE of logarithmic values 
+#'   \item logNSE: NSE of logarithmic values
 #'   \item KGE: Kling-Gupta-efficiency and its components
 #'   \item pBias:  relative bias as described in van Werkhoven et al. 2008
-#'   \item deltaSD: not implemented yet! 
+#'   \item deltaSD: not implemented yet!
 #' }
-#' @param minData minimum on available observed data in examined timeperiod, \cr 
+#' @param minData minimum on available observed data in examined timeperiod, \cr
 #' e.g. 0.5 for 50 percent (default)
 #' @return named list with benchmarks
 #' @importFrom stats cor
-#' @importFrom stats sd 
+#' @importFrom stats sd
 #' @export
-Q.calcQuality <- function(df_obs, df_sim, Type="NSE", minData=0.5){
+Q.calc_quality <- function(df_obs, df_sim, Type="NSE", minData=0.5){
 
   df_all <- merge(df_sim, df_obs, by="Date", all.x=T)
   df_all$Sim[is.na(df_all$Value)] <- NA
@@ -112,7 +115,7 @@ Q.calcQuality <- function(df_obs, df_sim, Type="NSE", minData=0.5){
       val = list("KGE"=NA, "b"=NA, "a"=NA, "r"=NA)
     }
   }
-  
+
   df_all_diff <- df_all$Value - df_all$Sim
   df_all_diff2 <- df_all_diff^2
   df_all_obsdiff <- df_all$Value - mean(df_all$Value, na.rm=T)
@@ -138,12 +141,12 @@ Q.calcQuality <- function(df_obs, df_sim, Type="NSE", minData=0.5){
     val = list("logNSE"=NSE)
 
   } else if (Type == "pBias"){
-    
+
     df_all$Value[df_all$Value == 0] <- 0.00000001
     pBias <- mean((df_all$Sim - df_all$Value)/df_all$Value, na.rm=T)
-    
+
     val = list("pBias"=pBias)
-   
+
   }  else if (Type == "KGE"){
     b = sd(df_all$Sim, na.rm=T)/sd(df_all$Value, na.rm=T)
     a = mean(df_all$Sim, na.rm=T)/mean(df_all$Value, na.rm=T)
@@ -167,13 +170,13 @@ Q.calcQuality <- function(df_obs, df_sim, Type="NSE", minData=0.5){
 #' @param from optional information (Date) where to start plot
 #' @param to optional information (Date) where to end plot
 #' @param showPlot if TRUE than plot is directly shown in Viewer, inf FALSE than not
-#' @return ggplot object 
+#' @return ggplot object
 #' @importFrom stats cor
-#' @importFrom stats sd 
+#' @importFrom stats sd
 #' @import ggplot2
 #' @importFrom rlang .data
 #' @export
-#' 
+#'
 Q.plotTimeseries <- function(df_obs, df_sim, df_prec, from=NULL, to=NULL, showPlot=T){
 
   if (is.null(from)) { from=1 }
@@ -183,7 +186,7 @@ Q.plotTimeseries <- function(df_obs, df_sim, df_prec, from=NULL, to=NULL, showPl
   df_sim <- df_sim[from:to,]
   df_prec <- df_prec[from:to,]
 
-  KGE_List <- Q.calcQuality(df_obs, df_sim, Type="KGE")
+  KGE_List <- Q.calc_quality(df_obs, df_sim, Type="KGE")
 
   ymin = 0
   ymax = round(max(max(df_obs$Value, na.rm=T), max(df_sim$Sim, na.rm=T)) + 0.1 * max(max(df_obs$Value, na.rm=T), max(df_sim$Sim, na.rm=T)),0)
@@ -238,11 +241,11 @@ return(p)
 #' @param df_sim data.frame of simulated daily discharge with ("Date" and "Sim" Columns)
 #' @return ggplot object
 #' @importFrom stats cor
-#' @importFrom stats sd 
+#' @importFrom stats sd
 #' @importFrom rlang .data
 #' @import dplyr
 #' @export
-#' 
+#'
 Q.createMonthlyPlot <- function(df_obs, df_sim){
 
   df_all <- merge(df_sim, df_obs, by="Date", all.x=T)

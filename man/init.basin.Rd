@@ -4,10 +4,10 @@
 \alias{init.basin}
 \title{Initializing Basin as empty basinObject}
 \usage{
-init.basin(ContinentObject, grdc_number, lat, long, cont)
+init.basin(continent_object, grdc_number, lat, long, cont)
 }
 \arguments{
-\item{ContinentObject}{ContinentObject defined from init.initCont()}
+\item{continent_object}{ContinentObject defined from init.initCont()}
 
 \item{grdc_number}{grdc number of basin}
 

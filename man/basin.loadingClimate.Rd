@@ -7,16 +7,16 @@
 basin.loadingClimate(
   cont,
   grdc_number,
-  basinIndex,
-  transMatrix,
-  simPeriodDate,
-  climateShortcut,
-  DataDir,
-  G_WG3_WG2WITH5MIN,
-  G_WG3_WATCH,
-  typeName = "prec",
-  readNewly = F,
-  ClimateFormat
+  basin_index,
+  trans_matrix,
+  sim_period_date,
+  climate_shortcut,
+  data_dir,
+  wg2with5min_mask,
+  watch_mask,
+  type_name = "prec",
+  read_newly = FALSE,
+  climate_format
 )
 }
 \arguments{
@@ -24,25 +24,25 @@ basin.loadingClimate(
 
 \item{grdc_number}{grdc_number of basin (is used as ID in this case, however, later on it is also used to load Discharge data)}
 
-\item{basinIndex}{basinIndex information to determine which cells belong to the basin}
+\item{basin_index}{basinIndex information to determine which cells belong to the basin}
 
-\item{transMatrix}{transformation Matrix to transform global data to basinwide data (not sure if this is correct)}
+\item{trans_matrix}{transformation Matrix to transform global data to basinwide data (not sure if this is correct)}
 
-\item{simPeriodDate}{DateVector defining the simulation period}
+\item{sim_period_date}{DateVector defining the simulation period}
 
-\item{climateShortcut}{filepath to climateshortcut-folder - usually ...base/data/ClimateShortcut}
+\item{climate_shortcut}{filepath to climateshortcut-folder - usually ...base/data/ClimateShortcut}
 
-\item{DataDir}{filepath to data-folder - usually ...base/data}
+\item{data_dir}{filepath to data-folder - usually ...base/data}
 
-\item{G_WG3_WG2WITH5MIN}{transformation information to get basinwide information from global met. data}
+\item{wg2with5min_mask}{transformation information to get basinwide information from global met. data}
 
-\item{G_WG3_WATCH}{transformation information to get basinwide information from global met. data}
+\item{watch_mask}{transformation information to get basinwide information from global met. data}
 
-\item{typeName}{of variable to be read}
+\item{type_name}{of variable to be read}
 
-\item{readNewly}{information if climate data is forced to be read newly (T) or not (F, ClimateShortCut will be used)}
+\item{read_newly}{information if climate data is forced to be read newly (T) or not (F, ClimateShortCut will be used)}
 
-\item{ClimateFormat}{defining format of climate (global, continental or basin)}
+\item{climate_format}{defining format of climate (global, continental or basin)}
 }
 \value{
 Matrix with climate data (nrow=days, ncol=cells of basin)
