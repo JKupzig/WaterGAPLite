@@ -1,110 +1,120 @@
 #' @title Preparation of model run (in rcpp)
 #' @description Function to create List to pass to WGL
-#' @param basinObject basinObject defined from init.model() 
-#' @param climateObject climateObject defined from init.climate()
-#' @param waterUseObject waterUseObject defined from init.waterUse()
+#' @param basin_object basinObject defined from init.model() 
+#' @param climate_object climateObject defined from init.climate()
+#' @param wateruse_object waterUseObject defined from init.waterUse()
 #' @return List to pass to rcpp function to run model
 #' @export
+basin.prepare_run <- function(basin_object,
+                             climate_object,
+                             wateruse_object) {
 
-basin.prepareRun <- function(basinObject,
-                             climateObject,
-                             waterUseObject){
+  dateformat <- "%d.%m.%Y"
+  startstring <- slot(climate_object, "start")
+  endstring <- slot(climate_object, "end")
 
   #first checking dates
-  if ((slot(climateObject, "start") != slot(waterUseObject, "start")) | (slot(climateObject, "end") != slot(waterUseObject, "end"))) {
-    stop("timeseries from waterUse and Climate are not refering to the same period!")
-  } else {
-    simPeriodDate <- seq(as.Date(slot(climateObject, "start"), format="%d.%m.%Y"), as.Date(slot(climateObject, "end"), format="%d.%m.%Y"),1) #getting timeseries to simulate
+  if (startstring != slot(wateruse_object, "start")) {
+    stop("timeseries from waterUse and Climate are not 
+          refering to the same period!")
   }
 
-  ListConst = list() #list to pass to wgl
-  
-  ListConst[["SystemValuesPath"]] = basinObject@cont@SystemValues
-  ListConst[["id"]] = basinObject@id
+  if (endstring != slot(wateruse_object, "end")) {
+        stop("timeseries from waterUse and Climate are not 
+          refering to the same period!")
+  }
 
-  ListConst[["SimPeriod"]] <- simPeriodDate
-  ListConst[["temp"]] = climateObject@temp
-  ListConst[["shortwave"]] = climateObject@shortwave
-  ListConst[["longwave"]] = climateObject@longwave
-  ListConst[["prec"]] = climateObject@prec
-  
-  ListConst[["cor_row"]] = slot(basinObject, "cont")@corRow
-  ListConst[["GR"]] = basinObject@GR
-  ListConst[["NeighbouringCells"]] = basinObject@NeighbouringCells
+  #getting timeseries to simulate
+  sim_period_date <- seq(as.Date(startstring, format = dateformat),
+                          as.Date(endstring, format = dateformat),
+                          1)
 
-  ListConst[["albedo"]] = basinObject@albedo
-  ListConst[["albedoSnow"]] = basinObject@albedoSnow
-  ListConst[["emissivity"]] = basinObject@emissivity
-  ListConst[["alphaPT"]] = basinObject@alphaPT
-  ListConst[["maxDailyPET"]] = basinObject@maxDailyPET
+  basin_list <- list() #list to pass to wgl
 
-  ListConst[["LAI_min"]] = basinObject@LAI_min
-  ListConst[["LAI_max"]] = basinObject@LAI_max
-  ListConst[["initDays"]] = basinObject@initDays
-  ListConst[["GLCT"]] = basinObject@GLCT
+  basin_list[["SystemValuesPath"]] <- basin_object@cont@SystemValues
+  basin_list[["id"]] <- basin_object@id
 
-  ListConst[["G_ELEV_RANGE.26"]] = basinObject@G_ELEV_RANGE.26
-  ListConst[["GBUILTUP"]] = basinObject@GBUILTUP
+  basin_list[["SimPeriod"]] <- sim_period_date
+  basin_list[["temp"]] <- climate_object@temp
+  basin_list[["shortwave"]] <- climate_object@shortwave
+  basin_list[["longwave"]] <- climate_object@longwave
+  basin_list[["prec"]] <- climate_object@prec
 
-  ListConst[["array_size"]] = basinObject@array_size
+  basin_list[["cor_row"]] <- slot(basin_object, "cont")@corRow
+  basin_list[["GR"]] <- basin_object@GR
+  basin_list[["NeighbouringCells"]] <- basin_object@NeighbouringCells
+
+  basin_list[["albedo"]] <- basin_object@albedo
+  basin_list[["albedoSnow"]] <- basin_object@albedoSnow
+  basin_list[["emissivity"]] <- basin_object@emissivity
+  basin_list[["alphaPT"]] <- basin_object@alphaPT
+  basin_list[["maxDailyPET"]] <- basin_object@maxDailyPET
+
+  basin_list[["LAI_min"]] <- basin_object@LAI_min
+  basin_list[["LAI_max"]] <- basin_object@LAI_max
+  basin_list[["initDays"]] <- basin_object@initDays
+  basin_list[["GLCT"]] <- basin_object@GLCT
+
+  basin_list[["G_ELEV_RANGE.26"]] <- basin_object@G_ELEV_RANGE.26
+  basin_list[["GBUILTUP"]] <- basin_object@GBUILTUP
+
+  basin_list[["array_size"]] <- basin_object@array_size
 
 
-  ListConst[["maxCanopyStoragePerLAI"]] = basinObject@maxCanopyStoragePerLAI
-  ListConst[["canopyEvapoExp"]] = basinObject@canopyEvapoExp
+  basin_list[["maxCanopyStoragePerLAI"]] <- basin_object@maxCanopyStoragePerLAI
+  basin_list[["canopyEvapoExp"]] <- basin_object@canopyEvapoExp
 
-  ListConst[["degreeDayFactor"]] = basinObject@degreeDayFactor
-  ListConst[["snowFreezeTemp"]] = basinObject@snowFreezeTemp
-  ListConst[["snowMeltTemp"]] = basinObject@snowMeltTemp
+  basin_list[["degreeDayFactor"]] <- basin_object@degreeDayFactor
+  basin_list[["snowFreezeTemp"]] <- basin_object@snowFreezeTemp
+  basin_list[["snowMeltTemp"]] <- basin_object@snowMeltTemp
 
-  ListConst[["runoffFracBuiltUp"]] = basinObject@runoffFracBuiltUp
-  ListConst[["G_GAMMA_HBV"]] = basinObject@G_GAMMA_HBV #rep(1, array_size) #G_GAMMA_HBV
+  basin_list[["runoffFracBuiltUp"]] <- basin_object@runoffFracBuiltUp
+  basin_list[["G_GAMMA_HBV"]] <- basin_object@G_GAMMA_HBV
 
-  ListConst[["G_Smax"]] = basinObject@G_Smax
-  ListConst[["G_ARID_HUMID"]] = basinObject@G_ARID_HUMID
-  ListConst[["G_TEXTURE"]] = basinObject@G_TEXTURE
-  ListConst[["G_gwFactor"]] = basinObject@G_gwFactor
-  ListConst[["pcrit"]] = basinObject@pcrit
-  ListConst[["G_LOCLAK"]] = basinObject@G_LOCLAK
-  ListConst[["G_LOCWET"]] = basinObject@G_LOCWET
-  ListConst[["G_GLOLAK"]] = basinObject@G_GLOLAK
-  ListConst[["G_GLOWET"]] = basinObject@G_GLOWET
-  ListConst[["G_RESAREA"]] = basinObject@G_RESAREA
-  ListConst[["G_LAKAREA"]] = basinObject@G_LAKAREA
-  ListConst[["routeOrder"]] = basinObject@routeOrder
-  ListConst[["GAREA"]] = basinObject@GAREA
-  ListConst[["landfrac"]] = basinObject@landfrac
-  ListConst[["lakeDepth"]] = basinObject@lakeDepth
-  ListConst[["lakeOutflowExp"]] = basinObject@lakeOutflowExp
-  ListConst[["G_LAKAREA"]] = basinObject@G_LAKAREA
-  ListConst[["wetlandDepth"]] = basinObject@wetlandDepth
-  ListConst[["wetlOutflowExp"]] = basinObject@wetlOutflowExp
-  ListConst[["evapoReductionExp"]] = basinObject@evapoReductionExp
-  ListConst[["loc_storageFactor"]] = basinObject@loc_storageFactor
-  ListConst[["glo_storageFactor"]] = basinObject@glo_storageFactor
-  ListConst[["k_g"]] = basinObject@k_g
-  ListConst[["outflow"]] = basinObject@outflow
-  ListConst[["G_RG_max"]] = basinObject@G_RG_max
-  ListConst[["G_STORAGE_CAPACITY"]] = basinObject@G_STORAGE_CAPACITY
-  ListConst[["G_MEAN_INFLOW"]] = basinObject@G_MEAN_INFLOW
-  ListConst[["G_START_MONTH"]] = basinObject@G_START_MONTH
-  ListConst[["evapoReductionExpReservoir"]] = basinObject@evapoReductionExpReservoir
-  ListConst[["G_RES_TYPE"]] = basinObject@G_RES_TYPE  #
-  ListConst[["G_ALLOC_COEFF.20"]] = basinObject@G_ALLOC_COEFF.20
-  ListConst[["Splitfactor"]] = basinObject@Splitfactor
+  basin_list[["G_Smax"]] <- basin_object@G_Smax
+  basin_list[["G_ARID_HUMID"]] <- basin_object@G_ARID_HUMID
+  basin_list[["G_TEXTURE"]] <- basin_object@G_TEXTURE
+  basin_list[["G_gwFactor"]] <- basin_object@G_gwFactor
+  basin_list[["pcrit"]] <- basin_object@pcrit
+  basin_list[["G_LOCLAK"]] <- basin_object@G_LOCLAK
+  basin_list[["G_LOCWET"]] <- basin_object@G_LOCWET
+  basin_list[["G_GLOLAK"]] <- basin_object@G_GLOLAK
+  basin_list[["G_GLOWET"]] <- basin_object@G_GLOWET
+  basin_list[["G_RESAREA"]] <- basin_object@G_RESAREA
+  basin_list[["G_LAKAREA"]] <- basin_object@G_LAKAREA
+  basin_list[["routeOrder"]] <- basin_object@routeOrder
+  basin_list[["GAREA"]] <- basin_object@GAREA
+  basin_list[["landfrac"]] <- basin_object@landfrac
+  basin_list[["lakeDepth"]] <- basin_object@lakeDepth
+  basin_list[["lakeOutflowExp"]] <- basin_object@lakeOutflowExp
+  basin_list[["G_LAKAREA"]] <- basin_object@G_LAKAREA
+  basin_list[["wetlandDepth"]] <- basin_object@wetlandDepth
+  basin_list[["wetlOutflowExp"]] <- basin_object@wetlOutflowExp
+  basin_list[["evapoReductionExp"]] <- basin_object@evapoReductionExp
+  basin_list[["loc_storageFactor"]] <- basin_object@loc_storageFactor
+  basin_list[["glo_storageFactor"]] <- basin_object@glo_storageFactor
+  basin_list[["k_g"]] <- basin_object@k_g
+  basin_list[["outflow"]] <- basin_object@outflow
+  basin_list[["G_RG_max"]] <- basin_object@G_RG_max
+  basin_list[["G_STORAGE_CAPACITY"]] <- basin_object@G_STORAGE_CAPACITY
+  basin_list[["G_MEAN_INFLOW"]] <- basin_object@G_MEAN_INFLOW
+  basin_list[["G_START_MONTH"]] <- basin_object@G_START_MONTH
+  basin_list[["evapoReductionExpReservoir"]] <- basin_object@evapoReductionExpReservoir
+  basin_list[["G_RES_TYPE"]] <- basin_object@G_RES_TYPE
+  basin_list[["G_ALLOC_COEFF.20"]] <- basin_object@G_ALLOC_COEFF.20
+  basin_list[["Splitfactor"]] <- basin_object@Splitfactor
 
-  ListConst[["G_riverLength"]] = basinObject@G_riverLength
-  ListConst[["G_riverSlope"]] = basinObject@G_riverSlope
-  ListConst[["G_riverRoughness"]] = basinObject@G_riverRoughness
-  ListConst[["G_BANKFULL"]] = basinObject@G_BANKFULL
+  basin_list[["G_riverLength"]] <- basin_object@G_riverLength
+  basin_list[["G_riverSlope"]] <- basin_object@G_riverSlope
+  basin_list[["G_riverRoughness"]] <- basin_object@G_riverRoughness
+  basin_list[["G_BANKFULL"]] <- basin_object@G_BANKFULL
 
-  ListConst[["defaultRiverVelocity"]] = basinObject@defaultRiverVelocity
+  basin_list[["defaultRiverVelocity"]] <- basin_object@defaultRiverVelocity
 
-  ListConst[["Info_GW"]] = waterUseObject@Info_GW
-  ListConst[["Info_SW"]] = waterUseObject@Info_SW
-  ListConst[["Info_TF"]] = waterUseObject@Info_TF
-  ListConst[["G_NUs_7100"]] = waterUseObject@G_NUs_7100
+  basin_list[["Info_GW"]] <- wateruse_object@Info_GW
+  basin_list[["Info_SW"]] <- wateruse_object@Info_SW
+  basin_list[["Info_TF"]] <- wateruse_object@Info_TF
+  basin_list[["G_NUs_7100"]] <- wateruse_object@G_NUs_7100
 
-  #ListConst[["G_startMonth_index"]] = G_startMonth_index
-
-  return(ListConst)
+  return(basin_list)
 }

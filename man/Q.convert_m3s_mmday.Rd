@@ -9,7 +9,7 @@ Q.convert_m3s_mmday(timeseries, area)
 \arguments{
 \item{timeseries}{vector/matrix of data that needs to be converted}
 
-\item{area}{GAREA information of basin, can be obtained grom GAREA of basinObject}
+\item{area}{sum of GAREA information of basin, (area must be in km²)}
 }
 \value{
 changed timeseries

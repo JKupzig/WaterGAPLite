@@ -111,5 +111,4 @@ void WaterUseCalcDaily(int waterUseType, NumericMatrix dailyUse, int year, int m
 	
 	}
 	
-	//return(dailyUse);
 }

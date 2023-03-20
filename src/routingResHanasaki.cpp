@@ -52,8 +52,6 @@ double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, doub
 	
 	//NumericVector annual_release (array_size);
 	NumericVector K_release (array_size);
-	
-	
 		
 		
 	// define storage capacity to mean annual inflow ratio (c_ratio)
@@ -92,15 +90,14 @@ double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, doub
 	
 	//set rules at the beginning of the operational year! (only once per operational year!)
 	if ((dayDate == 1) & (monthDate == G_START_MONTH[cell])){
-		//1. calculate release coefficient for the actual year:
+		//calculate release coefficient for the actual year:
 		//reduce release coefficent in this year to refill storage volume in reservoir
 		if (S_ResStorage[cell] < (G_STORAGE_CAPACITY[cell]*1000*1000 * 0.1)) {
 			K_release[cell] = 0.1;
 		} else {
 			K_release[cell] = S_ResStorage[cell] / (G_STORAGE_CAPACITY[cell]*1000*1000);
 		}
-		//2 calculate annual release
-		//annual_release[cell] = K_release[cell] * G_MEAN_INFLOW[cell];
+
 	}
 	
 	// algorithm based on water use
@@ -122,12 +119,6 @@ double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, doub
 			downstreamCell = outflowOrder[downstreamCell-1];
 		}
 
-		//monthlyUse = dailyUseCell / 1000 * 86400.; // [mm*km²/day] --> [m3/s]
-
-		// SE 05/2016
-		// First if statement added to prevent negative G_mean_demand[n] or monthlyUse values to cause negative reservoir outflow
-		// Quickfix!!!
-		// Reservoir release under negative G_mean_demand[n] and/or negative monthlyUse needs to be checked!
 				
 		if(MeanDemand[cell] < 0 || dailyUseCell < 0 ){
 			prov_rel = meanInflow;
@@ -141,7 +132,6 @@ double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, doub
 	} else if ((G_RES_TYPE[cell] >= 2) ) {//(non-irrigation: domestic & hydropower)  //$$$Christof: resOpt ==1 (Hanasaki)
 		prov_rel = meanInflow; // [mm*km²/day]
 	} else {
-	  //cerr << "unknown reservoir type in gcrcNumber << '\n';
 	  prov_rel = 0.;
 	}
 
@@ -182,7 +172,7 @@ double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, doub
 	Res_inflow[cell] = totalInflow; 
 	
 	return(outflow+overflow); // mm*km²
-} // routing_reservoir_Hanasaki
+} 
 
 
 

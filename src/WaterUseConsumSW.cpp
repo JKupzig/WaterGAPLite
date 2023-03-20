@@ -60,7 +60,7 @@ void SubtractWaterConsumSW(int WaterUseAllocationType, NumericMatrix dailyUse, N
 		//G_actualUse[cell] += totalDesiredUse - remainingUse;
 		G_totalUnsatisfiedUse[cell] = remainingUse;
 		
-	}	// end of loop for 'cell'
+	}
 	
 	
 	// now it is looked up in the neighbouringcells (to account for inaccuracy in modeling) and the next 20 downstream cells to satisfy demand
@@ -127,7 +127,7 @@ void SubtractWaterConsumSW(int WaterUseAllocationType, NumericMatrix dailyUse, N
 	}
 		
 		
-} // SubtractWaterConsum()
+} 
 
 
 //' @title AbstractFromCell

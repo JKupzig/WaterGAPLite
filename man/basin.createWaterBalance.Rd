@@ -5,26 +5,29 @@
 \title{basin.createWaterBalance}
 \usage{
 basin.createWaterBalance(
-  model.output,
-  climateObject,
-  basinObject,
+  model_output,
+  climate_object,
+  basin_object,
   start2use = NULL,
   end2use = NULL
 )
 }
 \arguments{
-\item{model.output}{output of the model (--> runModel())}
+\item{model_output}{output of the model (--> runModel())}
 
-\item{climateObject}{climateObject which was used durign the simulation}
+\item{climate_object}{climateObject which was used durign the simulation}
 
-\item{basinObject}{basinObject itself that belongs to input}
+\item{basin_object}{basinObject itself that belongs to input}
 
-\item{start2use}{Date to use as start, given as string in the format "\%dd.\%mm.\%.YYYY"}
+\item{start2use}{Date to use as start, given as string in the format
+"\%dd.\%mm.\%.YYYY"}
 
-\item{end2use}{Date to use as end, given as string in the format "\%dd.\%mm.\%.YYYY"}
+\item{end2use}{Date to use as end, given as string in the format
+"\%dd.\%mm.\%.YYYY"}
 }
 \value{
-List of waterbalance elements in the unit mm (referring to the total basin area)
+List of waterbalance elements in the unit mm
+(referring to the total basin area)
 }
 \description{
 Function to create Waterbalance for basin

@@ -1,48 +1,62 @@
 #' @title Loading Routing Information for Basin
 #' @description Function to read routing information in routing folder and update basinObject
-#' @param basinObject basinObject that needs to be updated with information
+#' @param basin_object basinObject that needs to be updated with information
 #' @return updated basinObject
 #' @importFrom methods slot
 
 
-basin.getRoutingInfo <- function(basinObject){
-  
-  DataDir <- slot(basinObject, "cont")@DataDir
-  transMatrix <- basinObject@gcrcWithoutZero
-  basIndex <- basinObject@basinIndex
-  contName <- slot(basinObject, "cont")@contName
-  
-  G_riverLength <- readingUNF("G_RIVER_LENGTH.UNF0", DataDir, transMatrix, basIndex, name="routing", cont=contName)
-  G_riverSlope <- readingUNF("G_RIVERSLOPE.UNF0", DataDir, transMatrix, basIndex, name="routing", cont=contName)
-  G_riverRoughness <- readingUNF("G_ROUGHNESS.UNF0", DataDir, transMatrix, basIndex, name="routing", cont=contName)
-  
+basin.get_routing_info <- function(basin_object) {
+
+  data_dir <- slot(basin_object, "cont")@DataDir
+  trans_matrix <- basin_object@gcrcWithoutZero
+  basin_index <- basin_object@basinIndex
+  cont_name <- slot(basin_object, "cont")@contName
+
+  river_length <- reading_unf("G_RIVER_LENGTH.UNF0", data_dir,
+                                trans_matrix, basin_index,
+                                name = "routing", cont = cont_name)
+  river_slope <- reading_unf("G_RIVERSLOPE.UNF0", data_dir,
+                                trans_matrix, basin_index,
+                                name = "routing", cont = cont_name)
+  river_roughness <- reading_unf("G_ROUGHNESS.UNF0", data_dir,
+                                trans_matrix, basin_index,
+                                name = "routing", cont = cont_name)
+
   #Needs to be created based on FlowDir!
-  flowAcc <-readingUNF("G_FLOW_ACC.UNF4", DataDir, transMatrix, basIndex, name="routing", cont=contName)
-  outflow <-readingUNF("G_OUTFLC.UNF4", DataDir, transMatrix, basIndex, name="routing", cont=contName) #gcrc-ID in basin - sorted as all input files 
-  
-  routeOrder = rep(NA, length(flowAcc))
-  routingSteps <- unique(flowAcc)
-  routingSteps <- routingSteps[order(routingSteps)]
-  #routeOrder <- order(flowAcc) #das funktioniert nicht, da gleiche Zahlen einfach trotzdemm sortiwert werden
-  for (i in 1:length(routingSteps)){
-     index <- which(flowAcc == routingSteps[i])
-     routeOrder[index] <- i
-  }
-  #have to change gcrc-IDs in outflow so they correspondens with index in input files 
-  outflow_new <- sapply(1:length(outflow), function(x) which(outflow[x] == transMatrix[basIndex])[1])
-  #note that outlet has NA because downstream cell is not included in basin 
-  if (length(which(is.na(outflow_new))) == 1){
-    outflow_new[is.na(outflow_new)] = -999;
-  } else {
-    stop("There is an error when creating routing order - have to check in detail!")
+  flow_acc <-reading_unf("G_FLOW_ACC.UNF4", data_dir, trans_matrix,
+                        basin_index, name="routing", cont=cont_name)
+  #gcrc-ID in basin - sorted as all input files 
+  outflow <-reading_unf("G_OUTFLC.UNF4", data_dir, trans_matrix,
+                        basin_index, name="routing", cont=cont_name)
+
+  route_order <- rep(NA, length(flow_acc))
+  routing_steps <- unique(flow_acc)
+  routing_steps <- routing_steps[order(routing_steps)]
+
+  for (i in 1:length(routing_steps)){
+     index <- which(flow_acc == routing_steps[i])
+     route_order[index] <- i
   }
 
-  basinObject@G_riverLength <- G_riverLength
-  basinObject@G_riverSlope <- G_riverSlope
-  basinObject@G_riverRoughness <- G_riverRoughness
-  basinObject@routeOrder <- routeOrder
-  basinObject@outflow <- outflow_new
-  
-  return(basinObject)
-  
+  # have to change gcrc-IDs in outflow 
+  # so they correspondens with index in input files 
+  outflow_new <- sapply(1:length(outflow), function(x)
+                         which(outflow[x] == trans_matrix[basin_index])[1])
+
+  #note that outlet has NA because downstream cell is not included in basin
+  if (length(which(is.na(outflow_new))) == 1) {
+    outflow_new[is.na(outflow_new)] <- -999
+  } else {
+    stop("There is an error when creating routing order - 
+          have to check in detail!")
+  }
+
+  basin_object@G_riverLength <- river_length
+  basin_object@G_riverSlope <- river_slope
+  basin_object@G_riverRoughness <- river_roughness
+  basin_object@routeOrder <- route_order
+  basin_object@outflow <- outflow_new
+
+  return(basin_object)
+
 }

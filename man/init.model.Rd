@@ -7,19 +7,23 @@
 init.model(grdc_number, lat, long, cont, base)
 }
 \arguments{
-\item{grdc_number}{id for basin, usually grdc number is used because this id is also used for loading discharge data}
+\item{grdc_number}{id for basin, usually grdc
+number is used because this id is also used for loading discharge data}
 
 \item{lat}{latitude of basin outlet in degree}
 
 \item{long}{longitud of basin outlet in degree}
 
-\item{cont}{continent as string where basin is part of (as, af, au, na, eu, sa)}
+\item{cont}{continent as string where basin is
+part of (as, af, au, na, eu, sa)}
 
-\item{base}{filepath to folder where folder for data, source_code and output are located}
+\item{base}{filepath to folder where folder
+for data, source_code and output are located}
 }
 \value{
 new basin object for basin (continent object is part of basin object)
 }
 \description{
-Function to initialize the model (all time-independent data is load for basin)
+Function to initialize the model
+all time-independent data is load for basin)
 }

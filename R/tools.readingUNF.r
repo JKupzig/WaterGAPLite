@@ -1,150 +1,162 @@
 #' @title  Reading UNF-File
 #' @description function to read data from UNF-File
 #' @param file2read filename to read
-#' @param DataDir defined (global) direction for data - usually workindgirectory/data/
-#' @param transMatrix usually gcrc information
-#' @param basIndex vector to use to define basin
+#' @param data_dir defined (global) direction for data -
+#' usually workindgirectory/data/
+#' @param trans_matrix usually gcrc information
+#' @param basin_index vector to use to define basin
 #' @param name name folder to use for reading
 #' @param ng_land ng_land information, needed to read G_ELEV_RANGE.UNF
-#' @param TypeClimate value to determine which type needs to be written: 0: normal layer, 1:global climate data 2:continental climate data
+#' @param type_climate value to determine which type needs to be written:
+#' 0: normal layer, 1:global climate data 2:continental climate data
 #' @param cont character to determine continent (af,au,as,eu,na,sa)
-#' @return vector (single layer) oder matrix (mutlple layer) with each column is information for one cell in defined basin
+#' @return vector (single layer) oder matrix (mutlple layer) with each column
+#' is information for one cell in defined basin
 
-#Note: ELEV_RANGE.26 (ng_land) and GAREA (nrow) Mean_Inflow.12 (multiple layers) have different construction!
-#source("_getInfoFile.r")
+# Note: ELEV_RANGE.26 (ng_land) and GAREA (nrow) Mean_Inflow.12
+# (multiple layers) have different construction!
 
-readingUNF <- function(file2read, DataDir, transMatrix=NULL, basIndex, name="basinInfo", ng_land=NULL, TypeClimate=0, cont=NULL) {
+reading_unf <- function(file2read, data_dir, trans_matrix = NULL,
+                        basin_index, name = "basinInfo", ng_land = NULL,
+                        type_climate = 0, cont = NULL) {
+
   #ng_land only used to read ELEV_range
-  ng <- length(transMatrix)
+  ng <- length(trans_matrix)
 
-  if (TypeClimate == 1) {
+  if (type_climate == 1) {
 
-    filepath <- file.path(DataDir, name, "global", file2read)
-    filetype <- substr(file2read,  nchar(file2read)-3, nchar(file2read))
+    filepath <- file.path(data_dir, name, "global", file2read)
     nlayers  <- 31
 
-    to.read = file(filepath, "rb")
-    if (filetype == "UNF0") {
-      Vals <- readBin(to.read,what=numeric(), endian = "big", size=4, n=99999999)
-    } else if (filetype ==  "UNF1"){ #wrong Info from Ellen not character but integer
-      Vals <- readBin(to.read,what=integer(), endian = "big", size=1, n=99999999)
-    } else if (filetype ==  "UUF2"){
-      Vals <- readBin(to.read,what=integer(), endian = "big", size=2, n=99999999, signed = F)
-    } else if (filetype ==  "UNF2"){
-      Vals <- readBin(to.read,what=integer(), endian = "big", size=2, n=99999999)
-    } else if (filetype ==  "UNF4"){
-      Vals <- readBin(to.read,what=integer(), endian = "big", size=4, n=99999999)
-    }
+    vals <- read_unf(filepath)
 
-    close(to.read)
 
-  } else if (TypeClimate == 2) {
+  } else if (type_climate == 2) {
 
-    filepath <- file.path(DataDir, name, "continental", cont, file2read)
-    filetype <- substr(file2read,  nchar(file2read)-3, nchar(file2read))
+    filepath <- file.path(data_dir, name, "continental", cont, file2read)
     nlayers  <- 31
-    to.read = file(filepath, "rb")
-    if (filetype == "UNF0") {
-      Vals <- readBin(to.read,what=numeric(), endian = "big", size=4, n=99999999)
-    } else if (filetype ==  "UNF1"){ #wrong Info from Ellen not character but integer
-      Vals <- readBin(to.read,what=integer(), endian = "big", size=1, n=99999999)
-    } else if (filetype ==  "UUF2"){
-      Vals <- readBin(to.read,what=integer(), endian = "big", size=2, n=99999999, signed = F)
-    } else if (filetype ==  "UNF2"){
-      Vals <- readBin(to.read,what=integer(), endian = "big", size=2, n=99999999)
-    } else if (filetype ==  "UNF4"){
-      Vals <- readBin(to.read,what=integer(), endian = "big", size=4, n=99999999)
-    }
-    close(to.read)
+
+    vals <- read_unf(filepath)
+
     #same es for g_mean_inflow and so on
-    mat = matrix(NA, nlayers,length(Vals)/nlayers)
-    for (j in 1:nlayers){
-      mat[j,] = sapply(1:(length(Vals)/nlayers), function(x) Vals[(x-1)*nlayers+j])
-      mat[j,] =  mat[j,][transMatrix] #have to check if transformation is needed!
+    mat <- matrix(NA, nlayers, length(vals) / nlayers)
+    for (row in 1:nlayers) {
+      mat[row, ] <- sapply(1:(length(vals) / nlayers),
+                        function(x) {
+                          vals[(x - 1) * nlayers + row]
+                          }
+                        )
+      mat[row, ] <-  mat[row, ][trans_matrix]
     }
-    Vals = mat
+    vals <- mat
 
-    if (!missing(basIndex)) {
-      NewMat <- matrix(NA, nlayers, length(basIndex))
-      for (k in 1:nlayers){ NewMat[k,] <- mat[k,][basIndex] } #only basinInfo is read into system so save memory
-      Vals = NewMat
+    if (!missing(basin_index)) {
+      new_mat <- matrix(NA, nlayers, length(basin_index))
+      for (k in 1:nlayers) {
+        new_mat[k, ] <- mat[k, ][basin_index]
+      }
+      vals <- new_mat
     }
 
   } else {
-    filepath <- file.path(DataDir, name, cont, file2read)
-    filetype <- substr(file2read,  nchar(file2read)-3, nchar(file2read))
-    nlayers = getInfoFile(filepath)[[1]][1]
 
-    to.read = file(filepath, "rb")
-    if (filetype == "UNF0") {
-      Vals <- readBin(to.read,what=numeric(), endian = "big", size=4, n=99999999)
-    } else if (filetype ==  "UNF1"){ #wrong Info from Ellen not character but integer
-      Vals <- readBin(to.read,what=integer(), endian = "big", size=1, n=99999999)
-    } else if (filetype ==  "UUF2"){
-      Vals <- readBin(to.read,what=integer(), endian = "big", size=2, n=99999999, signed = F)
-    } else if (filetype ==  "UNF2"){
-      Vals <- readBin(to.read,what=integer(), endian = "big", size=2, n=99999999)
-    } else if (filetype ==  "UNF4"){
-      Vals <- readBin(to.read,what=integer(), endian = "big", size=4, n=99999999)
-    }
+    filepath <- file.path(data_dir, name, cont, file2read)
+    nlayers <- get_info_file(filepath)[[1]][1]
 
-    close(to.read)
-    #check if there are multilayers, if yes: create matrix
-    #could be written in cpp to improve performance
-    if (file2read == "GAREA.UNF0"){
+    vals <- read_unf(filepath)
 
-      to.read = file(file.path(DataDir, name, cont, "GR.UNF2"), "rb")
-      HelpInfo <- readBin(to.read,what=integer(), endian = "big", size=2, n=99999999)
-      close(to.read)
-      area <- Vals[HelpInfo]
-      Vals <- area
-      if (!missing(basIndex)) { Vals <- Vals[basIndex] } #only basinInfo is read into system so save memory
+    if (file2read == "GAREA.UNF0") {
 
-    } else if ((file2read != "G_ELEV_RANGE.26.UNF2") & (nlayers > 1)) {
-
-      #nlayers = getInfoFile(filepath)[[1]][1]
-      mat = matrix(NA, nlayers,length(Vals)/nlayers)
-      for (j in 1:nlayers){
-        mat[j,] = sapply(1:(length(Vals)/nlayers), function(x) Vals[(x-1)*nlayers+j])
-        mat[j,] =  mat[j,][transMatrix] #have to check if transformation is needed!
+      help_info <- read_unf(file.path(data_dir, name, cont, "GR.UNF2"))
+      area <- vals[help_info]
+      vals <- area
+      if (!missing(basin_index)) {
+        vals <- vals[basin_index] #only basinInfo is stored so save RAM
       }
-      Vals = mat
 
-      if (!missing(basIndex)) {
-        NewMat <- matrix(NA, nlayers, length(basIndex))
-        for (k in 1:nlayers){ NewMat[k,] <- mat[k,][basIndex] } #only basinInfo is read into system so save memory
-        Vals = NewMat
+    } else if ((file2read != "G_ELEV_RANGE.26.UNF2") && (nlayers > 1)) {
+
+      mat <- matrix(NA, nlayers, length(vals) / nlayers)
+      for (row in 1:nlayers){
+        mat[row, ] <- sapply(1:(length(vals) / nlayers),
+                    function(x) vals[(x - 1) * nlayers + row])
+        mat[row, ] <- mat[row, ][trans_matrix]
+      }
+        vals <- mat
+
+      if (!missing(basin_index)) {
+        new_mat <- matrix(NA, nlayers, length(basin_index))
+        for (row in 1:nlayers) {
+          new_mat[row, ] <- mat[row, ][basin_index] #only basinInfo is stored
+        }
+        vals <- new_mat
       }
 
     } else if (file2read == "G_ELEV_RANGE.26.UNF2") {
+      #special case because all cells with gcrc-ID > ng_land are not considered
 
-      #nlayers = getInfoFile(filepath)[[1]][1]
-      mat = matrix(NA, nlayers,ng)
-      #sepcial case because all cells with gcrc-ID > ng_land are not considered here
-      for (j in 1:nlayers){
-        hilf = sapply(1:ng_land, function(x) Vals[(x-1)*nlayers+j]) #there is an error using this formular!
-        hilf = c(hilf, rep(NA, ng-ng_land))
-        mat[j,] = hilf[transMatrix]
+      mat <- matrix(NA, nlayers, ng)
+
+      for (j in 1:nlayers) {
+        hilf <- sapply(1:ng_land, function(x) vals[(x - 1) * nlayers + j])
+        hilf <- c(hilf, rep(NA, ng - ng_land))
+        mat[j, ] <- hilf[trans_matrix]
       }
-      Vals = mat
+      vals <- mat
 
-      if (!missing(basIndex)) {
-        NewMat <- matrix(NA, nlayers, length(basIndex))
-        for (k in 1:nlayers){ NewMat[k,] <- mat[k,][basIndex] } #only basinInfo is read into system so save memory
-        Vals = NewMat }
+      if (!missing(basin_index)) {
+        new_mat <- matrix(NA, nlayers, length(basin_index))
+        for (k in 1:nlayers) {
+          new_mat[k, ] <- mat[k, ][basin_index] #only basinInfo is stored
+        }
+        vals <- new_mat
+      }
 
-    } else if (file2read == "GCRC.UNF4"){
+    } else if (file2read == "GCRC.UNF4") {
 
-      Vals <- Vals[Vals > 0]
-      if (!missing(basIndex)) { Vals <- Vals[basIndex] }
+      vals <- vals[vals > 0]
+      if (!missing(basin_index)) {
+        vals <- vals[basin_index]
+      }
 
     } else {
-      Vals <- Vals[transMatrix]
+      vals <- vals[trans_matrix]
       #have to sort like gcrc because basIndex is based on gcrc ID
-      if (!missing(basIndex)) { Vals <- Vals[basIndex] } #only basinInfo is read into system so save memory
+      if (!missing(basin_index)) {
+        vals <- vals[basin_index] #only basinInfo is stored
+      }
     }
   }
 
-  return(Vals)
+  return(vals)
 
-}
+  }
+
+  ##############
+
+  read_unf <- function(filepath) {
+
+    file2read <- basename(filepath)
+    filetype <- substr(file2read,  nchar(file2read) - 3, nchar(file2read))
+    to_read <- file(filepath, "rb")
+    if (filetype == "UNF0") {
+      vals <- readBin(to_read, what = numeric(), endian = "big",
+                      size = 4, n = 99999999)
+    } else if (filetype ==  "UNF1") {
+      vals <- readBin(to_read, what = integer(), endian = "big",
+                      size = 1, n = 99999999)
+    } else if (filetype ==  "UUF2") {
+      vals <- readBin(to_read, what = integer(), endian = "big",
+                      size = 2, n = 99999999, signed = FALSE)
+    } else if (filetype ==  "UNF2") {
+      vals <- readBin(to_read, what = integer(), endian = "big",
+                      size = 2, n = 99999999)
+    } else if (filetype ==  "UNF4") {
+      vals <- readBin(to_read, what = integer(), endian = "big",
+                      size = 4, n = 99999999)
+    }
+
+    close(to_read)
+
+    return(vals)
+  }

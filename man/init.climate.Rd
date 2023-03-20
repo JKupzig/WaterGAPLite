@@ -4,22 +4,33 @@
 \alias{init.climate}
 \title{Preparation of climate object for model run}
 \usage{
-init.climate(basinObject, start, end, force2read = F, ClimateFormat = "global")
+init.climate(
+  basin_object,
+  start,
+  end,
+  force2read = FALSE,
+  climate_format = "global"
+)
 }
 \arguments{
-\item{basinObject}{that defines basin for which climate is loaded}
+\item{basin_object}{that defines basin for which climate is loaded}
 
 \item{start}{date as string of type \%dd.\%mm.\%YYYY, e.g. 01.01.1980}
 
 \item{end}{date as string of type \%dd.\%mm.\%YYYY, e.g. 01.01.1980}
 
-\item{force2read}{to force model to read climate data again, Climateshortcut is first ignored and then updated}
+\item{force2read}{to force model to read climate data again, Climateshortcut
+is first ignored and then updated}
 
-\item{ClimateFormat}{to define which data type should be used (use 'global' or 'continental' or 'basin')}
+\item{climate_format}{to define which data type should be used
+(use 'global' or 'continental' or 'basin')}
 }
 \value{
-new Climate object with matrixes for tempertaure, precipitation longwave and shortwave downard radiation (each row is one day, and each column is one cell in basin)
+new Climate object with matrixes for tempertaure, precipitation,
+longwave and shortwave downard radiation (each row is one day,
+and each column is one cell in basin)
 }
 \description{
-Function has to be excecuted after basin initialization. It loads every required meteorological input
+Function has to be excecuted after basin initialization.
+It loads every required meteorological input
 }

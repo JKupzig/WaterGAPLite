@@ -7,5 +7,6 @@
 init.classes()
 }
 \description{
-Function to define basin and continent class for usage inside the package
+Function to define basin and continent
+class for usage inside the package
 }

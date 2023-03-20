@@ -3,8 +3,12 @@
 #include <stdlib.h> // for NULL
 #include <R_ext/Rdynload.h>
 
-/* FIXME: 
+/* FIXME:
    Check these declarations against the C/Fortran source code.
+   created with:
+   tools::package_native_routine_registration_skeleton(".", character_only = FALSE)
+   copy paced to this file
+   NEEDED WHEN FUNCTIONS ARE UPDATED
 */
 
 /* .Call calls */
@@ -25,7 +29,7 @@ extern SEXP _WaterGAPLite_setLakeWetlandToMaximum(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _WaterGAPLite_sortIt(SEXP);
 extern SEXP _WaterGAPLite_sumVector(SEXP);
 extern SEXP _WaterGAPLite_tools_DefDrainageCells(SEXP, SEXP, SEXP);
-extern SEXP _WaterGAPLite_tools_InterpolateValues(SEXP, SEXP, SEXP);
+extern SEXP _WaterGAPLite_tools_interpolate(SEXP, SEXP, SEXP);
 extern SEXP _WaterGAPLite_WaterUseCalcDaily(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _WaterGAPLite_WaterUseCalcMeanDemandDaily(SEXP, SEXP);
 extern SEXP _WaterGAPLite_WaterUseConsumGW(SEXP, SEXP, SEXP);
@@ -48,7 +52,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_WaterGAPLite_sortIt",                      (DL_FUNC) &_WaterGAPLite_sortIt,                      1},
     {"_WaterGAPLite_sumVector",                   (DL_FUNC) &_WaterGAPLite_sumVector,                   1},
     {"_WaterGAPLite_tools_DefDrainageCells",      (DL_FUNC) &_WaterGAPLite_tools_DefDrainageCells,      3},
-    {"_WaterGAPLite_tools_InterpolateValues",     (DL_FUNC) &_WaterGAPLite_tools_InterpolateValues,     3},
+    {"_WaterGAPLite_tools_interpolate",           (DL_FUNC) &_WaterGAPLite_tools_interpolate,           3},
     {"_WaterGAPLite_WaterUseCalcDaily",           (DL_FUNC) &_WaterGAPLite_WaterUseCalcDaily,           8},
     {"_WaterGAPLite_WaterUseCalcMeanDemandDaily", (DL_FUNC) &_WaterGAPLite_WaterUseCalcMeanDemandDaily, 2},
     {"_WaterGAPLite_WaterUseConsumGW",            (DL_FUNC) &_WaterGAPLite_WaterUseConsumGW,            3},

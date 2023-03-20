@@ -268,15 +268,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// tools_InterpolateValues
-NumericVector tools_InterpolateValues(NumericVector VectorIn, NumericVector Table_x, NumericVector Table_y);
-RcppExport SEXP _WaterGAPLite_tools_InterpolateValues(SEXP VectorInSEXP, SEXP Table_xSEXP, SEXP Table_ySEXP) {
+// tools_interpolate
+NumericVector tools_interpolate(NumericVector VectorIn, NumericVector Table_x, NumericVector Table_y);
+RcppExport SEXP _WaterGAPLite_tools_interpolate(SEXP VectorInSEXP, SEXP Table_xSEXP, SEXP Table_ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< NumericVector >::type VectorIn(VectorInSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type Table_x(Table_xSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type Table_y(Table_ySEXP);
-    rcpp_result_gen = Rcpp::wrap(tools_InterpolateValues(VectorIn, Table_x, Table_y));
+    rcpp_result_gen = Rcpp::wrap(tools_interpolate(VectorIn, Table_x, Table_y));
     return rcpp_result_gen;
 END_RCPP
 }

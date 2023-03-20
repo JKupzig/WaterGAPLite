@@ -1,13 +1,14 @@
 #' @title Defining Files to be read into model
-#' @description Function to get FileList to read 
-#' @param Type that defines which information is required (basinInfo, changingFiles or routing)
+#' @description Function to get FileList to read
+#' @param type that defines which information is required
+#' (basinInfo, changingFiles or routing)
 #' @return FileList with files that needs to be read
 
-getFileList <- function(Type="basinInfo"){
-  
-  
-  if (Type=="basinInfo"){
-    FileList <- c("G_ALTITUDE.UNF2",
+get_file_list <- function(type = "basinInfo") {
+
+  file_list <- NULL
+  if (type == "basinInfo") {
+    file_list <- c("G_ALTITUDE.UNF2",
                   "G_AQ_FACTOR.UNF1",
                   "G_ARID_HUMID.UNF2",
                   "G_BATJES.UNF2",
@@ -33,21 +34,21 @@ getFileList <- function(Type="basinInfo"){
                   "GCRC.UNF4",
                   "GR.UNF2")
 
-  } else if (Type=="changingFiles"){
-    FileList <- c("G_ALLOC_COEFF.20.UNF0",
+  } else if (type == "changingFiles") {
+    file_list <- c("G_ALLOC_COEFF.20.UNF0",
                   "G_BANKFULL.UNF0",
                   "G_MEAN_INFLOW.12.UNF0",
                   "G_MEAN_INFLOW.UNF0",
                   "G_START_MONTH.UNF1")
-  
-  } else if (Type=="routing") {
-    FileList <- c("G_FLOW_ACC.UNF4",
+
+  } else if (type == "routing") {
+    file_list <- c("G_FLOW_ACC.UNF4",
                   "G_OUTFLC.UNF4",
                   "G_RIVER_LENGTH.UNF0",
                   "G_RIVERSLOPE.UNF0",
                   "G_ROUGHNESS.UNF0")
   }
-  
-  return(FileList)
-  
+
+  return(file_list)
+
 }

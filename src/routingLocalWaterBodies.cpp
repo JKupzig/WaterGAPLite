@@ -28,10 +28,7 @@ using namespace std;
 double routingLocalWaterBodies(bool Type, int cell, double PrecWater,  double PETWater, double Inflow,
 								NumericVector S_locLakeStorage, NumericVector locLake_overflow, NumericVector locLake_outflow, NumericVector locLake_evapo, NumericVector locLake_inflow,
 								NumericVector S_locWetlandStorage, NumericVector locWetland_overflow, NumericVector locWetland_outflow, NumericVector locWetland_evapo, NumericVector locWetland_inflow) {
-	// k is to high when there exist Smax --> 50 % of outflow from lake is withput any delay because of overflow form lake 
-	// should be better to simulate local lake with normal ELS and create a dependency with k and lake are --> e.g. 4d * PercentageLake
-	// should check with local wetlands if it happends the same 
-	//	also have to ensure that water balance is closed		
+	
 
 	double totalInflow;
 	double outflow;

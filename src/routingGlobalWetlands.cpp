@@ -59,12 +59,6 @@ double routingGlobalWetlands(int cell, double PrecWater, double PETWater, double
 
 	outflow = totalInflow + storagePrevRouting - S_gloWetlandStorage[cell];
 
-	// if global wetland is in a cell wich is an inland sink, no outflow occurs
-	// and all upstream water is inflow into this global wetland
-	//if (G_LDD[n]==-1){
-	//	G_gloWetlStorage[n] = storagePrevRouting + totalInflow;
-	//	outflow = 0.;
-	//}
 
 	// reduce G_gloWetlStorage to maximum storage capacity
 	if (S_gloWetlandStorage[cell] > maxStorage) {
@@ -84,4 +78,4 @@ double routingGlobalWetlands(int cell, double PrecWater, double PETWater, double
 	
 	return(outflow);
 
-} // routing_gloWetland
+} 
