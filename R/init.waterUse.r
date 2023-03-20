@@ -16,8 +16,8 @@ init.wateruse <- function(basin_object,
   data_dir <- slot(basin_object, "cont")@DataDir
   cont_name <- slot(basin_object, "cont")@contName
 
-  sim_period_date <- seq(as.Date(sim_start, format="%d.%m.%Y"),
-                         as.Date(sim_end, format="%d.%m.%Y"), 1)
+  sim_period_date <- seq(as.Date(sim_start, format = "%d.%m.%Y"),
+                         as.Date(sim_end, format = "%d.%m.%Y"), 1)
 
   years <- as.numeric(unique(format(sim_period_date, "%Y")))
 

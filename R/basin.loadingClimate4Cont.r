@@ -81,9 +81,11 @@ basin.loading_climate_continental <- function(name = "prec", basin_index,
                             ncol = array_size)
       break
     } else {
-      climate_data <- reading_unf(file2read = file, DataDir = data_dir,
-                                 transMatrix = trans_matrix, basIndex = basin_index,
-                                name = "climate", TypeClimate = 2, cont = cont)
+      climate_data <- reading_unf(file2read = file, data_dir = data_dir,
+                                  trans_matrix = trans_matrix, 
+                                  basin_index = basin_index,
+                                  name = "climate", type_climate = 2, 
+                                  cont = cont)
 
       index_year <- which(as.numeric(format(sim_period_date, "%Y")) == year)
       index_month <- which(as.numeric(

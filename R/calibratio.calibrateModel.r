@@ -53,7 +53,7 @@ calibration.calibrate_model <- function(basin_object, basin_list,
     #getting Quality
     df = data.frame("Date"= sim_period_date, "Sim" = wb$routing$River$Discharge)
     df <- df[(nwarm_up*365): nrow(df), ]
-    targetfunction <- Q.calc_quality(df_obs, df, Type = "QmeanAbs")
+    targetfunction <- Q.calc_quality(df_obs, df, type = "QmeanAbs")
     
     return(targetfunction)
   }

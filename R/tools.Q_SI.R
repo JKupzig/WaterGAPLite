@@ -8,7 +8,7 @@
 #' yearly values (to be more robust)
 #' @param df dataframe with Sim and Date as columns
 #' @param func_name string of function_name, default= "Q.__calc_mgn_l_1__"
-#' @param addArgs additional argument e.g. when whole time series needs to be
+#' @param add_args additional argument e.g. when whole time series needs to be
 #' used it is passed as additonal Argument
 #' @return float or integer as yearly mean of function return
 #' @importFrom stats median
@@ -98,39 +98,40 @@
 #' mgn_l_2 = Q.calcSI(df, func_name="Q.__calc_mgn_l_2__")
 
 #' mgn_a_1 = Q.calcSI(df, func_name="Q.__calc_mgn_a_1__")
-#' mgn_a_2 = Q.calcSI(df, func_name="Q.__calc_mgn_a_2__", addArgs = 80)
+#' mgn_a_2 = Q.calcSI(df, func_name="Q.__calc_mgn_a_2__", add_args = 80)
 
 #' mgn_h_1 = Q.calcSI(df, func_name="Q.__calc_mgn_h_1__")
-#' mgn_h_2 = Q.calcSI(df, func_name="Q.__calc_mgn_h_2__", addArgs = df$Sim)
+#' mgn_h_2 = Q.calcSI(df, func_name="Q.__calc_mgn_h_2__", add_args = df$Sim)
 
-#' frq_l_1 = Q.calcSI(df, func_name="Q.__calc_frq_l_1__", addArgs = df$Sim)
-#' frq_l_2 = Q.calcSI(df, func_name="Q.__calc_frq_l_2__", addArgs = df$Sim)
+#' frq_l_1 = Q.calcSI(df, func_name="Q.__calc_frq_l_1__", add_args = df$Sim)
+#' frq_l_2 = Q.calcSI(df, func_name="Q.__calc_frq_l_2__", add_args = df$Sim)
 
-#' frq_h_1 = Q.calcSI(df, func_name="Q.__calc_frq_h_1__", addArgs = df$Sim)
-#' frq_h_2 = Q.calcSI(df, func_name="Q.__calc_frq_h_2__", addArgs = df$Sim)
+#' frq_h_1 = Q.calcSI(df, func_name="Q.__calc_frq_h_1__", add_args = df$Sim)
+#' frq_h_2 = Q.calcSI(df, func_name="Q.__calc_frq_h_2__", add_args = df$Sim)
 
-#' dur_l_1 = Q.calcSI(df, func_name="Q.__calc_dur_l_1__", addArgs = df$Sim)
-#' dur_l_2 = Q.calcSI(df, func_name="Q.__calc_dur_l_2__", addArgs = df$Sim)
+#' dur_l_1 = Q.calcSI(df, func_name="Q.__calc_dur_l_1__", add_args = df$Sim)
+#' dur_l_2 = Q.calcSI(df, func_name="Q.__calc_dur_l_2__", add_args = df$Sim)
 
-#' dur_h_1 = Q.calcSI(df, func_name="Q.__calc_dur_h_1__", addArgs = df$Sim)
-#' dur_h_2 = Q.calcSI(df, func_name="Q.__calc_dur_h_2__", addArgs = df$Sim)
+#' dur_h_1 = Q.calcSI(df, func_name="Q.__calc_dur_h_1__", add_args = df$Sim)
+#' dur_h_2 = Q.calcSI(df, func_name="Q.__calc_dur_h_2__", add_args = df$Sim)
 #'
 #' timing_1 = Q.calcSI(df, func_name="Q.__calc_timing_1__")
-#' timing_2 = Q.calcSI(df, func_name="Q.__calc_timing_2__", addArgs=df)
+#' timing_2 = Q.calcSI(df, func_name="Q.__calc_timing_2__", add_args=df)
 #' timing_3 = Q.calcSI(df, func_name="Q.__calc_timing_3__")
 
 #' rchg_1 = Q.calcSI(df, func_name="Q.__calc_rchg_1__")
 #' rchg_2 = Q.calcSI(df, func_name="Q.__calc_rchg_2__")
 #' @export
 #' @md
-Q.calcSI <- function(df, func_name = "Q.__calc_mgn_l_1__", addArgs=NULL){
+Q.calcSI <- function(df, func_name = "Q.__calc_mgn_l_1__", add_args = NULL) {
 
-  '%>%' <- magrittr::'%>%'
+  "%>%" <- magrittr::"%>%"
 
-  value = df %>% dplyr::mutate(year = format(.data$Date, "%Y")) %>%
+  value <- df %>%
+    dplyr::mutate(year = format(.data$Date, "%Y")) %>%
     dplyr::group_by(.data$year) %>%
     dplyr::group_modify(~ {
-      get(func_name)(.x$Sim, addArgs) %>%
+      get(func_name)(.x$Sim, add_args) %>%
         tibble::enframe()
     }) %>%
     dplyr::ungroup() %>%
@@ -143,7 +144,8 @@ Q.calcSI <- function(df, func_name = "Q.__calc_mgn_l_1__", addArgs=NULL){
 # helper functions
 ################################################################################
 #' @title get_periods
-#' @description defines consecutive entries with 1 as entries (0s are gaps between periods)
+#' @description defines consecutive entries with 1 as entries
+#' (0s are gaps between periods)
 #' @param x vector with binary entries, where ones are than summed up to periods
 #' @return data.frame with start end end (index)
 get_periods <- function(x) {
@@ -159,13 +161,16 @@ get_periods <- function(x) {
 }
 
 #' @title moving average (ma)
-#' @description function to calculate moving average, using 7 entries as defualt moving
-#' @param x number of entries to be used for mean calculation (should be uneven, because average is defined as value in the middle)
+#' @description function to calculate moving average, using 7 entries
+#' as default moving
+#' @param x number of entries to be used for mean calculation
+#' (should be uneven, because average is defined as value in the middle)
 #' @param n number of entreis within the moving window, the default is 7
-#' @return vector, starting and ending with NA due to too less entries at the start and end for ma-calculation
+#' @return vector, starting and ending with NA due to too less entries at
+#' the start and end for ma-calculation
 #' @export
 #'
-ma <- function(x, n = 7){
+ma <- function(x, n = 7) {
   return(stats::filter(x, rep(1 / n, n), sides = 2))
 }
 
@@ -174,24 +179,26 @@ ma <- function(x, n = 7){
 ################################################################################
 #' @title 5th quantile
 #' @description returns 5th quantile (or minimum, when 5th quantile is zero),
-#' SI used in Pfannerstil 2014, McMillan 2021, Addor 2018; SI referring to magnitude of low flow condition
+#' SI used in Pfannerstil 2014, McMillan 2021, Addor 2018; SI referring to
+#' magnitude of low flow condition
 #' @param discharge input vector, e.g. usually disharge values in m?/s
-#' @param addArgs NULL (not used, but implemented to be useable for Q.calcSI)
+#' @param add_args NULL (not used, but implemented to be useable for Q.calcSI)
 #' @return float
-Q.__calc_mgn_l_1__ <- function(discharge, addArgs=NULL){
+Q.__calc_mgn_l_1__ <- function(discharge, add_args = NULL) {
   return(max(stats::quantile(discharge, 0.05),min(discharge[discharge > 0])))
 }
 
 #' @title Calculate Baseflow Index after Richter et al. (1998)
-#' @description Seven-day minimum flow divided by mean annual daily flows averaged across all years
+#' @description Seven-day minimum flow divided by mean annual daily
+#' flows averaged across all years
 #' used in Richter et al. (1998), recommended in Olden & Poff (2003)
 #' SI referring to magnitude of low flow condition
 #' @param discharge A numeric vector to be used to calculate the BFI
-#' @param addArgs NULL (not used, but implemented to be useable for Q.calcSI)
+#' @param add_args NULL (not used, but implemented to be useable for Q.calcSI)
 #' @return A numeric value representing the BFI of the numeric vector provided
-Q.__calc_mgn_l_2__ <- function(discharge, addArgs=NULL){ #O + P 2003
+Q.__calc_mgn_l_2__ <- function(discharge, add_args = NULL) {
   rollmean <- ma(discharge)
-  return(min(rollmean, na.rm=T)/mean(discharge))
+  return(min(rollmean, na.rm = TRUE) / mean(discharge))
 }
 
 ################################################################################
@@ -201,22 +208,21 @@ Q.__calc_mgn_l_2__ <- function(discharge, addArgs=NULL){ #O + P 2003
 #' @description calculates the skewness of daily values as mean(Q)/median(Q)
 #' used in Clausen and Biggs 2000 and recommended after Olden and Poff (2003)
 #' @param discharge A numeric vector to be used to calculate the BFI
-#' @param addArgs NULL (not used, but implemented to be useable for Q.calcSI)
+#' @param add_args NULL (not used, but implemented to be useable for Q.calcSI)
 #' @return A numeric value representing the BFI of the numeric vector provided
-Q.__calc_mgn_a_1__ <- function(discharge, addArgs=NULL){
-  #Clausen and Biggs 2000
-  return(mean(discharge)/stats::median(discharge))
+Q.__calc_mgn_a_1__ <- function(discharge, add_args = NULL) {
+  return(mean(discharge) / stats::median(discharge))
 }
 
 #' @title mean(q) in mm/d
 #' @description calculates average of flow (m³/s) and returns it in mm/d
-#' used in Hughes and James (1989), Addor 2018 and recommended in Olden and Poff (2003)
+#' used in Hughes and James (1989), Addor 2018 and
+#' recommended in Olden and Poff (2003)
 #' @param discharge vector in m³/s
 #' @param area of basin defined in km² as float or integer
 #' @return return mean flow in mm/d as float
-Q.__calc_mgn_a_2__ <- function(discharge, area){ #O + P 2003
-  #mean(q)/area 	Hughes and James (1989), Addor 2018 --> mm/day
-  return(mean(discharge)*60*60*24/area/1000)
+Q.__calc_mgn_a_2__ <- function(discharge, area) {
+  return(mean(discharge) * 60 * 60 * 24 / area / 1000)
 }
 
 ################################################################################
@@ -224,26 +230,28 @@ Q.__calc_mgn_a_2__ <- function(discharge, area){ #O + P 2003
 ################################################################################
 
 #' @title 95th quantile
-#' @description calculates 95th quantile of flow series, used in Addor (2018) \cr
+#' @description calculates 95th quantile of flow series,
+#' used in Addor (2018) \cr
 #' is a SI referrring to magnitude of high flow condition
 #' @param discharge vector in m³/s
-#' @param addArgs NULL (not used, but implemented to be useable for Q.calcSI)
+#' @param add_args NULL (not used, but implemented to be useable for Q.calcSI)
 #' @return 95th quantile
-Q.__calc_mgn_h_1__ <- function(discharge, addArgs=NULL){
-  #Q5 	Addor 2018
+Q.__calc_mgn_h_1__ <- function(discharge, add_args = NULL) {
   return(stats::quantile(discharge, 0.95))
 }
 
 #' @title Q90_year/Q50_total
 #' @description Mean of the 90th percentile from the flow duration \cr
-#  curve divided by median daily flow across all years, used in Clausen and Biggs (2000),
+#  curve divided by median daily flow across all years,
+#' used in Clausen and Biggs (2000),
 #' recommended after Olden and Poff (2003)
 #' @param discharge vector in m³/s (usually for one year)
-#' @param completeDischarge vector in m³/s (usually for whole period)
+#' @param complete_discharge vector in m³/s (usually for whole period)
 #' @return float Q10_year/Q50_total
-Q.__calc_mgn_h_2__ <- function(discharge, completeDischarge){ #O + P 2003
+Q.__calc_mgn_h_2__ <- function(discharge, complete_discharge) {
   # Q10/Q50 	Clausen and Biggs 2000
-  return(stats::quantile(discharge, 0.9) / stats::quantile(completeDischarge, 0.5))
+  return(stats::quantile(discharge, 0.9) /
+        stats::quantile(complete_discharge, 0.5))
 }
 
 ################################################################################
@@ -251,27 +259,31 @@ Q.__calc_mgn_h_2__ <- function(discharge, completeDischarge){ #O + P 2003
 ################################################################################
 
 #' @title Frequency of low-flow days (<0.2 times the mean daily flow)
-#' @description Frequency of low-flow days in a year (<0.2 times the mean daily flow) used in Addor 2018
+#' @description Frequency of low-flow days in a year
+#' (<0.2 times the mean daily flow) used in Addor 2018
 #' @param discharge vector in m³/s (usually for one year)
-#' @param completeDischarge vector in m³/s (usually for whole year) - necessary to define threshold
+#' @param complete_discharge vector in m³/s (usually for whole year) -
+#' necessary to define threshold
 #' @return days per year above threshold
-Q.__calc_frq_l_1__ <- function(discharge, completeDischarge){
-  threshold = mean(completeDischarge)*0.2
-  idx = (discharge < threshold)
+Q.__calc_frq_l_1__ <- function(discharge, complete_discharge) {
+  threshold <- mean(complete_discharge) * 0.2
+  idx <- (discharge < threshold)
   return(sum(idx))
 }
 
 #' @title Number of low flow spells
 #' @description mean number of low flow spells (threshold equal to 5% of
-#  mean daily flow) divided by the record length in years -> #/yr
-#  note: might not be appropiate for other basins than australien like basins as used in Huges and James 1989
+#' mean daily flow) divided by the record length in years -> #/yr
+#' note: might not be appropiate for other basins than australien
+#'like basins as used in Huges and James 1989
 #' @param discharge vector in m³/s - actually not used, so could be set to NULL
-#' @param completeDischarge vector in m³/s (usually for whole year) - necessary to define threshold
+#' @param complete_discharge vector in m³/s (usually for whole year) -
+#' necessary to define threshold
 #' @return number of low flow periods in examined year
-Q.__calc_frq_l_2__ <- function(discharge, completeDischarge){ #O + P 2003
-  threshold = mean(completeDischarge)*0.05
-  idx = (discharge < threshold)
-  df_periods = get_periods(idx)
+Q.__calc_frq_l_2__ <- function(discharge, complete_discharge) {
+  threshold <- mean(complete_discharge) * 0.05
+  idx <- (discharge < threshold)
+  df_periods <- get_periods(idx)
   return(nrow(df_periods))
 }
 
@@ -283,11 +295,12 @@ Q.__calc_frq_l_2__ <- function(discharge, completeDischarge){ #O + P 2003
 #' @description Frequency of high-flow days (>9 times the median daily flow)
 #' used in Addor (2018)
 #' @param discharge vector in m³/s (usually for one year)
-#' @param completeDischarge vector in m³/s (usually for whole period) - necessary to define threshold
+#' @param complete_discharge vector in m³/s (usually for whole period) -
+#' necessary to define threshold
 #' @return returns number of days where threshold is exceeded in whole period
-Q.__calc_frq_h_1__ <- function(discharge, completeDischarge){
-  threshold = stats::median(completeDischarge)*9
-  idx = (discharge > threshold)
+Q.__calc_frq_h_1__ <- function(discharge, complete_discharge) {
+  threshold <- stats::median(complete_discharge) * 9
+  idx <- (discharge > threshold)
   return(sum(idx))
 }
 
@@ -296,12 +309,12 @@ Q.__calc_frq_h_1__ <- function(discharge, completeDischarge){
 #' threshold of 3 times median flow over all years,
 #' used in Clausen and Biggs 2000, recommended in Olden and Poff (2003)
 #' @param discharge vector in m³/s (usually for one year)
-#' @param completeDischarge vector in m³/s (usually for whole year) - necessary to define threshold
+#' @param complete_discharge vector in m³/s (usually for whole year) - necessary to define threshold
 #' @return days in examined year
-Q.__calc_frq_h_2__ <- function(discharge, completeDischarge){ #O + P 2003
-  threshold = stats::median(completeDischarge)*3
-  idx = (discharge > threshold)
-  df_periods = get_periods(idx)
+Q.__calc_frq_h_2__ <- function(discharge, complete_discharge) {
+  threshold <- stats::median(complete_discharge)*3
+  idx <- (discharge > threshold)
+  df_periods <- get_periods(idx)
   return(nrow(df_periods))
 }
 
@@ -315,18 +328,21 @@ Q.__calc_frq_h_2__ <- function(discharge, completeDischarge){ #O + P 2003
 #  (number of consecutive days <0.2 times the
 #  mean daily flow), used in Addor 2018
 #' @param discharge vector in m³/s (usually for one year)
-#' @param completeDischarge vector in m³/s (usually for whole period) - necessary to define threshold
-#' @return mean number of consecutive days with flow lower than defined threshold
-Q.__calc_dur_l_1__ <- function(discharge, completeDischarge){
-  threshold = mean(completeDischarge)*0.2
-  idx = (completeDischarge < threshold)
-  df_periods = get_periods(idx)
-  df_periods$delta = df_periods$period_end - df_periods$period_start
-  if (length(df_periods$delta) == 0){
-    val = 0
-  } else {
-    val = mean(df_periods$delta)
+#' @param complete_discharge vector in m³/s (usually for whole period) -
+#' necessary to define threshold
+#' @return mean number of consecutive days with flow lower
+#' than defined threshold
+Q.__calc_dur_l_1__ <- function(discharge, complete_discharge) {
+  threshold <- mean(complete_discharge) * 0.2
+  idx <- (complete_discharge < threshold)
+  df_periods <- get_periods(idx)
+  df_periods$delta <- df_periods$period_end - df_periods$period_start
+
+  val <- 0
+  if (length(df_periods$delta) != 0) {
+    val <- mean(df_periods$delta)
   }
+
   return(val)
 }
 
@@ -334,11 +350,12 @@ Q.__calc_dur_l_1__ <- function(discharge, completeDischarge){
 #' @description Mean annual 30-day minimum, divided by median flow,
 #' used in Clausen 2000, recommended in Olden and Poff (2003)
 #' @param discharge vector in m³/s (usually for one year)
-#' @param completeDischarge vector in m³/s (usually for whole period) - necessary to adjust data
+#' @param complete_discharge vector in m³/s (usually for whole period) -
+#' necessary to adjust data
 #' @return float
-Q.__calc_dur_l_2__ <- function(discharge, completeDischarge){ #O + P 2003
-  NM30Q = min(ma(discharge, 30), na.rm=T)
-  return(NM30Q/stats::median(completeDischarge))
+Q.__calc_dur_l_2__ <- function(discharge, complete_discharge) {
+  nm30q <- min(ma(discharge, 30), na.rm = TRUE)
+  return(nm30q / stats::median(complete_discharge))
 }
 
 ################################################################################
@@ -346,19 +363,21 @@ Q.__calc_dur_l_2__ <- function(discharge, completeDischarge){ #O + P 2003
 ################################################################################
 
 #' @title Average duration of high-flow events
-#' @description number of consecutive days >9 times the median daily flow), used in Addor 2018
+#' @description number of consecutive days >9 times the median daily flow),
+#' used in Addor 2018
 #' @param discharge vector in m³/s (usually for one year)
-#' @param completeDischarge vector in m³/s (usually for whole period) - necessary to define threshold
+#' @param complete_discharge vector in m³/s (usually for whole period) -
+#' necessary to define threshold
 #' @return mean duration in days (float) for the examined year
-Q.__calc_dur_h_1__ <- function(discharge, completeDischarge){
-  threshold = stats::median(completeDischarge)*9
-  idx = (discharge > threshold)
-  df_periods = get_periods(idx)
-  df_periods$delta = df_periods$period_end - df_periods$period_start
-  if (length(df_periods$delta) == 0){
-    val = 0
-  } else {
-    val = mean(df_periods$delta)
+Q.__calc_dur_h_1__ <- function(discharge, complete_discharge) {
+  threshold <- stats::median(complete_discharge) * 9
+  idx <- (discharge > threshold)
+  df_periods <- get_periods(idx)
+  df_periods$delta <- df_periods$period_end - df_periods$period_start
+
+  val <- 0
+  if (length(df_periods$delta) != 0) {
+    val <- mean(df_periods$delta)
   }
   return(val)
 }
@@ -367,11 +386,12 @@ Q.__calc_dur_h_1__ <- function(discharge, completeDischarge){
 #' @description 30-day maxima of daily discharge divided by median flow,
 #' used in Clausen  2000, recommended in Olden and Poff (2003)
 #' @param discharge vector in m³/s (usually for one year)
-#' @param completeDischarge vector in m³/s (usually for whole period) - necessary to adjust value
+#' @param complete_discharge vector in m³/s (usually for whole period) -
+#' necessary to adjust value
 #' @return adjusted 30-day maxima (float)
-Q.__calc_dur_h_2__ <- function(discharge, completeDischarge){ #O + P 2003
-  MM30Q = max(ma(discharge, 30), na.rm=T)
-  return(MM30Q/stats::median(completeDischarge))
+Q.__calc_dur_h_2__ <- function(discharge, complete_discharge) {
+  nm30q = max(ma(discharge, 30), na.rm = TRUE)
+  return(nm30q / stats::median(complete_discharge))
 }
 
 ################################################################################
@@ -379,38 +399,45 @@ Q.__calc_dur_h_2__ <- function(discharge, completeDischarge){ #O + P 2003
 ################################################################################
 
 #' @title Mean half-flow date
-#' @description date on which the cumulative discharge since January first reaches
-#'  half of the annual discharge, used in Court 1962, Addor 2018
+#' @description date on which the cumulative discharge since January
+#' first reaches half of the annual discharge,
+#' used in Court 1962, Addor 2018
 #'  Note: slightly modified, befroe Ocotber was used not January
 #' @param discharge vector in m³/s (usually for one year)
-#' @param addArgs NULL (not used, but implemented to be useable for Q.calcSI)
-#' @return DOY from date when for the first time more then halb ofthe water volume passed
-Q.__calc_timing_1__ <- function(discharge, addArgs=NULL){
-  threshold = sum(discharge)*0.5
+#' @param add_args NULL (not used, but implemented to be useable for Q.calcSI)
+#' @return DOY from date when for the first time more than
+#' half of the water volume passed
+Q.__calc_timing_1__ <- function(discharge, add_args = NULL) {
+  threshold <- sum(discharge) * 0.5
   return(min(which(cumsum(discharge) >= threshold)))
 }
 
 #' @title Variability in Julian date of annual Minimum
-#' @description Variability in Julian date of annual Minimum expressed as coefficient of variation
-#' @param discharge vector in m³/s (usually for one year) - actually not used wihtin this function
-#' @param df dataframe of simulated discharge with (at least) 'Date' and 'Sim' (or 'Value') column
+#' @description Variability in Julian date of annual Minimum expressed as
+#' coefficient of variation
+#' @param discharge vector in m³/s (usually for one year) -
+#' actually not used wihtin this function
+#' @param df dataframe of simulated discharge with (at least)
+#' 'Date' and 'Sim' (or 'Value') column
 #' @return coefficient of variation of DOY of the yearly annual minima
-Q.__calc_timing_2__ <- function(discharge, df){ #O + P 2003
-  # Variability in Julian date of annual Minimum expressed as coefficient of variation
+Q.__calc_timing_2__ <- function(discharge, df) {
   df$year <- format(df$Date, "%Y")
-  minYear <- min(df$year); maxYear <- max(df$year)
-  DOY <- lapply(minYear:maxYear, function(x) { which(df$Sim[df$year==x] == min(df$Sim[df$year==x]))} )
-  CV = sd(unlist(DOY))/(mean(unlist(DOY)))
+  min_year <- min(df$year)
+  max_year <- max(df$year)
+  DOY <- lapply(min_year:max_year,
+              function(x) {which(df$Sim[df$year == x] == min(df$Sim[df$year == x]))}
+              )
+  CV = sd(unlist(DOY)) / (mean(unlist(DOY)))
   return(CV)
 }
 
 #' @title mean Julian date of annual Minimum
-#' @description mean Julian date of annual Minimum, used in Richter et al (1998) - not recommended just used as proof
+#' @description mean Julian date of annual Minimum, used in Richter et al (1998)
+#' - not recommended just used as proof
 #' @param discharge vector in m³/s (usually for one year)
-#' @param addArgs NULL (not used, but implemented to be useable for Q.calcSI)
+#' @param add_args NULL (not used, but implemented to be useable for Q.calcSI)
 #' @return DOY of annual minimum of examined year
-Q.__calc_timing_3__ <- function(discharge, addArgs=NULL){
-  #
+Q.__calc_timing_3__ <- function(discharge, add_args = NULL) {
   DOY <- which(discharge == min(discharge))
   return(DOY)
 }
@@ -422,28 +449,24 @@ Q.__calc_timing_3__ <- function(discharge, addArgs=NULL){
 
 #' @title slope of FDC
 #' @description Slope of the flow duration curve (between
-#' the log-transformed 33rd and 66th streamflow percentiles Addor 2018, sawizc 2011
+#' the log-transformed 33rd and 66th streamflow percentiles
+#' Addor 2018, sawizc 2011
 #' @param discharge vector in m³/s (usually for one year)
-#' @param addArgs NULL (not used, but implemented to be useable for Q.calcSI)
+#' @param add_args NULL (not used, but implemented to be useable for Q.calcSI)
 #' @return slope value [-]
-Q.__calc_rchg_1__ <- function(discharge, addArgs=NULL){
-  # Slope of the flow duration curve (between
-  # the log-transformed 33rd and 66th streamflow percentiles Addor 2018, sawizc 2011
-  Q33 <- as.numeric(stats::quantile(discharge, 0.33, na.rm=T))
-  Q66 <- as.numeric(stats::quantile(discharge, 0.66, na.rm=T))
+Q.__calc_rchg_1__ <- function(discharge, add_args = NULL) {
+  Q33 <- as.numeric(stats::quantile(discharge, 0.33, na.rm = TRUE))
+  Q66 <- as.numeric(stats::quantile(discharge, 0.66, na.rm = TRUE))
   val <- (log(Q66) - log(Q33)) / (0.66 - 0.33)
   return(val)
 }
 
 #' @title Ratio of days where the flow is higher than the previous day
-#' @description  Ratio of days where the flow is higher than the previous day, recommended in Olden and Poff (2003)
+#' @description  Ratio of days where the flow is higher than the previous day,
+#' recommended in Olden and Poff (2003)
 #' @param discharge vector in m³/s (usually for one year)
-#' @param addArgs NULL (not used, but implemented to be useable for Q.calcSI)
+#' @param add_args NULL (not used, but implemented to be useable for Q.calcSI)
 #' @return number of days
-Q.__calc_rchg_2__ <- function(discharge, addArgs=NULL){ #O + P 2003
-  # Ratio of days where the flow is higher than the previous day
-  return(sum(discharge[1:(length(discharge)-1)] > discharge[2:(length(discharge))]))
+Q.__calc_rchg_2__ <- function(discharge, add_args = NULL) {
+  return(sum(discharge[1:(length(discharge) - 1)] > discharge[2:(length(discharge))]))
 }
-
-
-

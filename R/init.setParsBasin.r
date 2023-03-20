@@ -17,14 +17,15 @@ init.set_pars_basin <- function(basin_object, lai_info, lct_info) {
   landcover <- basin_object@GLCT
   basin_object@LAI_max <- unlist(lai_info[landcover, 2], use.names = FALSE)
   basin_object@initDays <- unlist(lai_info[landcover, 5], use.names = FALSE)
-  reduction_factor_dec_plant <- unlist(lai_info[landcover, 4], use.names = FALSE)
+  reduction_factor_dec_plant <- unlist(lai_info[landcover, 4],
+                                        use.names = FALSE)
   factor_dec_plant <- unlist(lai_info[landcover, 3], use.names = FALSE)
 
   ##LAI_min calculation (original from model code in lai.cpp ll. 93-107)
   lai_factor_a <- 0.1 * factor_dec_plant
   lai_factor_b <- (1 - factor_dec_plant) * reduction_factor_dec_plant
   basin_object@LAI_min <- lai_factor_a + lai_factor_b * basin_object@LAI_max
-  
+
   #LCT table & arid/humid info
   basin_object@alphaPT <- ifelse(basin_object@G_ARID_HUMID == 1,
                                 as.numeric(par_table[1, 2]),
@@ -38,11 +39,12 @@ init.set_pars_basin <- function(basin_object, lai_info, lct_info) {
   basin_object@emissivity <- unlist(lct_info[landcover, 6], use.names = FALSE)
   basin_object@albedo <- unlist(lct_info[landcover, 3], use.names = FALSE)
   basin_object@albedoSnow <- unlist(lct_info[landcover, 4], use.names = FALSE)
-  basin_object@rootingDepth <- unlist(lct_info[landcover, 2],use.names = FALSE)
-  basin_object@degreeDayFactor <- unlist(lct_info[landcover, 5], use.names = FALSE)
+  basin_object@rootingDepth <- unlist(lct_info[landcover, 2], use.names = FALSE)
+  basin_object@degreeDayFactor <- unlist(lct_info[landcover, 5],
+                                          use.names = FALSE)
 
   #SplitFactpr
-  basin_object@Splitfactor <- rep(as.numeric(par_table[5,2]), length(landcover))
+  basin_object@Splitfactor <- rep(as.numeric(par_table[5, 2]), length(landcover))
 
   #Soil informatiom
   if (sum(basin_object@G_BATJES < 0) > 0) {

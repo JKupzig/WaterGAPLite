@@ -75,10 +75,11 @@ basin.loading_climate_ewembi <- function(name = "prec", basin_index, trans_matri
     year <- years[i]
     file <- sprintf(filename, year, month)
 
-    climate_data <- reading_unf(file, data_dir,
-                                transMatrix = NULL, basIndex = NULL,
-                                name = "climate", TypeClimate = 1)
+    climate_data <- reading_unf(file, data_dir=data_dir,
+                                trans_matrix = NULL, basin_index = NULL,
+                                name = "climate", type_climate = 1)
 
+    
     filepath <- file.path(root, file)
     nlayer_climate <- get_info_file(filepath)[[1]]
 

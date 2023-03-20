@@ -28,7 +28,7 @@ for (basin in basins){
   df$Sim = Q.convert_mmday_m3s(df$Sim_mm, sum(basin$GAREA))
   Qobs <- Q.read_grdc(basin$id, NA, NA,  
                      min(basin[["SimPeriod"]]), max(basin[["SimPeriod"]]), 
-                     useFolder="C:/Users/jenny/MyProject_sciebo/GRDC_2020/Rohdaten")
+                     use_folder="C:/Users/jenny/MyProject_sciebo/GRDC_2020/Rohdaten")
   
   
   plot(df$Date,df$Sim, col="maroon", type="l",
@@ -41,21 +41,21 @@ for (basin in basins){
   (mgn_l_1 = Q.calcSI(df, func_name="Q.__calc_mgn_l_1__"))
   (mgn_l_2 = Q.calcSI(df, func_name="Q.__calc_mgn_l_2__"))
   (mgn_a_1 = Q.calcSI(df, func_name="Q.__calc_mgn_a_1__"))
-  (mgn_a_2 = Q.calcSI(df, func_name="Q.__calc_mgn_a_2__", addArgs = sum(basin$GAREA)))
+  (mgn_a_2 = Q.calcSI(df, func_name="Q.__calc_mgn_a_2__", add_args = sum(basin$GAREA)))
   (mgn_h_1 = Q.calcSI(df, func_name="Q.__calc_mgn_h_1__"))
-  (mgn_h_2 = Q.calcSI(df, func_name="Q.__calc_mgn_h_2__", addArgs = df$Sim))
-  (frq_l_1 = Q.calcSI(df, func_name="Q.__calc_frq_l_1__", addArgs = df$Sim)) 
-  (frq_l_2 = Q.calcSI(df, func_name="Q.__calc_frq_l_2__", addArgs = df$Sim))
-  (frq_h_1 = Q.calcSI(df, func_name="Q.__calc_frq_h_1__", addArgs = df$Sim)) 
-  (frq_h_2 = Q.calcSI(df, func_name="Q.__calc_frq_h_2__", addArgs = df$Sim))
+  (mgn_h_2 = Q.calcSI(df, func_name="Q.__calc_mgn_h_2__", add_args = df$Sim))
+  (frq_l_1 = Q.calcSI(df, func_name="Q.__calc_frq_l_1__", add_args = df$Sim)) 
+  (frq_l_2 = Q.calcSI(df, func_name="Q.__calc_frq_l_2__", add_args = df$Sim))
+  (frq_h_1 = Q.calcSI(df, func_name="Q.__calc_frq_h_1__", add_args = df$Sim)) 
+  (frq_h_2 = Q.calcSI(df, func_name="Q.__calc_frq_h_2__", add_args = df$Sim))
   
-  (dur_l_1 = Q.calcSI(df, func_name="Q.__calc_dur_l_1__", addArgs = df$Sim)) 
-  (dur_l_2 = Q.calcSI(df, func_name="Q.__calc_dur_l_2__", addArgs = df$Sim))
-  (dur_h_1 = Q.calcSI(df, func_name="Q.__calc_dur_h_1__", addArgs = df$Sim)) 
-  (dur_h_2 = Q.calcSI(df, func_name="Q.__calc_dur_h_2__", addArgs = df$Sim))
+  (dur_l_1 = Q.calcSI(df, func_name="Q.__calc_dur_l_1__", add_args = df$Sim)) 
+  (dur_l_2 = Q.calcSI(df, func_name="Q.__calc_dur_l_2__", add_args = df$Sim))
+  (dur_h_1 = Q.calcSI(df, func_name="Q.__calc_dur_h_1__", add_args = df$Sim)) 
+  (dur_h_2 = Q.calcSI(df, func_name="Q.__calc_dur_h_2__", add_args = df$Sim))
   
   (timing_1 = Q.calcSI(df, func_name="Q.__calc_timing_1__"))
-  (timing_2 = Q.calcSI(df, func_name="Q.__calc_timing_2__", addArgs=df))
+  (timing_2 = Q.calcSI(df, func_name="Q.__calc_timing_2__", add_args=df))
   (timing_3 = Q.calcSI(df, func_name="Q.__calc_timing_3__"))
   (rchg_1 = Q.calcSI(df, func_name="Q.__calc_rchg_1__"))
   (rchg_2 = Q.calcSI(df, func_name="Q.__calc_rchg_2__"))

@@ -40,3 +40,5 @@ bas.model <- basin.prepare_run(basin_object = bas,
                                wateruse_object = bas.waterUse) 
 
 model_run <- runModel(bas.model$SimPeriod, bas.model, Settings, 3)
+
+plot(bas.model$SimPeriod, model_run$routing$River$Discharge, type="l")

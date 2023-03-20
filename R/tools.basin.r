@@ -27,7 +27,7 @@ basin.create_raster <- function(input, basin_object, spatial_reference = TRUE) {
   array_size <- length(col_info)
   arr <- matrix(NA, nrow = max(row_info) - min(row_info) + 1,
                 ncol = max(col_info) - min(col_info) + 1)
-  col_info_tmp <- col_info - min(GC) + 1
+  col_info_tmp <- col_info - min(col_info) + 1
   row_info_tmp <- row_info - min(row_info) + 1
   for (i in 1:array_size){
     arr[row_info_tmp[i], col_info_tmp[i]] <- input[i]
@@ -110,7 +110,7 @@ basin.createWaterBalance <- function(model_output, climate_object, basin_object,
 
   #check Date format
   format <- "%d.%m.%Y"
-  if ((is.na(as.Date(start2use, format = format))) ||  (is.na(as.Date(end2use, format = format)))) {
+  if ((is.na(as.Date(start2use, format = format))) || (is.na(as.Date(end2use, format = format)))) {
     stop("Error using start2use or end2use - Please make sure that dates are
           given as string in the format %d.%m.%y or as NULL")
   }

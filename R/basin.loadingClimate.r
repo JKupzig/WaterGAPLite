@@ -35,17 +35,25 @@ basin.loading_climate <- function(cont, grdc_number, basin_index, trans_matrix,
     #timeseries needs to be read in as whole
 
     if (climate_format == "global"){
-      var <- basin.loading_climate_ewembi(name = type_name, basin_index,
-                                          trans_matrix, data_dir,
-                                          wg2with5min_mask, watch_mask,
-                                          sim_period_date
+      var <- basin.loading_climate_ewembi(name = type_name, 
+                                          basin_index = basin_index,
+                                          trans_matrix = trans_matrix, 
+                                          data_dir = data_dir,
+                                          wg2with5min_mask = wg2with5min_mask,
+                                          watch_mask = watch_mask, 
+                                          sim_period_date = sim_period_date
                                           )
+      
 
     } else if (climate_format == "continental") {
-      var <- basin.loading_climate_continental(name = type_name, basin_index,
-                                       trans_matrix, data_dir,
-                                       sim_period_date, cont
-                                       )
+      var <- basin.loading_climate_continental(name = type_name, 
+                                               basin_index = basin_index,
+                                               trans_matrix = trans_matrix, 
+                                               data_dir = data_dir,
+                                               sim_period_date = sim_period_date, 
+                                               cont = cont
+                                              )
+      
 
     } else if (climate_format == "basin") {
       var <- basin.loading_climate_basin(name = type_name, grdc_number,
@@ -108,16 +116,23 @@ basin.loading_climate <- function(cont, grdc_number, basin_index, trans_matrix,
 
       #reading data that is missing form climate file
       if (climate_format == "global"){
-        var_start <- basin.loading_climate_ewembi(name = type_name, basin_index,
-                                                  trans_matrix, data_dir,
-                                                  wg2with5min_mask,
-                                                  watch_mask, sim_period_date_1)
+        var_start <- basin.loading_climate_ewembi(name = type_name, 
+                                              basin_index = basin_index,
+                                              trans_matrix = trans_matrix, 
+                                              data_dir = data_dir,
+                                              wg2with5min_mask = wg2with5min_mask,
+                                              watch_mask = watch_mask, 
+                                              sim_period_date = sim_period_date_1)
+  
 
       } else if (climate_format == "continental") {
         var_start <- basin.loading_climate_continental(name = type_name,
-                                                      basin_index,
-                                                      trans_matrix, data_dir,
-                                                      sim_period_date_1, cont)
+                                            basin_index = basin_index,
+                                            trans_matrix=trans_matrix,
+                                            data_dir = data_dir,
+                                            sim_period_date =sim_period_date_1, 
+                                            cont = cont)
+        
 
       } else if (climate_format == "basin") {
         var_start <- basin.loading_climate_basin(name="prec", grdc_number,
@@ -147,19 +162,22 @@ basin.loading_climate <- function(cont, grdc_number, basin_index, trans_matrix,
 
       #reading data that is missing form climate file
       if (climate_format == "global") {
-        var_end <- basin.loading_climate_ewembi(name = type_name, basin_index,
-                                                trans_matrix,
-                                                data_dir, wg2with5min_mask,
-                                                watch_mask,
-                                                sim_period_date_2)
+        var_end <- basin.loading_climate_ewembi(name = type_name, 
+                                            basin_index = basin_index,
+                                            trans_matrix = trans_matrix, 
+                                            data_dir = data_dir,
+                                            wg2with5min_mask = wg2with5min_mask,
+                                            watch_mask = watch_mask, 
+                                            sim_period_date = sim_period_date_2)
 
       } else if (climate_format == "continental") {
-        var_end <- basin.loading_climate_continental(name = type_name,
-                                                     basin_index,
-                                                     trans_matrix,
-                                                     data_dir,
-                                                     sim_period_date_2,
-                                                     cont)
+        var_end <- basin.loading_climate_continental(name = type_name, 
+                                            basin_index = basin_index,
+                                            trans_matrix = trans_matrix, 
+                                            data_dir = data_dir,
+                                            sim_period_date = sim_period_date_2, 
+                                            cont = cont)
+        
 
       } else if (climate_format=="basin") {
         var_end <- basin.loading_climate_basin(name = "prec", grdc_number,
