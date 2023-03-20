@@ -33,9 +33,13 @@ init.wateruse <- function(basin_object,
 
   if (wateruse_setting != 0) {
 
-    wateruse_reference <- reading_unf("G_NUs_7100.UNF0",
-                                      trans_matrix, basin_index,
-                                      name = "waterUse", cont = cont_name)
+    wateruse_reference <- reading_unf(file2read="G_NUs_7100.UNF0",
+                                      data_dir = data_dir,
+                                      trans_matrix = trans_matrix, 
+                                      basin_index = basin_index,
+                                      name = "waterUse", 
+                                      cont = cont_name
+                                      )
 
     i <- 1
     for (year in years) {
@@ -45,21 +49,34 @@ init.wateruse <- function(basin_object,
       i <- i + 1
 
       groundwater <- sprintf("G_NETUSE_GW_HISTAREA_m3_%d.12.UNF0", year)
-      info_groundwater[start_index:end_index, ] <- reading_unf(
-                                      groundwater,
-                                      data_dir, trans_matrix,
-                                      basin_index, name = "waterUse",
-                                      cont = cont_name)
+      info_groundwater[start_index:end_index, ] <- reading_unf(file2read=groundwater,
+                                                    data_dir = data_dir,
+                                                    trans_matrix = trans_matrix, 
+                                                    basin_index = basin_index,
+                                                    name = "waterUse", 
+                                                    cont = cont_name
+                                                  )
+                                                            
 
       surfacewater <- sprintf("G_NETUSE_SW_HISTAREA_m3_%d.12.UNF0", year)
-      info_surfacewater[start_index:end_index, ] <- reading_unf(
-                          surfacewater, data_dir, trans_matrix,
-                          basin_index, name = "waterUse", cont = cont_name)
-
-      water_transfer <- sprintf("G_TRANSFER_DOM_m3_%d.UNF0", year)
-      info_watertransfer[i, ] <- reading_unf(
-                    water_transfer, data_dir, trans_matrix,
-                    basin_index, name = "waterUse", cont = cont_name)
+      info_surfacewater[start_index:end_index, ] <- reading_unf(file2read=surfacewater,
+                                                  data_dir = data_dir,
+                                                  trans_matrix = trans_matrix, 
+                                                  basin_index = basin_index,
+                                                  name = "waterUse", 
+                                                  cont = cont_name
+                                                        )
+        
+      if (wateruse_setting == 2) {
+        water_transfer <- sprintf("G_TRANSFER_DOM_m3_%d.UNF0", year)
+        info_watertransfer[i, ] <- reading_unf(file2read=water_transfer,
+                     data_dir = data_dir,
+                     trans_matrix = trans_matrix, 
+                     basin_index = basin_index,
+                     name = "waterUse", 
+                     cont = cont_name
+          )
+      }
 
       info_time[start_index:end_index, 1] <- rep(year, 12)
       info_time[start_index:end_index, 2] <- seq(1, 12, 1)
