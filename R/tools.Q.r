@@ -216,6 +216,9 @@ Q.plot_timeseries <- function(df_obs, df_sim, df_prec,
   df_prec <- df_prec[from:to, ]
 
   kge_List <- Q.calc_quality(df_obs, df_sim, type = "KGE")
+  sub_title = sprintf("KGE: %f.2. - b: %f.2 - a: %f.2 - r: %f.2",
+                      kge_List$KGE, kge_List$b, kge_List$a, kge_List$r)
+  
 
   ymin <- 0
   ymax <- round(max(max(df_obs$Value, na.rm = TRUE),
@@ -235,12 +238,7 @@ Q.plot_timeseries <- function(df_obs, df_sim, df_prec,
               mapping = aes(x = .data$Date, y = .data$adj,   color = "Prec"),
               alpha = 0.5) +
 
-    sprintf("KGE: %f.2. - b: %f.2 - a: %f.2 - r: %f.2",
-              kge_List[[1]], kge_List[[2]], kge_List[[3]], kge_List[[4]])
-
-    labs(subtitle = sprintf("KGE: %.3f - b: %.3f - a: %.3f - r: %.3f",
-                             kge_List[[1]], kge_List[[2]],
-                             kge_List[[3]], kge_List[[4]]),
+    labs(subtitle = sub_title,
          caption = "only days within simulation period and
                     with observation data are considered")   +
     xlab("Dates") +
