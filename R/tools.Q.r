@@ -216,7 +216,7 @@ Q.plot_timeseries <- function(df_obs, df_sim, df_prec,
   df_prec <- df_prec[from:to, ]
 
   kge_List <- Q.calc_quality(df_obs, df_sim, type = "KGE")
-  sub_title = sprintf("KGE: %f.2. - b: %f.2 - a: %f.2 - r: %f.2",
+  sub_title = sprintf("KGE: %.2f - b: %2.f - a: %2.f - r: %2.f",
                       kge_List$KGE, kge_List$b, kge_List$a, kge_List$r)
   
 

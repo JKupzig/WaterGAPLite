@@ -20,6 +20,7 @@ int ReservoirType;
 int splitType;
 int calcLong;
 int useSystemVals;
+int snowInWetland;
 
 //CONSTANT FILES
 
@@ -115,6 +116,7 @@ void defSettings(NumericVector Settings){
 	splitType = Settings[5];
 	calcLong = Settings[6];
 	useSystemVals = Settings[7];
+	snowInWetland = Settings[8];
 }
 
 //' @title detLAIdaily

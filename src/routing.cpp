@@ -69,6 +69,9 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 
 	NumericVector Discharge (ndays);
 	NumericVector RiverVelocityStat (ndays);
+  NumericVector AccumDegreeDays (array_size);
+  NumericVector SnowStorageWetland (array_size);
+
 
 	//Zustände die gespeichert werden
 	NumericMatrix RiverAvail(ndays, array_size); //
@@ -88,6 +91,7 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 	NumericMatrix StoragelocWetland(ndays, array_size);  // storage of Wetland
 	NumericMatrix EvapolocWetland(ndays, array_size);    // Evaporatiom from Wetland
 	NumericMatrix InflowlocWetland(ndays, array_size);   // Inflow to Wetland
+    NumericMatrix SnowlocWetland(ndays, array_size);   // Snow Wetland
 
 	//global Lakes
 	NumericMatrix OverflowgloLake(ndays, array_size); // special overflow, when S > Smax
@@ -161,12 +165,13 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 
 				const double PrecWater = Prec(day, cell);
 				const double PETWater = PETw(day, cell);
+				const double TempWater = Temp(day, cell);
 				const double LandInflow = (GroundwaterRunoff(day, cell) + surfaceRunoff(day, cell))* GAREA[cell] * landfrac[cell]; // mm * km²
 
 				//routing process within cell - could also be part of waterbalance or otherwise - ground water routing could also be part of routing!
 				// local lakes
 				if (G_LOCLAK[cell] > 0) {
-					out_loclake = routingLocalWaterBodies(0, cell, PrecWater, PETWater, LandInflow,
+					out_loclake = routingLocalWaterBodies(0, cell, PrecWater, PETWater, TempWater, AccumDegreeDays, SnowStorageWetland, LandInflow,
 								S_locLakeStorage, locLake_overflow, locLake_outflow, locLake_evapo, locLake_inflow,
 								S_locWetlandStorage, locWetland_overflow, locWetland_outflow, locWetland_evapo, locWetland_inflow); // mm * km²
 				} else {
@@ -175,7 +180,7 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 
 				//local wetlands
 				if (G_LOCWET[cell] > 0) {
-					out_locwet = routingLocalWaterBodies(1, cell, PrecWater, PETWater, out_loclake,
+					out_locwet = routingLocalWaterBodies(1, cell, PrecWater, PETWater, TempWater, AccumDegreeDays, SnowStorageWetland, out_loclake,
 								S_locLakeStorage, locLake_overflow, locLake_outflow, locLake_evapo, locLake_inflow,
 								S_locWetlandStorage, locWetland_overflow, locWetland_outflow, locWetland_evapo, locWetland_inflow);
 				} else {
@@ -242,7 +247,7 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 					RiverVelocityStat[day] = riverVelocity / 86.4 ; // m/s
 				}
 			} // cell loop
-			
+
 
 			//Abstracting Water Use for surface water
 			// river --> reservoir --> global lakes -->local lakes
@@ -269,6 +274,7 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 		StoragelocWetland(day, _) = S_locWetlandStorage; // mm*km²- >(GAREA * G_LOCWET / 100.); //mm
 		EvapolocWetland(day, _) = locWetland_evapo; // mm*km²- >(GAREA * G_LOCWET / 100.); //mm
 		InflowlocWetland(day, _) = locWetland_inflow; // mm*km²- >(GAREA * G_LOCWET / 100.); //mm
+    SnowlocWetland(day, _) = SnowStorageWetland; //mm
 
 		OverflowgloLake(day, _) = gloLake_overflow; // mm*km²- >(GAREA * G_LOCWET / 100.); //mm
 		OutflowgloLake(day, _) = gloLake_outflow; // mm*km²- >(GAREA * G_LOCWET / 100.); //mm
@@ -295,7 +301,7 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 	List WaterUseSW = List::create(Named("ActualUseSW") = ActualUseSW);
 	List River = List::create(Named("Discharge") = Discharge, Named("RiverStorage")=RiverStorage, Named("InflowUpstream")=InflowUpstream2write, Named("RiverAvail") = RiverAvail, Named("RiverInNetwork")= S_river, Named("G_riverOutflow")= G_riverOutflow, Named("StatVelocity") = RiverVelocityStat);
 	List locLake = List::create(Named("Overflow") = OverflowlocLake, Named("Outflow") = OutflowlocLake, Named("Evapo") = EvapolocLake, Named("Storage") = StoragelocLake, Named("Inflow") = InflowlocLake);
-	List locWetland =List::create(Named("Overflow") = OverflowlocWetland, Named("Outflow") = OutflowlocWetland, Named("Evapo") = EvapolocWetland, Named("Storage") = StoragelocWetland, Named("Inflow") = InflowlocWetland);
+	List locWetland =List::create(Named("Overflow") = OverflowlocWetland, Named("Outflow") = OutflowlocWetland, Named("Evapo") = EvapolocWetland, Named("Storage") = StoragelocWetland, Named("Inflow") = InflowlocWetland, Named("Snow")=SnowlocWetland);
 	List gloLake = List::create(Named("Overflow") = OverflowgloLake, Named("Outflow") = OutflowgloLake, Named("Evapo") = EvapogloLake, Named("Storage") = StoragegloLake, Named("Inflow") = InflowgloLake);
 	List Res =List::create(Named("Overflow") = OverflowRes, Named("Outflow") = OutflowRes, Named("Evapo") = EvapoRes, Named("Storage") = StorageRes, Named("Inflow") = InflowRes);
 	List gloWetland =List::create(Named("Overflow") = OverflowgloWetland, Named("Outflow") = OutflowgloWetland, Named("Evapo") = EvapogloWetland, Named("Storage") = StoragegloWetland, Named("Inflow") = InflowgloWetland);

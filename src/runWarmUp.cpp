@@ -101,6 +101,7 @@ void runWarmUp(DateVector timestring, int nYears){
 		NumericVector PETw_day = dailyEvaporation2(count, "water",G_snow, G_PETnetShort,G_PETnetLong, DOY);
 		NumericVector PET_day = dailyEvaporation2(count, "land",G_snow,G_PETnetShort,G_PETnetLong, DOY);
 
+
 		//interception 
 		dailyInterception(count, G_canopyWaterContent, 
 					   daily_prec_to_soil,  
@@ -128,7 +129,9 @@ void runWarmUp(DateVector timestring, int nYears){
 				
 		
 		// ROUTING ######################################################################
-		
+		NumericVector SnowStorageWetland (array_size);
+		NumericVector Accumdays (array_size);
+	
 		NumericVector MeanDemand = WaterUseCalcMeanDemandDaily(year, GapYearType);
 		WaterUseCalcDaily(waterUseType, dailyUse, year, month, StartYear, Info_GW, Info_SW, Info_TF); // first row = GW, second row = SW
 		
@@ -145,12 +148,13 @@ void runWarmUp(DateVector timestring, int nYears){
 				
 				const double PrecWater = Prec(count, cell);
 				const double PETWater = PETw_day[cell]; //calculated in daily above
+				const double TempWater = Temp(count, cell); //calculated in daily above
 				const double LandInflow = (G_dailyLocalGWRunoff[cell] + G_dailyLocalSurfaceRunoff[cell])* GAREA[cell] * landfrac[cell]; // mm * km²
 				
 				//routing process within cell - could also be part of waterbalance or otherwise - ground water routing could also be part of routing!
 				// local lakes
 				if (G_LOCLAK[cell] > 0) {
-					out_loclake = routingLocalWaterBodies(0, cell, PrecWater, PETWater, LandInflow,
+					out_loclake = routingLocalWaterBodies(0, cell, PrecWater, PETWater, TempWater, Accumdays, SnowStorageWetland, LandInflow,
 								S_locLakeStorage, locLake_overflow, locLake_outflow, locLake_evapo, locLake_inflow,
 								S_locWetlandStorage, locWetland_overflow, locWetland_outflow, locWetland_evapo, locWetland_inflow); // mm * km²
 				} else {
@@ -159,7 +163,7 @@ void runWarmUp(DateVector timestring, int nYears){
 				
 				//local wetlands
 				if (G_LOCWET[cell] > 0) {
-					out_locwet = routingLocalWaterBodies(1, cell, PrecWater, PETWater, out_loclake,
+					out_locwet = routingLocalWaterBodies(1, cell, PrecWater, PETWater, TempWater, Accumdays, SnowStorageWetland, out_loclake,
 								S_locLakeStorage, locLake_overflow, locLake_outflow, locLake_evapo, locLake_inflow,
 								S_locWetlandStorage, locWetland_overflow, locWetland_outflow, locWetland_evapo, locWetland_inflow); 
 				} else {
