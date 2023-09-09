@@ -349,8 +349,8 @@ Q.create_monthly_plot <- function(df_obs, df_sim) {
               mapping = aes(x = date, y = sum_qsim, color = "Qsim")) +
 
     labs(subtitle = sprintf("KGE: %.3f - b: %.3f - a: %.3f - r: %.3f",
-                            KGE_List[[1]], KGE_List[[2]],
-                            KGE_List[[3]], KGE_List[[4]]),
+                            kge, b, a, r
+                            ),
          caption = "only days within simulation period
                     and with observation data are considered")   +
     xlab("Dates") +
