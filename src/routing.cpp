@@ -69,8 +69,8 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 
 	NumericVector Discharge (ndays);
 	NumericVector RiverVelocityStat (ndays);
-  NumericVector AccumDegreeDays (array_size);
-  NumericVector SnowStorageWetland (array_size);
+	IntegerVector AccumDegreeDays (array_size);
+	NumericVector SnowStorageWetland (array_size);
 
 
 	//Zustände die gespeichert werden

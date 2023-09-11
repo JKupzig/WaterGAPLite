@@ -130,7 +130,7 @@ void runWarmUp(DateVector timestring, int nYears){
 		
 		// ROUTING ######################################################################
 		NumericVector SnowStorageWetland (array_size);
-		NumericVector Accumdays (array_size);
+		IntegerVector Accumdays (array_size);
 	
 		NumericVector MeanDemand = WaterUseCalcMeanDemandDaily(year, GapYearType);
 		WaterUseCalcDaily(waterUseType, dailyUse, year, month, StartYear, Info_GW, Info_SW, Info_TF); // first row = GW, second row = SW

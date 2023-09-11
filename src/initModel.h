@@ -109,7 +109,8 @@ extern int loc_storageFactor;
 extern int reservoir_dsc; //downstream cells that are considered for water use of reservoir (for 5min always the same)
 extern double defaultRiverVelocity;
 
-
+extern double snow_threshold;
+extern int max_degree_days;
 
 extern void initModel(List ListConst);
 
