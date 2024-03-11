@@ -89,7 +89,7 @@ double routingLocalWaterBodies(bool Type, int cell, double PrecWater,  double PE
 				accum_days[cell] = max(accum_days[cell], 0);
 			}
 
-			if (accum_days[cell] >= max_degree_days) { //frozen wetland
+			if (accum_days[cell] == max_degree_days) { //frozen wetland
 
 				// accumulation of snow
 				if (TempWater <= snowFreezeTemp) { //0.0°C

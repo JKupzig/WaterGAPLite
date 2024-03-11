@@ -165,11 +165,14 @@ Q.calc_quality <- function(df_obs, df_sim, type = "NSE", min_data = 0.5) {
 
     b <- sd(df_all$Sim, na.rm = TRUE) /
          sd(df_all$Value, na.rm = TRUE)
+    
     a <- mean(df_all$Sim, na.rm = TRUE) /
          mean(df_all$Value, na.rm = TRUE)
+    
     r <- cor(df_all$Sim[!is.na(df_all$Sim)],
              df_all$Value[!is.na(df_all$Sim)],
              method = "pearson")
+    
     kge <- round(1 - sqrt((1 - r)^2 + (a - 1)^2 + (b - 1)^2), 3)
 
     val <- list("KGE" = kge, "b" = b, "a" = a, "r" = r)
