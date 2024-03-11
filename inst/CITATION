@@ -1,0 +1,12 @@
+bibentry(
+  bibtype  = "Software",
+  title    = "WaterGAPLite"
+  author   = "Jenny Kupzig"
+  journal  = ,
+  year     = "2023"
+  volume   = ,
+  number   = ,
+  pages    = ,
+  version  = "1.0.3",
+  
+)

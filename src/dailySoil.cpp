@@ -36,7 +36,7 @@ void dailySoil(const NumericVector dailyEffPrec, const NumericVector immediate_r
 		//total_daily_runoff[cell] = 0;
 		
 		soil_saturation = G_soilWaterContent[cell] / G_Smax[cell]; //[-]
-		daily_runoff[cell] = dailyEffPrec[cell] * pow(soil_saturation, G_GAMMA_HBV[cell]); //das klappt nicht!
+		daily_runoff[cell] = dailyEffPrec[cell] * pow(soil_saturation, G_GAMMA_HBV[cell]);
 		// this formula maybe produes NAN in the beginning of a simulation...
 		
 		//check wether max daily PET should be limited or not (see maxDailyPET_arid or maxDailyPET_humid):

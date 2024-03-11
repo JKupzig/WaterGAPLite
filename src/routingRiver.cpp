@@ -47,7 +47,7 @@ double routingRiver(int cell, double riverVelocity, double RiverInflow,
 double getRiverVelocity(int Type, int cell, double inflow){
 
 	double riverVelocity = 0;
-	if (Type==0) {
+	if (Type == 0) {
 		riverVelocity = defaultRiverVelocity;
 	} else {
 		//uses: bankfull flow, river width, river slope

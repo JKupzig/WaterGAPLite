@@ -115,6 +115,9 @@ basin.prepare_run <- function(basin_object,
   basin_list[["Info_SW"]] <- wateruse_object@Info_SW
   basin_list[["Info_TF"]] <- wateruse_object@Info_TF
   basin_list[["G_NUs_7100"]] <- wateruse_object@G_NUs_7100
+  
+  basin_list[["snow_threshold"]] <- -5.
+  basin_list[["max_degree_days"]] <- 10
 
   return(basin_list)
 }

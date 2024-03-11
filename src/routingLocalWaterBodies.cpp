@@ -12,6 +12,8 @@ using namespace std;
 //' @param cell cell that is simulated
 //' @param PrecWater Pecipitation above cell [mm]
 //' @param PETWater Potential Evaporation form water [mm]
+//' @param TempWater Mean Temperature above cell [mm]
+//' @param accum_days accumulated days below -10 degree[mm]
 //' @param Inflow inflow to local wb from cell=(GroundwaterRunoff(day, cell) + surfaceRunoff(day, cell))* GAREA[cell] * landfrac[cell] or (for the case of local wetlands) outflow form local lake in the case of local wetland and local lake are present [mm*km²]
 //' @param S_locLakeStorage local lake storage [mmm*km²]
 //' @param locLake_overflow overflow of local lake (locStorage[cell] - maxStorage) [mm*km²]
@@ -25,10 +27,10 @@ using namespace std;
 //' @param locWetland_inflow inflow to local wetland Inflow + PrecWater * (GAREA[cell] * locPerc[cell] / 100.); // mm km²
 //' @return routed outflow from local waterbody [mm*km²]
 //' @export
-double routingLocalWaterBodies(bool Type, int cell, double PrecWater,  double PETWater, double Inflow,
+double routingLocalWaterBodies(bool Type, int cell, double PrecWater,  double PETWater, double TempWater, IntegerVector accum_days, NumericVector snow_storage_wetland, double Inflow,
 								NumericVector S_locLakeStorage, NumericVector locLake_overflow, NumericVector locLake_outflow, NumericVector locLake_evapo, NumericVector locLake_inflow,
 								NumericVector S_locWetlandStorage, NumericVector locWetland_overflow, NumericVector locWetland_outflow, NumericVector locWetland_evapo, NumericVector locWetland_inflow) {
-	
+
 
 	double totalInflow;
 	double outflow;
@@ -36,40 +38,74 @@ double routingLocalWaterBodies(bool Type, int cell, double PrecWater,  double PE
 	double locEvapoReductionFactor; // open water PET reduction (2.1f)
 	double surfStorageEvapo = 0.; // added for cell AET calculation (WG3.1)
 	
+	//double snow_threshold = -5;
+	//double max_degree_days = 10;
+	double snowmelt;
+
+
 	//prepare everything for Type definition:
 	//const IntegerVector locPerc = Environment::global_env()["G_LOCLAK"]; // % of cell that belongs to local lake
 	IntegerVector locPerc(array_size, -99);
 	double Depth;
 	double OutflowExp;
-	
+
 	NumericVector locStorage (array_size);
 	NumericVector locOverflow (array_size);
 	NumericVector locOutflow (array_size);
 	NumericVector locEvapo (array_size);
 	NumericVector locInflow (array_size);
-	
+
 	// variables dependent on type (lake or wetland)
 	if (Type == 0) { // I think, this takes quite a time in the function
 		locPerc = G_LOCLAK; // % of cell that belongs to local lake
 		Depth = lakeDepth; // 0.005 km --> 5000 mm
-		OutflowExp = lakeOutflowExp; // 1.5 [-]	
-		
+		OutflowExp = lakeOutflowExp; // 1.5 [-]
+
 		locStorage = S_locLakeStorage;
-		locOverflow = locLake_overflow;	
+		locOverflow = locLake_overflow;
 		locOutflow = locLake_outflow;
 		locEvapo = locLake_evapo;
 		locInflow = locLake_inflow;
-		
+
 	} else if (Type == 1) {
 		locPerc = G_LOCWET; // % of cell that belongs to local wetland
 		Depth = wetlandDepth; // 0.002 km --> 2000 mm
 		OutflowExp = wetlOutflowExp; // 2.5 [-]
-		
+
 		locStorage = S_locWetlandStorage;
-		locOverflow = locWetland_overflow;	
+		locOverflow = locWetland_overflow;
 		locOutflow = locWetland_outflow;
 		locEvapo = locWetland_evapo;
 		locInflow = locWetland_inflow;
+		
+		if (snowInWetland == 1) {
+
+			// snow module for wetlands
+			if (TempWater <= snow_threshold) {
+				accum_days[cell] += 1.;
+				accum_days[cell] = min(accum_days[cell], max_degree_days);
+			} else {
+				accum_days[cell] -= 1.;
+				accum_days[cell] = max(accum_days[cell], 0);
+			}
+
+			if (accum_days[cell] == max_degree_days) { //frozen wetland
+
+				// accumulation of snow
+				if (TempWater <= snowFreezeTemp) { //0.0°C
+					snow_storage_wetland[cell] += PrecWater;
+					PrecWater = 0;
+				}
+			}
+
+			// melting of snow
+			if (TempWater > snowMeltTemp) { //0.0°C
+				snowmelt = min(4.0 * abs(TempWater - snowMeltTemp), snow_storage_wetland[cell]);
+				snow_storage_wetland[cell] -= snowmelt;
+				PrecWater += snowmelt;
+			
+			}
+		}
 	}
 
 	// maximum storage capacity --> threshold for lake (logical?)
@@ -81,25 +117,28 @@ double routingLocalWaterBodies(bool Type, int cell, double PrecWater,  double PE
 	} else {
 		locEvapoReductionFactor = 1. - pow((fabs(locStorage[cell] - maxStorage) / (maxStorage)), evapoReductionExp);
 	}
-	
+
+
+
+
 	//calculate water balance from lake
 	surfStorageEvapo = PETWater * locEvapoReductionFactor * (GAREA[cell] * locPerc[cell] / 100.); // calculate evaporation from local lakes mm km²
 	totalInflow = Inflow + PrecWater * (GAREA[cell] * locPerc[cell] / 100.); // mm km²
-	
-	// original model code: 
-	// 1) Evaporation is substracted 
+
+	// original model code:
+	// 1) Evaporation is substracted
 	locStorage[cell] -= surfStorageEvapo; 	// substract local lake evapo
 	// 2) Storage is proofed and maybe corrected
 	if (locStorage[cell] < 0.){ // if G_locLakeStorage is below '0', evaporation is reduced and there is no outflow anymore
 		surfStorageEvapo +=  locStorage[cell];  /// (GAREA[cell] / 1000000.) / (G_LOCLAK[cell] / 100.);
 		locStorage[cell] = 0.;
-	} 
+	}
 
 	// 3) add inflow to storage : PROBLEM: STORAGE CAN BE NOW BIGGER THAN MAX!
 	locStorage[cell] += totalInflow;
 	// 4) calculate routing through G_locLakeStorage --> not stable for cases with locStorage > MaxStorage!
 	outflow = (1./loc_storageFactor) * locStorage[cell] * pow((locStorage[cell] / maxStorage), OutflowExp); // mm km²
-			
+
 
 	// if local lake is in a cell wich is an inland sink, no outflow occurs
 	// (if there are no local wetlands and no global lakes/wetlands)
@@ -129,9 +168,9 @@ double routingLocalWaterBodies(bool Type, int cell, double PrecWater,  double PE
 	locEvapo[cell] = surfStorageEvapo; // mm km²
 	locInflow[cell] = totalInflow; // mm km²
 	locOutflow[cell] = outflow - locOverflow[cell]; // mm km²
-	
+
 	// now saving all again to adequate vectors - NEW
-	if (Type == 0) { 		
+	if (Type == 0) {
 		S_locLakeStorage[cell] = locStorage[cell];
 		locLake_overflow[cell] = locOverflow[cell];
 		locLake_outflow[cell]  = locOutflow[cell];
@@ -144,6 +183,6 @@ double routingLocalWaterBodies(bool Type, int cell, double PrecWater,  double PE
 		locWetland_evapo[cell]    = locEvapo[cell];
 		locWetland_inflow[cell]   = locInflow[cell];
 	}
-	
+
 	return(outflow);
 }

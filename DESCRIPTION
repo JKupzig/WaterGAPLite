@@ -1,7 +1,7 @@
 Package: WaterGAPLite
 Type: Package
 Title: WaterGAPLite - the little brother of WaterGAP3
-Version: 1.0.1
+Version: 1.0.3
 Date: 2021-07-19
 Author: Jenny Kupzig
 Maintainer: Your Name <your@email.com>
@@ -22,7 +22,7 @@ Imports: Rcpp (>= 1.0.3),
 Suggests: optimx,
 		  minqa,
 LinkingTo: Rcpp
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 Encoding: UTF-8
 LazyData: true
-LazyDataCompression:xz
+LazyDataCompression: xz

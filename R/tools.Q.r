@@ -165,11 +165,14 @@ Q.calc_quality <- function(df_obs, df_sim, type = "NSE", min_data = 0.5) {
 
     b <- sd(df_all$Sim, na.rm = TRUE) /
          sd(df_all$Value, na.rm = TRUE)
+    
     a <- mean(df_all$Sim, na.rm = TRUE) /
          mean(df_all$Value, na.rm = TRUE)
+    
     r <- cor(df_all$Sim[!is.na(df_all$Sim)],
              df_all$Value[!is.na(df_all$Sim)],
              method = "pearson")
+    
     kge <- round(1 - sqrt((1 - r)^2 + (a - 1)^2 + (b - 1)^2), 3)
 
     val <- list("KGE" = kge, "b" = b, "a" = a, "r" = r)
@@ -216,7 +219,7 @@ Q.plot_timeseries <- function(df_obs, df_sim, df_prec,
   df_prec <- df_prec[from:to, ]
 
   kge_List <- Q.calc_quality(df_obs, df_sim, type = "KGE")
-  sub_title = sprintf("KGE: %f.2. - b: %f.2 - a: %f.2 - r: %f.2",
+  sub_title = sprintf("KGE: %.2f - b: %2.f - a: %2.f - r: %2.f",
                       kge_List$KGE, kge_List$b, kge_List$a, kge_List$r)
   
 
@@ -349,8 +352,8 @@ Q.create_monthly_plot <- function(df_obs, df_sim) {
               mapping = aes(x = date, y = sum_qsim, color = "Qsim")) +
 
     labs(subtitle = sprintf("KGE: %.3f - b: %.3f - a: %.3f - r: %.3f",
-                            KGE_List[[1]], KGE_List[[2]],
-                            KGE_List[[3]], KGE_List[[4]]),
+                            kge, b, a, r
+                            ),
          caption = "only days within simulation period
                     and with observation data are considered")   +
     xlab("Dates") +

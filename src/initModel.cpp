@@ -20,6 +20,7 @@ int ReservoirType;
 int splitType;
 int calcLong;
 int useSystemVals;
+int snowInWetland;
 
 //CONSTANT FILES
 
@@ -102,6 +103,9 @@ int loc_storageFactor;
 int reservoir_dsc = 20; //downstream cells that are considered for water use of reservoir (for 5min always the same)
 double defaultRiverVelocity; // = 86.4;	// [km/d] = 1 m/s
 
+double snow_threshold; // NEW (-5.)
+int max_degree_days; // NEW (10)
+
 //' @title Declaration of Settings from R Module
 //' @description translates R Settings to global rcpp Settings
 //' @param Settings Settings defined as IntegerVector
@@ -115,6 +119,7 @@ void defSettings(NumericVector Settings){
 	splitType = Settings[5];
 	calcLong = Settings[6];
 	useSystemVals = Settings[7];
+	snowInWetland = Settings[8];
 }
 
 //' @title detLAIdaily
@@ -314,9 +319,13 @@ void initModel(List ListConst){
 	glo_storageFactor = as<int>(ListConst["glo_storageFactor"]);
 	loc_storageFactor = as<int>(ListConst["loc_storageFactor"]);
 	cor_row = as<int>(ListConst["cor_row"]);
+	
 
 	defaultRiverVelocity = as<double>(ListConst["defaultRiverVelocity"]);
-
+  
+  snow_threshold = as<double>(ListConst["snow_threshold"]);
+  max_degree_days = as<int>(ListConst["max_degree_days"]);
+  
 	dailyLaiAll = getLAIdaily(LAI_min, LAI_max, initDays,
 						   Temp, Prec, G_ARID_HUMID, GLCT);
 
