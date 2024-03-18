@@ -82,8 +82,10 @@ NumericVector G_BANKFULL;
 NumericVector G_riverSlope;
 NumericVector G_riverRoughness;
 
+// parameter
 NumericVector Splitfactor;
 
+double lower_threshold_soil; // 0 [%]
 double maxCanopyStoragePerLAI; // 0.3 mm
 double canopyEvapoExp; // 0.6666667 [-]
 int array_size; //
@@ -296,6 +298,7 @@ void initModel(List ListConst){
 	G_riverRoughness = as<NumericVector>(ListConst["G_riverRoughness"]);
 
 	Splitfactor = as<NumericVector>(ListConst["Splitfactor"]);
+	lower_threshold_soil = as<double>(ListConst["lower_threshold_soil"]);
 
 	Info_GW = as<NumericMatrix>(ListConst["Info_GW"]);
 	Info_SW = as<NumericMatrix>(ListConst["Info_SW"]);

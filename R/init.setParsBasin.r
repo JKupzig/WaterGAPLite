@@ -9,7 +9,9 @@
 init.set_pars_basin <- function(basin_object, lai_info, lct_info) {
 
   par_table <- init.setPars()
-  for (i in 6:nrow(par_table)){
+  
+  for (i in 6:nrow(par_table))
+  {
     slot(basin_object, par_table[i, 1]) <- as.numeric(par_table[i, 2])
   }
 
@@ -44,7 +46,8 @@ init.set_pars_basin <- function(basin_object, lai_info, lct_info) {
                                           use.names = FALSE)
 
   #SplitFactpr
-  basin_object@Splitfactor <- rep(as.numeric(par_table[5, 2]), length(landcover))
+  basin_object@Splitfactor <- rep(as.numeric(par_table[5, 2]), 
+                                  length(landcover))
 
   #Soil informatiom
   if (sum(basin_object@G_BATJES < 0) > 0) {
@@ -58,6 +61,7 @@ init.set_pars_basin <- function(basin_object, lai_info, lct_info) {
                                   )
 
   basin_object@G_Smax <- basin_object@G_BATJES * basin_object@rootingDepth
+                         
 
   #info to simulate/estimate groundwater recharge
   basin_object@G_RG_max <- basin.get_rgmax(basin_object@G_TEXTURE)
