@@ -68,7 +68,4 @@ void dailySoil(const NumericVector dailyEffPrec,
 			soil_water_overflow[cell] = 0.;
 		}
 	}
-
-	List L = List::create(G_soilWaterContent, dailyAET, daily_runoff, soil_water_overflow);
-	return(L);
 }
