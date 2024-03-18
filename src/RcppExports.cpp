@@ -176,6 +176,43 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// defSettings
+void defSettings(NumericVector Settings);
+RcppExport SEXP _WaterGAPLite_defSettings(SEXP SettingsSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type Settings(SettingsSEXP);
+    defSettings(Settings);
+    return R_NilValue;
+END_RCPP
+}
+// getLAIdaily
+NumericMatrix getLAIdaily(NumericVector LAI_min, NumericVector LAI_max, NumericVector initDays, const NumericMatrix Temp, const NumericMatrix Prec, const IntegerVector aridType, const NumericVector GLCT);
+RcppExport SEXP _WaterGAPLite_getLAIdaily(SEXP LAI_minSEXP, SEXP LAI_maxSEXP, SEXP initDaysSEXP, SEXP TempSEXP, SEXP PrecSEXP, SEXP aridTypeSEXP, SEXP GLCTSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type LAI_min(LAI_minSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type LAI_max(LAI_maxSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type initDays(initDaysSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix >::type Temp(TempSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix >::type Prec(PrecSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector >::type aridType(aridTypeSEXP);
+    Rcpp::traits::input_parameter< const NumericVector >::type GLCT(GLCTSEXP);
+    rcpp_result_gen = Rcpp::wrap(getLAIdaily(LAI_min, LAI_max, initDays, Temp, Prec, aridType, GLCT));
+    return rcpp_result_gen;
+END_RCPP
+}
+// initModel
+void initModel(List ListConst);
+RcppExport SEXP _WaterGAPLite_initModel(SEXP ListConstSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type ListConst(ListConstSEXP);
+    initModel(ListConst);
+    return R_NilValue;
+END_RCPP
+}
 // routing
 List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix GroundwaterRunoff, NumericMatrix PETw, NumericMatrix Prec);
 RcppExport SEXP _WaterGAPLite_routing(SEXP SimPeriodSEXP, SEXP surfaceRunoffSEXP, SEXP GroundwaterRunoffSEXP, SEXP PETwSEXP, SEXP PrecSEXP) {

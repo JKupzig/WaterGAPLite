@@ -12,27 +12,28 @@
 */
 
 /* .Call calls */
-extern SEXP _WaterGAPLite_CheckResType();
-extern SEXP _WaterGAPLite_createWaterBalance(SEXP);
-extern SEXP _WaterGAPLite_dailyEstimateLongwave(SEXP, SEXP, SEXP, SEXP);
-extern SEXP _WaterGAPLite_dailyEstimateShortwave(SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _WaterGAPLite_dailySnow(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _WaterGAPLite_findNumberInVector(SEXP, SEXP);
-extern SEXP _WaterGAPLite_findUniqueValues(SEXP);
-extern SEXP _WaterGAPLite_getRiverVelocity(SEXP, SEXP, SEXP);
-extern SEXP _WaterGAPLite_numberOfDaysInMonth(SEXP, SEXP);
-extern SEXP _WaterGAPLite_numberOfDaysInYear(SEXP);
-extern SEXP _WaterGAPLite_routing(SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _WaterGAPLite_routingRiver(SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _WaterGAPLite_runModel(SEXP, SEXP, SEXP, SEXP);
-extern SEXP _WaterGAPLite_setLakeWetlandToMaximum(SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _WaterGAPLite_sortIt(SEXP);
-extern SEXP _WaterGAPLite_sumVector(SEXP);
-extern SEXP _WaterGAPLite_tools_DefDrainageCells(SEXP, SEXP, SEXP);
-extern SEXP _WaterGAPLite_tools_interpolate(SEXP, SEXP, SEXP);
-extern SEXP _WaterGAPLite_WaterUseCalcDaily(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-extern SEXP _WaterGAPLite_WaterUseCalcMeanDemandDaily(SEXP, SEXP);
-extern SEXP _WaterGAPLite_WaterUseConsumGW(SEXP, SEXP, SEXP);
+extern SEXP _WaterGAPLite_CheckResType(void);
+extern SEXP _WaterGAPLite_createWaterBalance(void *);
+extern SEXP _WaterGAPLite_dailyEstimateLongwave(void *, void *, void *, void *);
+extern SEXP _WaterGAPLite_dailyEstimateShortwave(void *, void *, void *, void *, void *);
+extern SEXP _WaterGAPLite_dailySnow(void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern SEXP _WaterGAPLite_findNumberInVector(void *, void *);
+extern SEXP _WaterGAPLite_findUniqueValues(void *);
+extern SEXP _WaterGAPLite_getRiverVelocity(void *, void *, void *);
+extern SEXP _WaterGAPLite_initModel(void *);
+extern SEXP _WaterGAPLite_numberOfDaysInMonth(void *, void *);
+extern SEXP _WaterGAPLite_numberOfDaysInYear(void *);
+extern SEXP _WaterGAPLite_routing(void *, void *, void *, void *, void *);
+extern SEXP _WaterGAPLite_routingRiver(void *, void *, void *, void *, void *);
+extern SEXP _WaterGAPLite_runModel(void *, void *, void *, void *);
+extern SEXP _WaterGAPLite_setLakeWetlandToMaximum(void *, void *, void *, void *, void *);
+extern SEXP _WaterGAPLite_sortIt(void *);
+extern SEXP _WaterGAPLite_sumVector(void *);
+extern SEXP _WaterGAPLite_tools_DefDrainageCells(void *, void *, void *);
+extern SEXP _WaterGAPLite_tools_interpolate(void *, void *, void *);
+extern SEXP _WaterGAPLite_WaterUseCalcDaily(void *, void *, void *, void *, void *, void *, void *, void *);
+extern SEXP _WaterGAPLite_WaterUseCalcMeanDemandDaily(void *, void *);
+extern SEXP _WaterGAPLite_WaterUseConsumGW(void *, void *, void *);
 
 static const R_CallMethodDef CallEntries[] = {
     {"_WaterGAPLite_CheckResType",                (DL_FUNC) &_WaterGAPLite_CheckResType,                0},
@@ -43,6 +44,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_WaterGAPLite_findNumberInVector",          (DL_FUNC) &_WaterGAPLite_findNumberInVector,          2},
     {"_WaterGAPLite_findUniqueValues",            (DL_FUNC) &_WaterGAPLite_findUniqueValues,            1},
     {"_WaterGAPLite_getRiverVelocity",            (DL_FUNC) &_WaterGAPLite_getRiverVelocity,            3},
+    {"_WaterGAPLite_initModel",                   (DL_FUNC) &_WaterGAPLite_initModel,                   1},
     {"_WaterGAPLite_numberOfDaysInMonth",         (DL_FUNC) &_WaterGAPLite_numberOfDaysInMonth,         2},
     {"_WaterGAPLite_numberOfDaysInYear",          (DL_FUNC) &_WaterGAPLite_numberOfDaysInYear,          1},
     {"_WaterGAPLite_routing",                     (DL_FUNC) &_WaterGAPLite_routing,                     5},
