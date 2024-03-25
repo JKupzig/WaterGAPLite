@@ -1,36 +1,21 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-#
-# See https://github.com/r-lib/actions/tree/master/examples#readme for
-# additional example workflows available for the R community.
 
-name: R
-
+name: testing_r
 on: [push]
     
-permissions:
-  contents: read
-
 jobs:
   build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        r-version: ['3.6.3', '4.3.1']
-
+    runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up R ${{ matrix.r-version }}
-        uses: r-lib/actions/setup-r@f57f1301a053485946083d7a45022b278929a78a
-        with:
-          r-version: ${{ matrix.r-version }}
-      - name: Install dependencies
-        run: |
-          install.packages(c("remotes", "rcmdcheck", "Rcpp", "ggplot2", "raster", "methods", "utils, "stats", "dplyr", "rlang", "magrittr", "tibble", "data.table", "optimx", "minqa", "testthat"))
-          remotes::install_deps(dependencies = TRUE)
-        shell: Rscript {0}
-      - name: Check
-        run: rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")
-        shell: Rscript {0}
+        - uses: actions/checkout@v4
+        - uses: r-lib/actions/setup-r@v2
+          with:
+            r-version: '4.3.1'
+        - uses: r-lib/actions/setup-r-dependencies@v2
+          with:
+            extra-packages: any::rcmdcheck
+            needs: check
+        - uses: r-lib/actions/check-r-package@v2
+          with:
+            args: 'c("--no-manual")'
+            error-on: '"error"'
+            check-dir: '"check"'
