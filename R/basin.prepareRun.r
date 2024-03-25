@@ -70,7 +70,8 @@ basin.prepare_run <- function(basin_object,
 
   basin_list[["runoffFracBuiltUp"]] <- basin_object@runoffFracBuiltUp
   basin_list[["G_GAMMA_HBV"]] <- basin_object@G_GAMMA_HBV
-
+  
+  basin_list[["lower_threshold_soil"]] <- basin_object@lower_threshold_soil
   basin_list[["G_Smax"]] <- basin_object@G_Smax
   basin_list[["G_ARID_HUMID"]] <- basin_object@G_ARID_HUMID
   basin_list[["G_TEXTURE"]] <- basin_object@G_TEXTURE
@@ -115,6 +116,9 @@ basin.prepare_run <- function(basin_object,
   basin_list[["Info_SW"]] <- wateruse_object@Info_SW
   basin_list[["Info_TF"]] <- wateruse_object@Info_TF
   basin_list[["G_NUs_7100"]] <- wateruse_object@G_NUs_7100
+  
+  basin_list[["snow_threshold"]] <- -5.
+  basin_list[["max_degree_days"]] <- 10
 
   return(basin_list)
 }

@@ -19,17 +19,18 @@ using namespace std;
 //' @param gloWetland_inflow inflow to global wetland: inflow + (PrecWater * GAREA[cell] * G_GLOWET[cell]/100) [mm*km²]
 //' @return total outflow form global wetland: outflow + overflow [mm*km²]
 //' @export
+// [[Rcpp::export]]
 double routingGlobalWetlands(int cell, double PrecWater, double PETWater, double inflow,
-		NumericVector gloWetland_overflow, NumericVector gloWetland_outflow, NumericVector S_gloWetlandStorage, 
+		NumericVector gloWetland_overflow, NumericVector gloWetland_outflow, NumericVector S_gloWetlandStorage,
 		NumericVector gloWetland_evapo, NumericVector gloWetland_inflow){
-	
+
 	double maxStorage;
 	double totalInflow;
 	double outflow;
 	double overflow;
 	double evaporation;
 	double storagePrevRouting;
-	
+
 	double gloWetlEvapoReductionFactor; // open water PET reduction (2.1f)
 
 	maxStorage = (G_GLOWET[cell] / 100.) * GAREA[cell] * (wetlandDepth * 1000 * 1000); // maximum storage capacity [mm km²]
@@ -44,7 +45,7 @@ double routingGlobalWetlands(int cell, double PrecWater, double PETWater, double
 
 	evaporation = PETWater * gloWetlEvapoReductionFactor * GAREA[cell] * (G_GLOWET[cell]/100.); // calculate evaporation from global wetlands [mm*km²]
 	S_gloWetlandStorage[cell] -= evaporation;// substract global wetland evapo [mm km²]
-						 
+
 	// if G_gloWetlStorage is below '0' storage and surfStorageEvapo has to be adjusted
 	if (S_gloWetlandStorage[cell] < 0.){
 		evaporation += S_gloWetlandStorage[cell]; // [mm km²]
@@ -67,15 +68,15 @@ double routingGlobalWetlands(int cell, double PrecWater, double PETWater, double
 	} else {
 		overflow = 0;
 	}
-	
-	
+
+
 	gloWetland_overflow[cell] = overflow;;
 	gloWetland_outflow[cell] = outflow;
 	gloWetland_evapo[cell] = evaporation;;
 	gloWetland_inflow[cell] = totalInflow;
-	
+
 	outflow = outflow + overflow;
-	
+
 	return(outflow);
 
-} 
+}

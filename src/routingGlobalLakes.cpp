@@ -16,20 +16,21 @@
 //' @param gloLake_inflow inflow to global lake: inflow + PrecWater * G_LAKAREA[cell] [mm*km²]
 //' @return total outflow form global lake: outflow + overflow [mm*km²]
 //' @export
+// [[Rcpp::export]]
 double routingGlobalLakes(int cell, double PrecWater, double PETWater, double inflow,
-			NumericVector gloLake_overflow, NumericVector gloLake_outflow , NumericVector S_gloLakeStorage, 
+			NumericVector gloLake_overflow, NumericVector gloLake_outflow , NumericVector S_gloLakeStorage,
 			NumericVector gloLake_evapo, NumericVector gloLake_inflow) {
-	
+
 	double maxStorage;
 	double totalInflow;
 	double outflow;
 	double overflow;
 	double evaporation;
 	double storagePrevRouting;
-	
+
 	double gloLakeEvapoReductionFactor;
-	
-	
+
+
 	// cell is a natural lake, or the reservoir type is unknown
 	// this test can not be realized using 'G_glo_lake'
 	// because in some cases 'G_glo_lake' is equal to zero
@@ -37,7 +38,7 @@ double routingGlobalLakes(int cell, double PrecWater, double PETWater, double in
 	// because the area of the whole lake is assigned to that cell
 	// (which might even be much greater than one cell)
 
-	
+
 	maxStorage = G_LAKAREA[cell] * (lakeDepth * 1000 * 1000); //// maximum storage capacity [mm km²]
 	totalInflow = inflow + PrecWater * G_LAKAREA[cell]; //// calculate inflow only [mm km²]
 
@@ -50,7 +51,7 @@ double routingGlobalLakes(int cell, double PrecWater, double PETWater, double in
 		gloLakeEvapoReductionFactor = 1. - pow(fabs(S_gloLakeStorage[cell] - maxStorage)
 								/ maxStorage, evapoReductionExp);
 	}
-	
+
 	evaporation = (PETWater * gloLakeEvapoReductionFactor) * G_LAKAREA[cell]; // calculate evaporation from global lakes [mm km²]
 	S_gloLakeStorage[cell] -= evaporation; //substract global lake evapo [mm km²]
 
@@ -59,17 +60,17 @@ double routingGlobalLakes(int cell, double PrecWater, double PETWater, double in
 		evaporation += S_gloLakeStorage[cell];
 		S_gloLakeStorage[cell] = 0;
 	}
-	
+
 	//know lake storage is stored to apply routing algorithm and to define outflow as difference between storage before and after routing
 	storagePrevRouting = S_gloLakeStorage[cell];
-	
+
 	// calculate routing through G_gloLakeStorage
 	S_gloLakeStorage[cell] = ( storagePrevRouting * exp(-1./glo_storageFactor))
 				+ (totalInflow * glo_storageFactor * (1. - exp(-1./glo_storageFactor)));
-				
+
 	//G_gloLakeStorage[n] = ( G_gloLakeStoragePrevStep * exp(-1./(((double) timeStepsPerDay) * 1./glo_storageFactor)) )
 	//		+ (totalInflow * ((double) timeStepsPerDay) * 1./glo_storageFactor * (1. - exp(-1./(((double) timeStepsPerDay) * 1./glo_storageFactor))) );
-				
+
 	outflow = totalInflow + (storagePrevRouting - S_gloLakeStorage[cell]);
 
 
@@ -80,8 +81,8 @@ double routingGlobalLakes(int cell, double PrecWater, double PETWater, double in
 	} else {
 		overflow = 0;
 	}
-	
-	
+
+
 	gloLake_overflow[cell] = overflow;;
 	gloLake_outflow[cell] = outflow;
 	gloLake_evapo[cell] = evaporation;;

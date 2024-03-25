@@ -117,17 +117,17 @@ dailyEstimateLongwave <- function(n, DOY, dailyTempC, dailyShortWave) {
     .Call(`_WaterGAPLite_dailyEstimateLongwave`, n, DOY, dailyTempC, dailyShortWave)
 }
 
-#' @title Calculate shortwave radiation
+#' @title Calculate shortwave radiation (after Kaspar 2004)
 #' @description rcpp function to estimate Shortwave radiation when not given as measured input
-#' @param SimDates Datevector of Simulation period
-#' @param TempC Temperatur as NumericMatrix in degree
-#' @param Sunshine Sunshine duration as NumericMatrix  in hours
-#' @param GR information of row for cells
-#' @param cor_row information of correction of rows for continental grid
-#' @return ShortwaveDownMatrix Matrix with estimated shortwave radiation in W/m²
+#' @param dates_of_simulation Datevector of Simulation period
+#' @param temperature Temperatur as NumericMatrix in degree
+#' @param sunshine_duration Sunshine duration duration as NumericMatrix  in hours
+#' @param row_information_GR information of row for cells
+#' @param corrected_row_for_continent information of correction of rows for continental grid
+#' @return shortwave_downward_radiation Matrix with estimated shortwave radiation in W/m²
 #' @export
-dailyEstimateShortwave <- function(SimDates, TempC, Sunshine, GR, cor_row) {
-    .Call(`_WaterGAPLite_dailyEstimateShortwave`, SimDates, TempC, Sunshine, GR, cor_row)
+dailyEstimateShortwave <- function(dates_of_simulation, temperature, sunshine_duration, row_information_GR, corrected_row_for_continent) {
+    .Call(`_WaterGAPLite_dailyEstimateShortwave`, dates_of_simulation, temperature, sunshine_duration, row_information_GR, corrected_row_for_continent)
 }
 
 #' @title snow storage interpolation
@@ -144,6 +144,68 @@ dailyEstimateShortwave <- function(SimDates, TempC, Sunshine, GR, cor_row) {
 #' @export
 dailySnow <- function(day, daily_prec_to_soil, G_snow, G_snowWaterEquivalent, dailySnowMelt, dailySnowEvapo, thresh_elev, dailyEffPrec, dailySoilPET) {
     invisible(.Call(`_WaterGAPLite_dailySnow`, day, daily_prec_to_soil, G_snow, G_snowWaterEquivalent, dailySnowMelt, dailySnowEvapo, thresh_elev, dailyEffPrec, dailySoilPET))
+}
+
+#' @title soil storage implementation
+#' @description core of the modle where run-off generation processes are takes part and calibration parameter gamma is implemented
+#' @param dailyEffPrec effective precipitation to soil (throughfall + snow melt - fallen snow)
+#' @param immediate_runoff immediate run-off that was build over sealed area and does not go into soil storage
+#' @param dailySoilPET energy which is left for evapotranspration from soil
+#' @param dailyCanopyEvapo evaporation amount of interception (needed to ensure that PET is not > PETdaily,max)
+#' @param dailySnowEvapo sublimation amount (needed to ensure that PET is not > PETdaily,max)
+#' @param G_soilWaterContent water content of soil storage (<= Smax!)
+#' @param dailyAET evapotranspiration from soil storage
+#' @param daily_runoff created run-off in soil storage (is later on split into fast and slow component)
+#' @param soil_water_overflow overflow of soil storage which contributes directly to the fast run-off component later
+#' @export
+dailySoil <- function(dailyEffPrec, immediate_runoff, dailySoilPET, dailyCanopyEvapo, dailySnowEvapo, G_soilWaterContent, dailyAET, daily_runoff, soil_water_overflow) {
+    invisible(.Call(`_WaterGAPLite_dailySoil`, dailyEffPrec, immediate_runoff, dailySoilPET, dailyCanopyEvapo, dailySnowEvapo, G_soilWaterContent, dailyAET, daily_runoff, soil_water_overflow))
+}
+
+#' @title Declaration of Settings from R Module
+#' @description translates R Settings to global rcpp Settings
+#' @param Settings Settings defined as IntegerVector
+#' @export
+defSettings <- function(Settings) {
+    invisible(.Call(`_WaterGAPLite_defSettings`, Settings))
+}
+
+#' @title getLAIdaily
+#' @description Definition of interception storage size
+#' @param LAI_min minimal interception storage in mm from LAI_info
+#' @param LAI_max maximal interception storage in mm from LAI_info
+#' @param initDays needed days to start growing season in d from LAI_info
+#' @param Temp Temperature in °C (Matrix)
+#' @param Prec Precipitation in mm (Matrix)
+#' @param aridType arid or humid tyoe definition for cells, obtained from G_ARID_HUMID.UNF
+#' @param GLCT Landcover information
+#' @return Matrix with interception storage in mm (rows=days, cols=cells)
+#' @export
+getLAIdaily <- function(LAI_min, LAI_max, initDays, Temp, Prec, aridType, GLCT) {
+    .Call(`_WaterGAPLite_getLAIdaily`, LAI_min, LAI_max, initDays, Temp, Prec, aridType, GLCT)
+}
+
+#' @title initModel
+#' @description Sets passed List as global model input
+#' @param ListConst that is defined in R
+#' @export
+initModel <- function(ListConst) {
+    invisible(.Call(`_WaterGAPLite_initModel`, ListConst))
+}
+
+#' @title setting storages to starting value
+#' @description setting storages to starting value
+#' @param SimPeriod datevector to define length of storages
+#' @export
+setStorages <- function(SimPeriod) {
+    invisible(.Call(`_WaterGAPLite_setStorages`, SimPeriod))
+}
+
+#' @title Initializing of model
+#' @description Vectors and Matrices are initiliazed with the appropiate size for basin (all entries are 0)
+#' @export
+initializeModel <- function() {
+    invisible(.Call(`_WaterGAPLite_initializeModel`))
 }
 
 #' @title routing
@@ -175,6 +237,86 @@ CheckResType <- function() {
 #' @export
 setLakeWetlandToMaximum <- function(S_locLakeStorage, S_locWetlandStorage, S_gloLakeStorage, S_ResStorage, S_gloWetlandStorage) {
     invisible(.Call(`_WaterGAPLite_setLakeWetlandToMaximum`, S_locLakeStorage, S_locWetlandStorage, S_gloLakeStorage, S_ResStorage, S_gloWetlandStorage))
+}
+
+#' @title routingGlobalLakes
+#' @description function that defines roouting through global lakes
+#' @param cell cell that is simulated
+#' @param PrecWater Pecipitation above cell [mm]
+#' @param PETWater Potential Evaporation form water [mm]
+#' @param inflow routed inflow from network to global lake [mm*km²]
+#' @param gloLake_overflow overflow from global lake: overflow = (S_gloLakeStorage[cell] - maxStorage);
+#' @param gloLake_outflow outflow from global lake: outflow = totalInflow + (storagePrevRouting - S_gloLakeStorage[cell])*G_LAKAREA[cell]; [mm*km²]
+#' @param S_gloLakeStorage global lake storage [mm*km²]
+#' @param gloLake_evapo evaporation from global lake: evaporation = (PETWater * gloLakeEvapoReductionFactor); [mm*km²]
+#' @param gloLake_inflow inflow to global lake: inflow + PrecWater * G_LAKAREA[cell] [mm*km²]
+#' @return total outflow form global lake: outflow + overflow [mm*km²]
+#' @export
+routingGlobalLakes <- function(cell, PrecWater, PETWater, inflow, gloLake_overflow, gloLake_outflow, S_gloLakeStorage, gloLake_evapo, gloLake_inflow) {
+    .Call(`_WaterGAPLite_routingGlobalLakes`, cell, PrecWater, PETWater, inflow, gloLake_overflow, gloLake_outflow, S_gloLakeStorage, gloLake_evapo, gloLake_inflow)
+}
+
+#' @title routingGlobalWetlands
+#' @description function that defines roouting through global wetlands
+#' @param cell cell that is simulated
+#' @param PrecWater Pecipitation above cell [mm]
+#' @param PETWater Potential Evaporation form water [mm]
+#' @param inflow routed inflow from network to global wetland [mm*km²]
+#' @param gloWetland_overflow overflow from global wetland: overflow = (S_gloWetlandStorage[cell] - maxStorage) [mm*km²]
+#' @param gloWetland_outflow outflow form global wetland: outflow = totalInflow + storagePrevRouting - S_gloWetlandStorage[cell] [mm*km²]
+#' @param S_gloWetlandStorage global wetland storage [mm*km²]
+#' @param gloWetland_evapo from global wetland: evaporation = PETWater * gloWetlEvapoReductionFactor * GAREA[cell] * (G_GLOWET[cell]/100.)[mm*km²]
+#' @param gloWetland_inflow inflow to global wetland: inflow + (PrecWater * GAREA[cell] * G_GLOWET[cell]/100) [mm*km²]
+#' @return total outflow form global wetland: outflow + overflow [mm*km²]
+#' @export
+routingGlobalWetlands <- function(cell, PrecWater, PETWater, inflow, gloWetland_overflow, gloWetland_outflow, S_gloWetlandStorage, gloWetland_evapo, gloWetland_inflow) {
+    .Call(`_WaterGAPLite_routingGlobalWetlands`, cell, PrecWater, PETWater, inflow, gloWetland_overflow, gloWetland_outflow, S_gloWetlandStorage, gloWetland_evapo, gloWetland_inflow)
+}
+
+#' @title routingGlobalWetlands
+#' @description function that defines routing through local waterbodies
+#' @param Type 0 (local lake) or 1 (local wetland)
+#' @param cell cell that is simulated
+#' @param PrecWater Pecipitation above cell [mm]
+#' @param PETWater Potential Evaporation form water [mm]
+#' @param TempWater Mean Temperature above cell [mm]
+#' @param accum_days accumulated days below -10 degree[mm]
+#' @param Inflow inflow to local wb from cell=(GroundwaterRunoff(day, cell) + surfaceRunoff(day, cell))* GAREA[cell] * landfrac[cell] or (for the case of local wetlands) outflow form local lake in the case of local wetland and local lake are present [mm*km²]
+#' @param S_locLakeStorage local lake storage [mmm*km²]
+#' @param locLake_overflow overflow of local lake (locStorage[cell] - maxStorage) [mm*km²]
+#' @param locLake_outflow outflow of local lake (only via routing, overflow is extra) [mm*km²]
+#' @param locLake_evapo evaporation from local lake PETWater * locEvapoReductionFactor * (GAREA[cell] * locPerc[cell] / 100.) [mm*km²]
+#' @param locLake_inflow total inflow to local lake Inflow + PrecWater * (GAREA[cell] * locPerc[cell] / 100.); // mm km²
+#' @param S_locWetlandStorage local wetland storage [mm*km²]
+#' @param locWetland_overflow overflow of local wetland (locStorage[cell] - maxStorage) [mm*km²]
+#' @param locWetland_outflow outflow of local wetland (only via routing, overflow is extra) [mm*km²]
+#' @param locWetland_evapo evaporation from local wetland PETWater * locEvapoReductionFactor * (GAREA[cell] * locPerc[cell] / 100.) [mm*km²]
+#' @param locWetland_inflow inflow to local wetland Inflow + PrecWater * (GAREA[cell] * locPerc[cell] / 100.); // mm km²
+#' @return routed outflow from local waterbody [mm*km²]
+#' @export
+routingLocalWaterBodies <- function(Type, cell, PrecWater, PETWater, TempWater, accum_days, snow_storage_wetland, Inflow, S_locLakeStorage, locLake_overflow, locLake_outflow, locLake_evapo, locLake_inflow, S_locWetlandStorage, locWetland_overflow, locWetland_outflow, locWetland_evapo, locWetland_inflow) {
+    .Call(`_WaterGAPLite_routingLocalWaterBodies`, Type, cell, PrecWater, PETWater, TempWater, accum_days, snow_storage_wetland, Inflow, S_locLakeStorage, locLake_overflow, locLake_outflow, locLake_evapo, locLake_inflow, S_locWetlandStorage, locWetland_overflow, locWetland_outflow, locWetland_evapo, locWetland_inflow)
+}
+
+#' @title routingResHanasaki
+#' @description function that defines routing through reservoir (after Hanasaki)
+#' @param day of simulation period (0 = 1st day of simulation period)
+#' @param cell cell that is simulated
+#' @param SimDate Date of day which is simulated
+#' @param PETWater Potential Evaporation from water [mm]
+#' @param PrecWater Pecipitation above cell [mm]
+#' @param inflow inflow to reservoir from network [mm*km²]
+#' @param Res_outflow  outflow from reservoir (excluding overflow) [mm*km²]
+#' @param Res_overflow overflow of reservoir [mm*km²]
+#' @param S_ResStorage storage of reservoir [mm*km²]
+#' @param Res_evapo evaporation from reservoir: evaporation = (PETWater * gloResEvapoReductionFactor)* G_RESAREA[cell] [mm*km²]
+#' @param Res_inflow inflow to reservoir: inflow + ( PrecWater * G_RESAREA[cell]);//[mm km²]
+#' @param dailyUse information of water that needs to be abstracted from surface water (second row of NumericMatrix)
+#' @param MeanDemand output of WaterUseCalcMeanDemandDaily(year, GapYearType)
+#' @return total outflow form reservoir: outflow + overflow [mm*km²]
+#' @export
+routingResHanasaki <- function(day, cell, SimDate, PETWater, PrecWater, inflow, Res_outflow, Res_overflow, S_ResStorage, Res_evapo, Res_inflow, dailyUse, MeanDemand) {
+    .Call(`_WaterGAPLite_routingResHanasaki`, day, cell, SimDate, PETWater, PrecWater, inflow, Res_outflow, Res_overflow, S_ResStorage, Res_evapo, Res_inflow, dailyUse, MeanDemand)
 }
 
 #' @title routingRiver
@@ -214,7 +356,8 @@ getRiverVelocity <- function(Type, cell, inflow) {
 #'   \item 5th entry: reservoir algorithm     -> 0 (Hanasaki), 1 (global lake)
 #'   \item 6th entry: splitting factor        -> 0 (original version), 1 (set as parameter) - only used for development purposes
 #'   \item 7th entry: long wave radiation     -> 0 (reading), 1 (calculating)
-#'   \item 8th entry: warm up period          -> 0 (no system values), 1 (system values are read), 2 (system values are written), 3 (system values are read and written) }
+#'   \item 8th entry: warm up period          -> 0 (no system values), 1 (system values are read), 2 (system values are written), 3 (system values are read and written) 
+#'   \item 9th entry: snow in wetland           -> 0 (off), 1 (on) }
 #' @param nYears number of years defined as warm-up (first year is then simulated n times, before starting with the actual simulation)
 #' @export
 runModel <- function(SimPeriod, ListConst, Settings, nYears) {
