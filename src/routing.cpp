@@ -282,7 +282,8 @@ List routing(
 				{
 					double riverbed_width = estimate_bottom_width(bankfull_flow_in_cell);
 					double bankfullflow_width = estimate_bankfullflow_width(bankfull_flow_in_cell);
-					double estimated_surface = (riverbed_width + bankfullflow_width) / 2.;
+					double estimated_surface = 1/1000 * (riverbed_width + bankfullflow_width) / 2. * G_riverLength[cell];
+
 					S_river[cell] = std::max(S_river[cell] - PETWater * estimated_surface, 0.0);
 				}
 
