@@ -27,6 +27,7 @@ using namespace std;
 //' @param locWetland_inflow inflow to local wetland Inflow + PrecWater * (GAREA[cell] * locPerc[cell] / 100.); // mm km²
 //' @return routed outflow from local waterbody [mm*km²]
 //' @export
+// [[Rcpp::export]]
 double routingLocalWaterBodies(bool Type, int cell, double PrecWater,  double PETWater, double TempWater, IntegerVector accum_days, NumericVector snow_storage_wetland, double Inflow,
 								NumericVector S_locLakeStorage, NumericVector locLake_overflow, NumericVector locLake_outflow, NumericVector locLake_evapo, NumericVector locLake_inflow,
 								NumericVector S_locWetlandStorage, NumericVector locWetland_overflow, NumericVector locWetland_outflow, NumericVector locWetland_evapo, NumericVector locWetland_inflow) {
@@ -37,7 +38,7 @@ double routingLocalWaterBodies(bool Type, int cell, double PrecWater,  double PE
 	double maxStorage;
 	double locEvapoReductionFactor; // open water PET reduction (2.1f)
 	double surfStorageEvapo = 0.; // added for cell AET calculation (WG3.1)
-	
+
 	//double snow_threshold = -5;
 	//double max_degree_days = 10;
 	double snowmelt;
@@ -77,7 +78,7 @@ double routingLocalWaterBodies(bool Type, int cell, double PrecWater,  double PE
 		locOutflow = locWetland_outflow;
 		locEvapo = locWetland_evapo;
 		locInflow = locWetland_inflow;
-		
+
 		if (snowInWetland == 1) {
 
 			// snow module for wetlands
@@ -103,7 +104,7 @@ double routingLocalWaterBodies(bool Type, int cell, double PrecWater,  double PE
 				snowmelt = min(4.0 * abs(TempWater - snowMeltTemp), snow_storage_wetland[cell]);
 				snow_storage_wetland[cell] -= snowmelt;
 				PrecWater += snowmelt;
-			
+
 			}
 		}
 	}

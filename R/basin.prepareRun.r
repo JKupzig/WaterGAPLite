@@ -70,7 +70,8 @@ basin.prepare_run <- function(basin_object,
 
   basin_list[["runoffFracBuiltUp"]] <- basin_object@runoffFracBuiltUp
   basin_list[["G_GAMMA_HBV"]] <- basin_object@G_GAMMA_HBV
-
+  
+  basin_list[["lower_threshold_soil"]] <- basin_object@lower_threshold_soil
   basin_list[["G_Smax"]] <- basin_object@G_Smax
   basin_list[["G_ARID_HUMID"]] <- basin_object@G_ARID_HUMID
   basin_list[["G_TEXTURE"]] <- basin_object@G_TEXTURE

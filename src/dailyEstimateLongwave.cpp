@@ -14,8 +14,8 @@
 // [[Rcpp::export(rng = false)]]
 double dailyEstimateLongwave(int n, int DOY, double dailyTempC, double dailyShortWave){
 	// need also form initModel: NumericVector G_AridHumid, GR, cor_row
-	// after Kaspar 2004 
-	
+	// after Kaspar 2004
+
 	const double a_c_arid	= 1.35;	// long-wave radiation coefficients for clear skies
 	const double b_c_arid 	= -0.35;	// sum has to be 1.0
 	const double a_c_humid 	= 1.00;
@@ -27,12 +27,12 @@ double dailyEstimateLongwave(int n, int DOY, double dailyTempC, double dailyShor
 	const double pi2_365 = 2. * pi / 365.0;
 	const double stefan_boltz_const = 0.000000004903;	// MJ /(m2 * K4 * day)
 	const double cellsInDegree = 12;
-	
+
 	double a_c=a_c_arid; //to make sure that a_c and b_c have a valid when there is other entry then 1 or 2 in G_ARID_HIMUD.UNF
 	double b_c=b_c_arid;
 	double lat_heat;
-	
-	// pre-defined arid-humid areas 
+
+	// pre-defined arid-humid areas
 	switch (G_ARID_HUMID[n]) {
 	case 2: // arid area
 		a_c = a_c_arid;
@@ -42,13 +42,13 @@ double dailyEstimateLongwave(int n, int DOY, double dailyTempC, double dailyShor
 		a_c = a_c_humid;
 		b_c = b_c_humid;
 	}
-	
-	int row =GR[n];
-	
+
+	int row = GR[n];
+
 	// getting necessarily climatlogical information (Temp and Shortwave)
 	double net_emissivity = -0.02 + 0.261 * exp(-0.000777 * dailyTempC * dailyTempC); // net emissivity between the atmosphere and the ground
 	double temp_K = dailyTempC + 273.2;	// [K]
-	
+
 	// latent heat of evaporation
 	if (dailyTempC > 0) { // latent heat of vaporization of water
 		lat_heat = 2.501 - 0.002361 * dailyTempC;	// [MJ/kg]
@@ -69,10 +69,10 @@ double dailyEstimateLongwave(int n, int DOY, double dailyTempC, double dailyShor
 	// extraterrestrial radiation [mm/day]
 	double ext_rad = ( 15.392 * dist_es * (omega_s * sin(theta) * sin(declination_angle) +
 			  cos(theta) * cos(declination_angle) * sin(omega_s)) ); //Anhang A.2 Dis Kaspar
-		
+
 	double solar_rad = conv_Wm2_to_mmd * dailyShortWave; //[mm/day]
 	double solar_rad_0 = (a_s + b_s) * ext_rad;	// mm/day =S0
-	
+
 	// adjustment for cloud cover
 	double solar_fraction;
 	if (ext_rad <= 0.)
@@ -81,9 +81,8 @@ double dailyEstimateLongwave(int n, int DOY, double dailyTempC, double dailyShor
 		solar_fraction = min(solar_rad / solar_rad_0, 1.); // this case can happen if solar_rad is derived from measured data and solar_rad_0 is calculated
 
 	double ff = a_c * solar_fraction + b_c;
-	
+
 	double net_long_wave_rad = ( -ff * net_emissivity * stefan_boltz_const * pow(temp_K,4.) ) / lat_heat; // [mm/day]
-	
 	return(net_long_wave_rad);
 
 }

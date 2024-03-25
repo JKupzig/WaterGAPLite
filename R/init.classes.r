@@ -80,6 +80,7 @@ init.classes <- function() {
              degreeDayFactor = "numeric",
              snowFreezeTemp = "numeric",
              snowMeltTemp = "numeric",
+             lower_threshold_soil = "numeric",
 
              pcrit = "numeric",
              lakeDepth = "numeric",
@@ -138,3 +139,5 @@ init.classes <- function() {
            )
 
 }
+
+init.classes()
