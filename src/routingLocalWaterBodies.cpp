@@ -14,6 +14,7 @@ using namespace std;
 //' @param PETWater Potential Evaporation form water [mm]
 //' @param TempWater Mean Temperature above cell [mm]
 //' @param accum_days accumulated days below -10 degree[mm]
+//' @param snow_storage_wetland snow storage on wetlands [mm]
 //' @param Inflow inflow to local wb from cell=(GroundwaterRunoff(day, cell) + surfaceRunoff(day, cell))* GAREA[cell] * landfrac[cell] or (for the case of local wetlands) outflow form local lake in the case of local wetland and local lake are present [mm*km²]
 //' @param S_locLakeStorage local lake storage [mmm*km²]
 //' @param locLake_overflow overflow of local lake (locStorage[cell] - maxStorage) [mm*km²]
@@ -28,9 +29,26 @@ using namespace std;
 //' @return routed outflow from local waterbody [mm*km²]
 //' @export
 // [[Rcpp::export]]
-double routingLocalWaterBodies(bool Type, int cell, double PrecWater,  double PETWater, double TempWater, IntegerVector accum_days, NumericVector snow_storage_wetland, double Inflow,
-								NumericVector S_locLakeStorage, NumericVector locLake_overflow, NumericVector locLake_outflow, NumericVector locLake_evapo, NumericVector locLake_inflow,
-								NumericVector S_locWetlandStorage, NumericVector locWetland_overflow, NumericVector locWetland_outflow, NumericVector locWetland_evapo, NumericVector locWetland_inflow) {
+double routingLocalWaterBodies(
+	bool Type,
+	int cell,
+	double PrecWater,
+	double PETWater,
+	double TempWater,
+	IntegerVector accum_days,
+	NumericVector snow_storage_wetland,
+	double Inflow,
+	NumericVector S_locLakeStorage,
+	NumericVector locLake_overflow,
+	NumericVector locLake_outflow,
+	NumericVector locLake_evapo,
+	NumericVector locLake_inflow,
+	NumericVector S_locWetlandStorage,
+	NumericVector locWetland_overflow,
+	NumericVector locWetland_outflow,
+	NumericVector locWetland_evapo,
+	NumericVector locWetland_inflow)
+	{
 
 
 	double totalInflow;

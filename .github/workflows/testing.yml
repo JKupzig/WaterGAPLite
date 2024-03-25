@@ -18,4 +18,4 @@ jobs:
           with:
             args: 'c("--no-manual")'
             error-on: '"error"'
-            check-dir: '"tests/testthat"'
+            upload-snapshots: true
