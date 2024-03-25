@@ -145,16 +145,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // dailyEstimateShortwave
-NumericMatrix dailyEstimateShortwave(DateVector SimDates, NumericMatrix TempC, NumericMatrix Sunshine, IntegerVector GR, int cor_row);
-RcppExport SEXP _WaterGAPLite_dailyEstimateShortwave(SEXP SimDatesSEXP, SEXP TempCSEXP, SEXP SunshineSEXP, SEXP GRSEXP, SEXP cor_rowSEXP) {
+NumericMatrix dailyEstimateShortwave(DateVector dates_of_simulation, NumericMatrix temperature, NumericMatrix sunshine_duration, IntegerVector row_information_GR, int corrected_row_for_continent);
+RcppExport SEXP _WaterGAPLite_dailyEstimateShortwave(SEXP dates_of_simulationSEXP, SEXP temperatureSEXP, SEXP sunshine_durationSEXP, SEXP row_information_GRSEXP, SEXP corrected_row_for_continentSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< DateVector >::type SimDates(SimDatesSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type TempC(TempCSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type Sunshine(SunshineSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type GR(GRSEXP);
-    Rcpp::traits::input_parameter< int >::type cor_row(cor_rowSEXP);
-    rcpp_result_gen = Rcpp::wrap(dailyEstimateShortwave(SimDates, TempC, Sunshine, GR, cor_row));
+    Rcpp::traits::input_parameter< DateVector >::type dates_of_simulation(dates_of_simulationSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type temperature(temperatureSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type sunshine_duration(sunshine_durationSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type row_information_GR(row_information_GRSEXP);
+    Rcpp::traits::input_parameter< int >::type corrected_row_for_continent(corrected_row_for_continentSEXP);
+    rcpp_result_gen = Rcpp::wrap(dailyEstimateShortwave(dates_of_simulation, temperature, sunshine_duration, row_information_GR, corrected_row_for_continent));
     return rcpp_result_gen;
 END_RCPP
 }

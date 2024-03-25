@@ -117,17 +117,17 @@ dailyEstimateLongwave <- function(n, DOY, dailyTempC, dailyShortWave) {
     .Call(`_WaterGAPLite_dailyEstimateLongwave`, n, DOY, dailyTempC, dailyShortWave)
 }
 
-#' @title Calculate shortwave radiation
+#' @title Calculate shortwave radiation (after Kaspar 2004)
 #' @description rcpp function to estimate Shortwave radiation when not given as measured input
-#' @param SimDates Datevector of Simulation period
-#' @param TempC Temperatur as NumericMatrix in degree
-#' @param Sunshine Sunshine duration as NumericMatrix  in hours
-#' @param GR information of row for cells
-#' @param cor_row information of correction of rows for continental grid
-#' @return ShortwaveDownMatrix Matrix with estimated shortwave radiation in W/m²
+#' @param dates_of_simulation Datevector of Simulation period
+#' @param temperature Temperatur as NumericMatrix in degree
+#' @param sunshine_duration Sunshine duration duration as NumericMatrix  in hours
+#' @param row_information_GR information of row for cells
+#' @param corrected_row_for_continent information of correction of rows for continental grid
+#' @return shortwave_downward_radiation Matrix with estimated shortwave radiation in W/m²
 #' @export
-dailyEstimateShortwave <- function(SimDates, TempC, Sunshine, GR, cor_row) {
-    .Call(`_WaterGAPLite_dailyEstimateShortwave`, SimDates, TempC, Sunshine, GR, cor_row)
+dailyEstimateShortwave <- function(dates_of_simulation, temperature, sunshine_duration, row_information_GR, corrected_row_for_continent) {
+    .Call(`_WaterGAPLite_dailyEstimateShortwave`, dates_of_simulation, temperature, sunshine_duration, row_information_GR, corrected_row_for_continent)
 }
 
 #' @title snow storage interpolation
