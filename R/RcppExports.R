@@ -281,6 +281,7 @@ routingGlobalWetlands <- function(cell, PrecWater, PETWater, inflow, gloWetland_
 #' @param PETWater Potential Evaporation form water [mm]
 #' @param TempWater Mean Temperature above cell [mm]
 #' @param accum_days accumulated days below -10 degree[mm]
+#' @param snow_storage_wetland snow storage on wetlands [mm]
 #' @param Inflow inflow to local wb from cell=(GroundwaterRunoff(day, cell) + surfaceRunoff(day, cell))* GAREA[cell] * landfrac[cell] or (for the case of local wetlands) outflow form local lake in the case of local wetland and local lake are present [mm*km²]
 #' @param S_locLakeStorage local lake storage [mmm*km²]
 #' @param locLake_overflow overflow of local lake (locStorage[cell] - maxStorage) [mm*km²]
