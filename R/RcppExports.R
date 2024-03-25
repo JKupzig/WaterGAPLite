@@ -193,6 +193,21 @@ initModel <- function(ListConst) {
     invisible(.Call(`_WaterGAPLite_initModel`, ListConst))
 }
 
+#' @title setting storages to starting value
+#' @description setting storages to starting value
+#' @param SimPeriod datevector to define length of storages
+#' @export
+setStorages <- function(SimPeriod) {
+    invisible(.Call(`_WaterGAPLite_setStorages`, SimPeriod))
+}
+
+#' @title Initializing of model
+#' @description Vectors and Matrices are initiliazed with the appropiate size for basin (all entries are 0)
+#' @export
+initializeModel <- function() {
+    invisible(.Call(`_WaterGAPLite_initializeModel`))
+}
+
 #' @title routing
 #' @description this function includes als routing modules
 #' @param SimPeriod Datevector of Simulationperiod

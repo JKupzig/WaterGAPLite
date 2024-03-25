@@ -230,6 +230,25 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// setStorages
+void setStorages(DateVector SimPeriod);
+RcppExport SEXP _WaterGAPLite_setStorages(SEXP SimPeriodSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< DateVector >::type SimPeriod(SimPeriodSEXP);
+    setStorages(SimPeriod);
+    return R_NilValue;
+END_RCPP
+}
+// initializeModel
+void initializeModel();
+RcppExport SEXP _WaterGAPLite_initializeModel() {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    initializeModel();
+    return R_NilValue;
+END_RCPP
+}
 // routing
 List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix GroundwaterRunoff, NumericMatrix PETw, NumericMatrix Prec);
 RcppExport SEXP _WaterGAPLite_routing(SEXP SimPeriodSEXP, SEXP surfaceRunoffSEXP, SEXP GroundwaterRunoffSEXP, SEXP PETwSEXP, SEXP PrecSEXP) {
