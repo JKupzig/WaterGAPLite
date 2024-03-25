@@ -9,6 +9,7 @@
 #' @param longwave_radiation defined if long wave radiation is calculated or read (reading, calculation)
 #' @param initial_states defines how initial states are treated (not known, reading, writing, reading and writing)
 #' @param snow_in_wetlands new model option, snow in wetland/freezing of wetlands can now be considered (on, off)
+#' @param evaporation_from_river new model option, evaporation form river can now be considered (on, off)
 #' @return settings vector to pass to run model
 #' @export
 init.settings <- function(water_use = "off",

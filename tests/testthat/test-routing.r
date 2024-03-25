@@ -2,7 +2,7 @@
 
 testthat::test_that("daily soil routine",
 {
-  model <- readRDS("./tests/testthat/example_basin.rds") # ./tests/testthat/example_basin.rds
+  model <- readRDS("example_basin.rds") # ./tests/testthat/example_basin.rds
   initModel(model)
   Settings <- init.settings()
   defSettings(Settings);
