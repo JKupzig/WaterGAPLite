@@ -2,23 +2,29 @@
 % Please edit documentation in R/RcppExports.R
 \name{dailyEstimateShortwave}
 \alias{dailyEstimateShortwave}
-\title{Calculate shortwave radiation}
+\title{Calculate shortwave radiation (after Kaspar 2004)}
 \usage{
-dailyEstimateShortwave(SimDates, TempC, Sunshine, GR, cor_row)
+dailyEstimateShortwave(
+  dates_of_simulation,
+  temperature,
+  sunshine_duration,
+  row_information_GR,
+  corrected_row_for_continent
+)
 }
 \arguments{
-\item{SimDates}{Datevector of Simulation period}
+\item{dates_of_simulation}{Datevector of Simulation period}
 
-\item{TempC}{Temperatur as NumericMatrix in degree}
+\item{temperature}{Temperatur as NumericMatrix in degree}
 
-\item{Sunshine}{Sunshine duration as NumericMatrix  in hours}
+\item{sunshine_duration}{Sunshine duration duration as NumericMatrix  in hours}
 
-\item{GR}{information of row for cells}
+\item{row_information_GR}{information of row for cells}
 
-\item{cor_row}{information of correction of rows for continental grid}
+\item{corrected_row_for_continent}{information of correction of rows for continental grid}
 }
 \value{
-ShortwaveDownMatrix Matrix with estimated shortwave radiation in W/m²
+shortwave_downward_radiation Matrix with estimated shortwave radiation in W/m²
 }
 \description{
 rcpp function to estimate Shortwave radiation when not given as measured input

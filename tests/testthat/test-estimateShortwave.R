@@ -1,4 +1,4 @@
-devtools::load_all()
+#devtools::load_all()
 
 testthat::test_that("estimate shortwave simple",
 {

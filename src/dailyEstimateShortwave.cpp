@@ -13,7 +13,6 @@ using namespace Rcpp;
 //' @return shortwave_downward_radiation Matrix with estimated shortwave radiation in W/m²
 //' @export
 // [[Rcpp::export(rng = false)]]
-
 NumericMatrix dailyEstimateShortwave(
 	DateVector dates_of_simulation,
 	NumericMatrix temperature,
