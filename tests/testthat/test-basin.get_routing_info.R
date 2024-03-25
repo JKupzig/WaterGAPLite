@@ -8,7 +8,7 @@ test_that("get routing info (namibia)", {
                    corRow=629, 
                    corCol=1855,
                    ncol=1237, 
-                   DataDir="../data", 
+                   DataDir="../data", # ./tests/data
                    contName="af")
   
   basin_object <- new("Basin",
