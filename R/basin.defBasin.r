@@ -44,3 +44,4 @@ basin.def_basin <- function(basin_object) {
   basin_object@basinIndex <- basinIndex
 
   return(basin_object)
+}
