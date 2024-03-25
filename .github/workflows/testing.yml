@@ -1,7 +1,7 @@
 
 name: testing_r
 on: [push]
-    
+
 jobs:
   build:
     runs-on: windows-latest
@@ -18,4 +18,4 @@ jobs:
           with:
             args: 'c("--no-manual")'
             error-on: '"error"'
-            check-dir: '"check"'
+            check-dir: '"tests/testthat"'
