@@ -116,9 +116,22 @@ double getRiverVelocity(int Type, int cell, double inflow)
 // [[Rcpp::export]]
 double estimate_bottom_width(double bankfull_flow_in_cell)
 {
-	double G_RiverWidth_bf = 2.71 * pow(bankfull_flow_in_cell, 0.557);
+	double G_RiverWidth_bf = estimate_bankfullflow_width(bankfull_flow_in_cell);
 	double G_RiverDepth_bf = 0.349 * pow(bankfull_flow_in_cell, 0.341);
 	double G_riverBottomWidth = G_RiverWidth_bf - 2.0 * 2.0 * G_RiverDepth_bf;
 
 	return(G_riverBottomWidth);
+}
+
+
+//' @title estimate_river_geometry (i.e.bankfull flow width)
+//' @description calculate rivers bankfull flow width asssuming a trapezoidal channes with 2/1 run to rise ratio
+//' @param bankfull_flow_in_cell bankfull flow in cell
+//' @return G_RiverWidth_bf in m
+//' @export
+// [[Rcpp::export]]
+double estimate_bankfullflow_width(double bankfull_flow_in_cell)
+{
+	double G_RiverWidth_bf = 2.71 * pow(bankfull_flow_in_cell, 0.557);
+	return(G_RiverWidth_bf);
 }

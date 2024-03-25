@@ -281,7 +281,9 @@ List routing(
 				if (evaporation_from_river == 1)
 				{
 					double riverbed_width = estimate_bottom_width(bankfull_flow_in_cell);
-					S_river[cell] = std::max(S_river[cell] - PETWater * riverbed_width, 0.0);
+					double bankfullflow_width = estimate_bankfullflow_width(bankfull_flow_in_cell);
+					double estimated_surface = (riverbed_width + bankfullflow_width) / 2.;
+					S_river[cell] = std::max(S_river[cell] - PETWater * estimated_surface, 0.0);
 				}
 
 

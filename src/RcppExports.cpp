@@ -415,6 +415,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// estimate_bankfullflow_width
+double estimate_bankfullflow_width(double bankfull_flow_in_cell);
+RcppExport SEXP _WaterGAPLite_estimate_bankfullflow_width(SEXP bankfull_flow_in_cellSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type bankfull_flow_in_cell(bankfull_flow_in_cellSEXP);
+    rcpp_result_gen = Rcpp::wrap(estimate_bankfullflow_width(bankfull_flow_in_cell));
+    return rcpp_result_gen;
+END_RCPP
+}
 // runModel
 List runModel(DateVector SimPeriod, List ListConst, NumericVector Settings, int nYears);
 RcppExport SEXP _WaterGAPLite_runModel(SEXP SimPeriodSEXP, SEXP ListConstSEXP, SEXP SettingsSEXP, SEXP nYearsSEXP) {

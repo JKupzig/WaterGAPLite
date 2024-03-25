@@ -45,6 +45,6 @@ testthat::test_that("routing with evaporation from river routine",
                             PETw, 
                             Prec)
   
-  expect_equal(sum(routing_result$River$Discharge), 18.3746)
+  expect_equal(sum(routing_result$River$Discharge), 17.2480756)
 })
                       

@@ -353,6 +353,15 @@ estimate_bottom_width <- function(bankfull_flow_in_cell) {
     .Call(`_WaterGAPLite_estimate_bottom_width`, bankfull_flow_in_cell)
 }
 
+#' @title estimate_river_geometry (i.e.bankfull flow width)
+#' @description calculate rivers bankfull flow width asssuming a trapezoidal channes with 2/1 run to rise ratio
+#' @param bankfull_flow_in_cell bankfull flow in cell
+#' @return G_RiverWidth_bf in m
+#' @export
+estimate_bankfullflow_width <- function(bankfull_flow_in_cell) {
+    .Call(`_WaterGAPLite_estimate_bankfullflow_width`, bankfull_flow_in_cell)
+}
+
 #' @title runModel
 #' @description run whole model including model initializing, warm-up period, water balance and routing and returns list with states and fluxes 
 #' @param SimPeriod Period to simulate (usually defines as model[["SimPeriod"]] where model is object returned from basin.prepareRun())

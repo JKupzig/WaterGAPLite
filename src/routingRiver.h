@@ -11,5 +11,6 @@ void setLakeWetlandToMaximum(NumericVector S_locLakeStorage, NumericVector S_loc
 							NumericVector S_gloWetlandStorage);
 
 double estimate_bottom_width(double bankfull_flow_in_cell);
+double estimate_bankfullflow_width(double bankfull_flow_in_cell);
 #endif
 
