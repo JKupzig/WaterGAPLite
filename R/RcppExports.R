@@ -344,6 +344,15 @@ getRiverVelocity <- function(Type, cell, inflow) {
     .Call(`_WaterGAPLite_getRiverVelocity`, Type, cell, inflow)
 }
 
+#' @title estimate_river_geometry (i.e. bottom width)
+#' @description calculate rivers bottom width asssuming a trapezoidal channes with 2/1 run to rise ratio
+#' @param cell cell that is simulated
+#' @return G_riverBottomWidth in m
+#' @export
+estimate_bottom_width <- function(bankfull_flow_in_cell) {
+    .Call(`_WaterGAPLite_estimate_bottom_width`, bankfull_flow_in_cell)
+}
+
 #' @title runModel
 #' @description run whole model including model initializing, warm-up period, water balance and routing and returns list with states and fluxes 
 #' @param SimPeriod Period to simulate (usually defines as model[["SimPeriod"]] where model is object returned from basin.prepareRun())

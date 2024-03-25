@@ -16,8 +16,13 @@ using namespace std;
 //' @return transportedVolume in [mm*km²/d]
 //' @export
 // [[Rcpp::export]]
-double routingRiver(int cell, double riverVelocity, double RiverInflow,
-					NumericVector G_riverOutflow, NumericVector S_river) {
+double routingRiver(
+	int cell,
+	double riverVelocity,
+	double RiverInflow,
+	NumericVector G_riverOutflow,
+	NumericVector S_river)
+	{
 
 	double K;
 	double G_riverStoragePrevStep;
@@ -44,29 +49,35 @@ double routingRiver(int cell, double riverVelocity, double RiverInflow,
 //' @return riverVelocity in km/day
 //' @export
 // [[Rcpp::export]]
-double getRiverVelocity(int Type, int cell, double inflow){
+double getRiverVelocity(int Type, int cell, double inflow)
+{
 
-	double riverVelocity = 0;
-	if (Type == 0) {
+	double riverVelocity = 0; // [km/day]
+	if (Type == 0)
+	{
 		riverVelocity = defaultRiverVelocity;
-	} else {
+	}
+	else
+	{
 		//uses: bankfull flow, river width, river slope
-		double riverDepth;
+		double riverDepth; //[m]
 		double wettedPerimeter;
 		double crossSectionalArea;
 		double hydraulicRad;
 		double incoming_discharge;
-
-		double G_RiverWidth_bf;
-		double G_RiverDepth_bf;
 		double G_riverBottomWidth;
+		double bankfull_flow_in_cell = G_BANKFULL[cell];
 
 		//inflow in mm*km²/day --> m³/sec
 		incoming_discharge = (inflow * 1000) / (60.*60.*24.); //[mm*km²/day]  --> [m3/sec]
 
 
 		// to avoid negative bottom width
-		if (G_BANKFULL[cell] < 0.05) {G_BANKFULL[cell] = 0.05; } //not sure why this is set...
+		if (bankfull_flow_in_cell < 0.05)
+		{
+			bankfull_flow_in_cell = 0.05;
+		}
+
 
 		// SE: quick fix to prevent further increase of river velocity at overbank discharges
 		// JK: actually it should sink again when exceeding bankfull flow..
@@ -74,25 +85,20 @@ double getRiverVelocity(int Type, int cell, double inflow){
 			incoming_discharge = G_BANKFULL[cell];
 
 		// calculate river depth
-		riverDepth = 0.349 * pow(incoming_discharge, 0.341); //[m]
-
-		// calculate river bottom width asssuming a trapezoidal channes with 2/1 run to rise ratio
-		G_RiverWidth_bf = 2.71 * pow(G_BANKFULL[cell], 0.557); //[m]
-		G_RiverDepth_bf = 0.349 * pow(G_BANKFULL[cell], 0.341); //[m]
-		G_riverBottomWidth = G_RiverWidth_bf - 2.0 * 2.0 * G_RiverDepth_bf;
+		riverDepth = 0.349 * pow(incoming_discharge, 0.341);
+		G_riverBottomWidth = estimate_bottom_width(bankfull_flow_in_cell);
 
 		// trapezoidal channel shape with channel sides 2:1 run to rise ratio
 		crossSectionalArea = riverDepth * (2.0 * riverDepth + G_riverBottomWidth); // trapezoidal river shape
 		wettedPerimeter = G_riverBottomWidth + 2.0 * riverDepth * sqrt(5.0); // sqrt(1+2^2)
 		hydraulicRad = crossSectionalArea / wettedPerimeter;
 
-
 		// calculate riverVelocity
 		riverVelocity = 1./G_riverRoughness[cell] * pow(hydraulicRad, (2./3.)) * pow(G_riverSlope[cell], 0.5); //[m/sec]
 		riverVelocity = riverVelocity * 86.4; //m/sec -->km/day (60*60*24)/1000
 
-		// return value in [km/day]; if value is below 1cm/day then set limit
-		if (riverVelocity < 0.00001){
+		if (riverVelocity < 0.00001)
+		{
 			riverVelocity = 0.00001;
 		}
 	}
@@ -100,3 +106,19 @@ double getRiverVelocity(int Type, int cell, double inflow){
 	return(riverVelocity);
 }
 
+
+
+//' @title estimate_river_geometry (i.e. bottom width)
+//' @description calculate rivers bottom width asssuming a trapezoidal channes with 2/1 run to rise ratio
+//' @param cell cell that is simulated
+//' @return G_riverBottomWidth in m
+//' @export
+// [[Rcpp::export]]
+double estimate_bottom_width(double bankfull_flow_in_cell)
+{
+	double G_RiverWidth_bf = 2.71 * pow(bankfull_flow_in_cell, 0.557);
+	double G_RiverDepth_bf = 0.349 * pow(bankfull_flow_in_cell, 0.341);
+	double G_riverBottomWidth = G_RiverWidth_bf - 2.0 * 2.0 * G_RiverDepth_bf;
+
+	return(G_riverBottomWidth);
+}

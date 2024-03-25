@@ -23,6 +23,7 @@ extern int splitType;
 extern int calcLong;
 extern int useSystemVals;
 extern int snowInWetland;
+extern int evaporation_from_river;
 
 extern void defSettings(NumericVector Settings);
 extern NumericMatrix getLAIdaily(NumericVector LAI_min, NumericVector LAI_max, NumericVector initDays,

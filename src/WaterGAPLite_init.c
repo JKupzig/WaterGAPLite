@@ -19,6 +19,7 @@ extern SEXP _WaterGAPLite_dailyEstimateShortwave(void *, void *, void *, void *,
 extern SEXP _WaterGAPLite_dailySnow(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern SEXP _WaterGAPLite_dailySoil(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern SEXP _WaterGAPLite_defSettings(void *);
+extern SEXP _WaterGAPLite_estimate_bottom_width(void *);
 extern SEXP _WaterGAPLite_findNumberInVector(void *, void *);
 extern SEXP _WaterGAPLite_findUniqueValues(void *);
 extern SEXP _WaterGAPLite_getLAIdaily(void *, void *, void *, void *, void *, void *, void *);
@@ -52,6 +53,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"_WaterGAPLite_dailySnow",                   (DL_FUNC) &_WaterGAPLite_dailySnow,                    9},
   {"_WaterGAPLite_dailySoil",                   (DL_FUNC) &_WaterGAPLite_dailySoil,                    9},
   {"_WaterGAPLite_defSettings",                 (DL_FUNC) &_WaterGAPLite_defSettings,                  1},
+  {"_WaterGAPLite_estimate_bottom_width",       (DL_FUNC) &_WaterGAPLite_estimate_bottom_width,        1},
   {"_WaterGAPLite_findNumberInVector",          (DL_FUNC) &_WaterGAPLite_findNumberInVector,           2},
   {"_WaterGAPLite_findUniqueValues",            (DL_FUNC) &_WaterGAPLite_findUniqueValues,             1},
   {"_WaterGAPLite_getLAIdaily",                 (DL_FUNC) &_WaterGAPLite_getLAIdaily,                  7},
