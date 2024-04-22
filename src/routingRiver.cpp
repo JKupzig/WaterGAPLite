@@ -24,22 +24,38 @@ double routingRiver(
 	NumericVector S_river)
 	{
 
-	double K;
+    double Q_out;
+	double Qout_previous_step;
 	double G_riverStoragePrevStep;
-	double transportedVolume;
 
-	K = G_riverLength[cell] / riverVelocity; // [km / (km/d)] = [d]
-	G_riverStoragePrevStep = S_river[cell]; //[mm * km²]
+	G_riverStoragePrevStep = S_river[cell]; // [mm * km²]
+	Qout_previous_step = G_riverOutflow[cell]; // [mm * km² / d]
 
-	S_river[cell] = ( G_riverStoragePrevStep * exp(-1./ K) )
-					+ (RiverInflow * K * (1. - exp(-1./K)));
+	Q_out = Qout_previous_step * exp(-1./riverVelocity) // formula after Maniak p. 309 eq. 6.17
+			+ (RiverInflow * (1 - exp(-1./riverVelocity)));
 
-	transportedVolume = RiverInflow + G_riverStoragePrevStep - S_river[cell]; //[mm * km²/d]
+	S_river[cell] = G_riverStoragePrevStep + RiverInflow - Q_out;
+	G_riverOutflow[cell] = Q_out; // immer 0?
 
-	G_riverOutflow[cell] = transportedVolume;
-
-	return(transportedVolume);
+	return(Q_out);
 }
+
+//' @title estimate_pet_from_river
+//' @description function that defines routing through river - note: uses original model code with bug in ELS equation
+//' @param bankfull_flow_in_cell
+//' @param PET in mm
+//' @return PET from river [mm*km²]
+//' @export
+// [[Rcpp::export]]
+double estimate_pet_from_river(double bankfull_flow_in_cell, double river_length, double PET)
+{
+	double riverbed_width = 1./1000. * estimate_bottom_width(bankfull_flow_in_cell); //km
+	double bankfullflow_width = 1./1000. * estimate_bankfullflow_width(bankfull_flow_in_cell); //km
+	double estimated_surface = (riverbed_width + bankfullflow_width) / 2. * river_length; // km²
+	double pet_river = (PET * estimated_surface); // mm*km²
+	return(pet_river);
+}
+
 
 //' @title getRiverVelocity
 //' @description function that defines river velocity for routing (variable or constant)

@@ -62,6 +62,7 @@ List routing(
 	//states that will be stored
 	NumericMatrix discharge_in_river(n_days, array_size);
 	NumericMatrix inflow_from_upstream_to_write(n_days, array_size);
+	NumericMatrix pet_from_river(n_days, array_size);
 
 	//local Lakes
 	NumericMatrix overflow_local_lake(n_days, array_size); // overflow, when S > Smax
@@ -268,24 +269,28 @@ List routing(
 				calculated_river_velocity = getRiverVelocity(
 					flowVelocityType,
 					cell,
-					out_glowet);
+					out_glowet); // km/d
 
+				double calculated_duration = G_riverLength[cell] / calculated_river_velocity; // d
+
+				// get evaporation amount
+				double pet_river = 0.0f;
+				double minimum = 0.0f;
+				if (evaporation_from_river == 1)
+				{
+					pet_river = estimate_pet_from_river(bankfull_flow_in_cell, G_riverLength[cell], PETWater); // mm*km²
+				}
+
+				pet_from_river(day, cell) = pet_river;
+
+				double river_in = std::max(out_glowet - pet_river, minimum);
 				routed_outflow_from_cell = routingRiver(
 					cell,
-					calculated_river_velocity,
-					out_glowet,
+					calculated_duration,
+					river_in,
 					QA_river,
 					S_river);
 
-				// abstract evaporation from river
-				if (evaporation_from_river == 1)
-				{
-					double riverbed_width = estimate_bottom_width(bankfull_flow_in_cell);
-					double bankfullflow_width = estimate_bankfullflow_width(bankfull_flow_in_cell);
-					double estimated_surface = 1/1000 * (riverbed_width + bankfullflow_width) / 2. * G_riverLength[cell];
-
-					S_river[cell] = std::max(S_river[cell] - PETWater * estimated_surface, 0.0);
-				}
 
 
 				//adding everything to next cell till outlet
@@ -300,7 +305,7 @@ List routing(
 				if (outflowOrder[cell] < 0)
 				{ //end of basin is reached
 					discharge[day] = routed_outflow_from_cell / land_size; //mm
-					actual_river_velocity[day] = calculated_river_velocity / 86.4 ; // m/s
+					actual_river_velocity[day] = calculated_river_velocity / 86.4 ; // km/d -> m/s
 				}
 			} // cell loop
 
@@ -372,7 +377,8 @@ List routing(
 		Named("RiverAvail") = discharge_in_river,
 		Named("RiverInNetwork") = S_river,
 		Named("G_riverOutflow") = G_riverOutflow,
-		Named("StatVelocity") = actual_river_velocity);
+		Named("StatVelocity") = actual_river_velocity,
+		Named("PETRiver") = pet_from_river);
 
 	List result_local_lake = List::create(
 		Named("Overflow") = overflow_local_lake,

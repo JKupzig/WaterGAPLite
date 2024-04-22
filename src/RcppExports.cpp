@@ -391,6 +391,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// estimate_pet_from_river
+double estimate_pet_from_river(double bankfull_flow_in_cell, double river_length, double PET);
+RcppExport SEXP _WaterGAPLite_estimate_pet_from_river(SEXP bankfull_flow_in_cellSEXP, SEXP river_lengthSEXP, SEXP PETSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type bankfull_flow_in_cell(bankfull_flow_in_cellSEXP);
+    Rcpp::traits::input_parameter< double >::type river_length(river_lengthSEXP);
+    Rcpp::traits::input_parameter< double >::type PET(PETSEXP);
+    rcpp_result_gen = Rcpp::wrap(estimate_pet_from_river(bankfull_flow_in_cell, river_length, PET));
+    return rcpp_result_gen;
+END_RCPP
+}
 // getRiverVelocity
 double getRiverVelocity(int Type, int cell, double inflow);
 RcppExport SEXP _WaterGAPLite_getRiverVelocity(SEXP TypeSEXP, SEXP cellSEXP, SEXP inflowSEXP) {

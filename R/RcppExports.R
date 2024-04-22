@@ -333,6 +333,16 @@ routingRiver <- function(cell, riverVelocity, RiverInflow, G_riverOutflow, S_riv
     .Call(`_WaterGAPLite_routingRiver`, cell, riverVelocity, RiverInflow, G_riverOutflow, S_river)
 }
 
+#' @title estimate_pet_from_river
+#' @description function that defines routing through river - note: uses original model code with bug in ELS equation
+#' @param bankfull_flow_in_cell
+#' @param PET in mm
+#' @return PET from river [mm*km²]
+#' @export
+estimate_pet_from_river <- function(bankfull_flow_in_cell, river_length, PET) {
+    .Call(`_WaterGAPLite_estimate_pet_from_river`, bankfull_flow_in_cell, river_length, PET)
+}
+
 #' @title getRiverVelocity
 #' @description function that defines river velocity for routing (variable or constant)
 #' @param Type 0 (constant) or 1 (variable)
