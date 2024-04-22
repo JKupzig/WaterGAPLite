@@ -31,7 +31,6 @@ void dailySoil(const NumericVector dailyEffPrec,
 {
 
 	double soil_saturation;
-	double soil_saturation_with_prec;
 
 	for (int cell = 0; cell < array_size; cell++)
 	{
@@ -40,9 +39,9 @@ void dailySoil(const NumericVector dailyEffPrec,
 		dailyAET[cell] = 0;
 
 		soil_saturation = G_soilWaterContent[cell] / G_Smax[cell]; //[-]
-		soil_saturation_with_prec = (G_soilWaterContent[cell] + dailyEffPrec[cell]) / G_Smax[cell]; // [-]
 
-		if (soil_saturation_with_prec <= lower_threshold_soil)
+
+		if (soil_saturation <= lower_threshold_soil)
 		{
 			daily_runoff[cell] = 0;
 		} else {
