@@ -21,6 +21,8 @@ int splitType;
 int calcLong;
 int useSystemVals;
 int snowInWetland;
+int evaporation_from_river;
+int old_river_routing;
 
 //CONSTANT FILES
 
@@ -108,12 +110,20 @@ double defaultRiverVelocity; // = 86.4;	// [km/d] = 1 m/s
 double snow_threshold; // NEW (-5.)
 int max_degree_days; // NEW (10)
 
+
 //' @title Declaration of Settings from R Module
 //' @description translates R Settings to global rcpp Settings
 //' @param Settings Settings defined as IntegerVector
 //' @export
 // [[Rcpp::export]]
-void defSettings(NumericVector Settings){
+void defSettings(NumericVector Settings)
+{
+	int entries = Settings.length();
+	if (entries != 11)
+	{
+		stop("'Settings' must have 11 entries");
+	}
+
 	waterUseType = Settings[0];
 	WaterUseAllocationType = Settings[1];
 	flowVelocityType = Settings[2];
@@ -123,6 +133,8 @@ void defSettings(NumericVector Settings){
 	calcLong = Settings[6];
 	useSystemVals = Settings[7];
 	snowInWetland = Settings[8];
+	evaporation_from_river = Settings[9];
+	old_river_routing = Settings[10];
 }
 
 //' @title getLAIdaily
@@ -328,12 +340,11 @@ void initModel(List ListConst){
 
 	defaultRiverVelocity = as<double>(ListConst["defaultRiverVelocity"]);
 
-  snow_threshold = as<double>(ListConst["snow_threshold"]);
-  max_degree_days = as<int>(ListConst["max_degree_days"]);
+	snow_threshold = as<double>(ListConst["snow_threshold"]);
+	max_degree_days = as<int>(ListConst["max_degree_days"]);
 
 	dailyLaiAll = getLAIdaily(LAI_min, LAI_max, initDays,
 						   Temp, Prec, G_ARID_HUMID, GLCT);
-
 }
 
 

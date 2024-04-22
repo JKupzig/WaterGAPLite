@@ -121,9 +121,9 @@ void initializeModel(){
 	// ROUTING
 
 	//Creating working vectors
-	G_riverOutflow=NumericVector (array_size); // only for routing, needs ot be set to zero for every day
-	QA_river=NumericVector (array_size); //has always river outflow from previous time step
-	S_river=NumericVector (array_size); //has always river inflow from previous time step
+	G_riverOutflow=NumericVector (array_size, 0.0); // only for routing, needs ot be set to zero for every day
+	QA_river=NumericVector (array_size, 0.0); //has always river outflow from previous time step
+	S_river=NumericVector (array_size, 0.0); //has always river inflow from previous time step
 
 	locLake_overflow=NumericVector (array_size);
 	locLake_outflow=NumericVector (array_size);

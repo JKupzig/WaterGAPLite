@@ -1,4 +1,4 @@
-#devtools::load_all()
+# devtools::load_all()
 
 test_that("format pars table", {
   par_table <- init.setPars()

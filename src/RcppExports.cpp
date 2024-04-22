@@ -391,6 +391,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// routingRiverOld
+double routingRiverOld(int cell, double riverVelocity, double RiverInflow, NumericVector G_riverOutflow, NumericVector S_river);
+RcppExport SEXP _WaterGAPLite_routingRiverOld(SEXP cellSEXP, SEXP riverVelocitySEXP, SEXP RiverInflowSEXP, SEXP G_riverOutflowSEXP, SEXP S_riverSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type cell(cellSEXP);
+    Rcpp::traits::input_parameter< double >::type riverVelocity(riverVelocitySEXP);
+    Rcpp::traits::input_parameter< double >::type RiverInflow(RiverInflowSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type G_riverOutflow(G_riverOutflowSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type S_river(S_riverSEXP);
+    rcpp_result_gen = Rcpp::wrap(routingRiverOld(cell, riverVelocity, RiverInflow, G_riverOutflow, S_river));
+    return rcpp_result_gen;
+END_RCPP
+}
+// estimate_pet_from_river
+double estimate_pet_from_river(double bankfull_flow_in_cell, double river_length, double PET);
+RcppExport SEXP _WaterGAPLite_estimate_pet_from_river(SEXP bankfull_flow_in_cellSEXP, SEXP river_lengthSEXP, SEXP PETSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type bankfull_flow_in_cell(bankfull_flow_in_cellSEXP);
+    Rcpp::traits::input_parameter< double >::type river_length(river_lengthSEXP);
+    Rcpp::traits::input_parameter< double >::type PET(PETSEXP);
+    rcpp_result_gen = Rcpp::wrap(estimate_pet_from_river(bankfull_flow_in_cell, river_length, PET));
+    return rcpp_result_gen;
+END_RCPP
+}
 // getRiverVelocity
 double getRiverVelocity(int Type, int cell, double inflow);
 RcppExport SEXP _WaterGAPLite_getRiverVelocity(SEXP TypeSEXP, SEXP cellSEXP, SEXP inflowSEXP) {
@@ -401,6 +429,28 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type cell(cellSEXP);
     Rcpp::traits::input_parameter< double >::type inflow(inflowSEXP);
     rcpp_result_gen = Rcpp::wrap(getRiverVelocity(Type, cell, inflow));
+    return rcpp_result_gen;
+END_RCPP
+}
+// estimate_bottom_width
+double estimate_bottom_width(double bankfull_flow_in_cell);
+RcppExport SEXP _WaterGAPLite_estimate_bottom_width(SEXP bankfull_flow_in_cellSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type bankfull_flow_in_cell(bankfull_flow_in_cellSEXP);
+    rcpp_result_gen = Rcpp::wrap(estimate_bottom_width(bankfull_flow_in_cell));
+    return rcpp_result_gen;
+END_RCPP
+}
+// estimate_bankfullflow_width
+double estimate_bankfullflow_width(double bankfull_flow_in_cell);
+RcppExport SEXP _WaterGAPLite_estimate_bankfullflow_width(SEXP bankfull_flow_in_cellSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type bankfull_flow_in_cell(bankfull_flow_in_cellSEXP);
+    rcpp_result_gen = Rcpp::wrap(estimate_bankfullflow_width(bankfull_flow_in_cell));
     return rcpp_result_gen;
 END_RCPP
 }

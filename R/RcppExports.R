@@ -321,16 +321,39 @@ routingResHanasaki <- function(day, cell, SimDate, PETWater, PrecWater, inflow, 
 }
 
 #' @title routingRiver
+#' @description function that defines routing through river (updated)
+#' @param cell cell that is simulated
+#' @param riverVelocity river velocity in km/d
+#' @param RiverInflow inflow to river network [mm*km²/d]
+#' @param G_riverOutflow Q_out in [mm*km²/d]
+#' @param S_river river storage [mm*km²]
+#' @return Q_out in [mm*km²/d]
+#' @export
+routingRiver <- function(cell, riverVelocity, RiverInflow, G_riverOutflow, S_river) {
+    .Call(`_WaterGAPLite_routingRiver`, cell, riverVelocity, RiverInflow, G_riverOutflow, S_river)
+}
+
+#' @title routingRiverOld
 #' @description function that defines routing through river - note: uses original model code with bug in ELS equation
 #' @param cell cell that is simulated
 #' @param riverVelocity river velocity in km/d
 #' @param RiverInflow inflow to river network [mm*km²/d]
 #' @param G_riverOutflow transportedVolume in [mm*km²/d]
 #' @param S_river river storage [mm*km²]
-#' @return transportedVolume in [mm*km²/d]
+#' @return Q_out in [mm*km²/d]
 #' @export
-routingRiver <- function(cell, riverVelocity, RiverInflow, G_riverOutflow, S_river) {
-    .Call(`_WaterGAPLite_routingRiver`, cell, riverVelocity, RiverInflow, G_riverOutflow, S_river)
+routingRiverOld <- function(cell, riverVelocity, RiverInflow, G_riverOutflow, S_river) {
+    .Call(`_WaterGAPLite_routingRiverOld`, cell, riverVelocity, RiverInflow, G_riverOutflow, S_river)
+}
+
+#' @title estimate_pet_from_river
+#' @description function that defines routing through river - note: uses original model code with bug in ELS equation
+#' @param bankfull_flow_in_cell
+#' @param PET in mm
+#' @return PET from river [mm*km²]
+#' @export
+estimate_pet_from_river <- function(bankfull_flow_in_cell, river_length, PET) {
+    .Call(`_WaterGAPLite_estimate_pet_from_river`, bankfull_flow_in_cell, river_length, PET)
 }
 
 #' @title getRiverVelocity
@@ -342,6 +365,24 @@ routingRiver <- function(cell, riverVelocity, RiverInflow, G_riverOutflow, S_riv
 #' @export
 getRiverVelocity <- function(Type, cell, inflow) {
     .Call(`_WaterGAPLite_getRiverVelocity`, Type, cell, inflow)
+}
+
+#' @title estimate_river_geometry (i.e. bottom width)
+#' @description calculate rivers bottom width asssuming a trapezoidal channes with 2/1 run to rise ratio
+#' @param cell cell that is simulated
+#' @return G_riverBottomWidth in m
+#' @export
+estimate_bottom_width <- function(bankfull_flow_in_cell) {
+    .Call(`_WaterGAPLite_estimate_bottom_width`, bankfull_flow_in_cell)
+}
+
+#' @title estimate_river_geometry (i.e.bankfull flow width)
+#' @description calculate rivers bankfull flow width asssuming a trapezoidal channes with 2/1 run to rise ratio
+#' @param bankfull_flow_in_cell bankfull flow in cell
+#' @return G_RiverWidth_bf in m
+#' @export
+estimate_bankfullflow_width <- function(bankfull_flow_in_cell) {
+    .Call(`_WaterGAPLite_estimate_bankfullflow_width`, bankfull_flow_in_cell)
 }
 
 #' @title runModel
