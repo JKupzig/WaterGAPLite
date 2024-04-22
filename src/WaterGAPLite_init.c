@@ -36,6 +36,7 @@ extern SEXP _WaterGAPLite_routingGlobalWetlands(void *, void *, void *, void *, 
 extern SEXP _WaterGAPLite_routingLocalWaterBodies(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern SEXP _WaterGAPLite_routingResHanasaki(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern SEXP _WaterGAPLite_routingRiver(void *, void *, void *, void *, void *);
+extern SEXP _WaterGAPLite_routingRiverOld(void *, void *, void *, void *, void *);
 extern SEXP _WaterGAPLite_runModel(void *, void *, void *, void *);
 extern SEXP _WaterGAPLite_setLakeWetlandToMaximum(void *, void *, void *, void *, void *);
 extern SEXP _WaterGAPLite_setStorages(void *);
@@ -72,6 +73,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_WaterGAPLite_routingLocalWaterBodies",     (DL_FUNC) &_WaterGAPLite_routingLocalWaterBodies,     18},
     {"_WaterGAPLite_routingResHanasaki",          (DL_FUNC) &_WaterGAPLite_routingResHanasaki,          13},
     {"_WaterGAPLite_routingRiver",                (DL_FUNC) &_WaterGAPLite_routingRiver,                 5},
+    {"_WaterGAPLite_routingRiverOld",             (DL_FUNC) &_WaterGAPLite_routingRiverOld,              5},
     {"_WaterGAPLite_runModel",                    (DL_FUNC) &_WaterGAPLite_runModel,                     4},
     {"_WaterGAPLite_setLakeWetlandToMaximum",     (DL_FUNC) &_WaterGAPLite_setLakeWetlandToMaximum,      5},
     {"_WaterGAPLite_setStorages",                 (DL_FUNC) &_WaterGAPLite_setStorages,                  1},

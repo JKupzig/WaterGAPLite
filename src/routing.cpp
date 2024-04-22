@@ -282,14 +282,27 @@ List routing(
 				}
 
 				pet_from_river(day, cell) = pet_river;
-
 				double river_in = std::max(out_glowet - pet_river, minimum);
-				routed_outflow_from_cell = routingRiver(
-					cell,
-					calculated_duration,
-					river_in,
-					QA_river,
-					S_river);
+
+				if (old_river_routing == 1)
+				{
+					routed_outflow_from_cell = routingRiverOld(
+						cell,
+						calculated_duration,
+						river_in,
+						QA_river,
+						S_river);
+				}
+				else
+				{
+					routed_outflow_from_cell = routingRiver(
+						cell,
+						calculated_duration,
+						river_in,
+						QA_river,
+						S_river);
+				}
+
 
 
 

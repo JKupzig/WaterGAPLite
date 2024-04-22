@@ -7,13 +7,13 @@ using namespace Rcpp;
 using namespace std;
 
 //' @title routingRiver
-//' @description function that defines routing through river - note: uses original model code with bug in ELS equation
+//' @description function that defines routing through river (updated)
 //' @param cell cell that is simulated
 //' @param riverVelocity river velocity in km/d
 //' @param RiverInflow inflow to river network [mm*km²/d]
-//' @param G_riverOutflow transportedVolume in [mm*km²/d]
+//' @param G_riverOutflow Q_out in [mm*km²/d]
 //' @param S_river river storage [mm*km²]
-//' @return transportedVolume in [mm*km²/d]
+//' @return Q_out in [mm*km²/d]
 //' @export
 // [[Rcpp::export]]
 double routingRiver(
@@ -39,6 +39,40 @@ double routingRiver(
 
 	return(Q_out);
 }
+
+//' @title routingRiverOld
+//' @description function that defines routing through river - note: uses original model code with bug in ELS equation
+//' @param cell cell that is simulated
+//' @param riverVelocity river velocity in km/d
+//' @param RiverInflow inflow to river network [mm*km²/d]
+//' @param G_riverOutflow transportedVolume in [mm*km²/d]
+//' @param S_river river storage [mm*km²]
+//' @return Q_out in [mm*km²/d]
+//' @export
+// [[Rcpp::export]]
+double routingRiverOld(
+	int cell,
+	double riverVelocity,
+	double RiverInflow,
+	NumericVector G_riverOutflow,
+	NumericVector S_river)
+	{
+
+    double Q_out;
+	double G_riverStoragePrevStep;
+
+	G_riverStoragePrevStep = S_river[cell]; // [mm * km²]
+
+	S_river[cell] = ( G_riverStoragePrevStep * exp(-1./ riverVelocity) )
+					+ (RiverInflow * riverVelocity * (1. - exp(-1./riverVelocity)));
+
+	Q_out = RiverInflow + G_riverStoragePrevStep - S_river[cell]; //[mm * km²/d]
+
+	G_riverOutflow[cell] = Q_out;
+
+	return(Q_out);
+}
+
 
 //' @title estimate_pet_from_river
 //' @description function that defines routing through river - note: uses original model code with bug in ELS equation

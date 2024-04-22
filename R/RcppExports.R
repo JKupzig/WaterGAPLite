@@ -321,16 +321,29 @@ routingResHanasaki <- function(day, cell, SimDate, PETWater, PrecWater, inflow, 
 }
 
 #' @title routingRiver
+#' @description function that defines routing through river (updated)
+#' @param cell cell that is simulated
+#' @param riverVelocity river velocity in km/d
+#' @param RiverInflow inflow to river network [mm*km²/d]
+#' @param G_riverOutflow Q_out in [mm*km²/d]
+#' @param S_river river storage [mm*km²]
+#' @return Q_out in [mm*km²/d]
+#' @export
+routingRiver <- function(cell, riverVelocity, RiverInflow, G_riverOutflow, S_river) {
+    .Call(`_WaterGAPLite_routingRiver`, cell, riverVelocity, RiverInflow, G_riverOutflow, S_river)
+}
+
+#' @title routingRiverOld
 #' @description function that defines routing through river - note: uses original model code with bug in ELS equation
 #' @param cell cell that is simulated
 #' @param riverVelocity river velocity in km/d
 #' @param RiverInflow inflow to river network [mm*km²/d]
 #' @param G_riverOutflow transportedVolume in [mm*km²/d]
 #' @param S_river river storage [mm*km²]
-#' @return transportedVolume in [mm*km²/d]
+#' @return Q_out in [mm*km²/d]
 #' @export
-routingRiver <- function(cell, riverVelocity, RiverInflow, G_riverOutflow, S_river) {
-    .Call(`_WaterGAPLite_routingRiver`, cell, riverVelocity, RiverInflow, G_riverOutflow, S_river)
+routingRiverOld <- function(cell, riverVelocity, RiverInflow, G_riverOutflow, S_river) {
+    .Call(`_WaterGAPLite_routingRiverOld`, cell, riverVelocity, RiverInflow, G_riverOutflow, S_river)
 }
 
 #' @title estimate_pet_from_river

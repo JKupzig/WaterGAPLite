@@ -3,6 +3,8 @@
 
 double routingRiver(int cell, double riverVelocity, double RiverInflow,
 					NumericVector G_riverOutflow, NumericVector S_river);
+double routingRiverOld(int cell, double riverVelocity, double RiverInflow,
+					NumericVector G_riverOutflow, NumericVector S_river);
 
 double estimate_pet_from_river(double bankfull_flow_in_cell, double river_length, double PET);
 

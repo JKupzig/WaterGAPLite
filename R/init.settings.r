@@ -10,6 +10,8 @@
 #' @param initial_states defines how initial states are treated (not known, reading, writing, reading and writing)
 #' @param snow_in_wetlands new model option, snow in wetland/freezing of wetlands can now be considered (on, off)
 #' @param evaporation_from_river new model option, evaporation form river can now be considered (on, off)
+#' @param old_river_routing new model option, to check whether mofieid routing enhances simulation (on=old, off=new)
+
 #' @return settings vector to pass to run model
 #' @export
 init.settings <- function(water_use = "off",
@@ -21,7 +23,8 @@ init.settings <- function(water_use = "off",
                           longwave_radiation = "reading",
                           initial_states = "not known",
                           snow_in_wetlands = "off",
-                          evaporation_from_river = "off") {
+                          evaporation_from_river = "off",
+                          old_river_routing = "on") {
 
 
   water_use_setting <- switch(
@@ -120,6 +123,16 @@ init.settings <- function(water_use = "off",
     stop(sprintf("evaporation_from_river '%s' not valid choose between 'off', 'on'", evaporation_from_river))
   }
 
+    old_river_routing_setting <- switch(
+    old_river_routing,
+    "off" = 0, "on" = 1
+  )
+  if (is.null(old_river_routing_setting))
+  {
+    stop(sprintf("old_river_routing '%s' not valid choose between 'off', 'on'", old_river_routing))
+  }
+
+
   settings_vector <- c(water_use_setting,
                        water_use_allocation_setting,
                        flow_velocity_setting,
@@ -129,7 +142,8 @@ init.settings <- function(water_use = "off",
                        longwave_radiation_setting,
                        initial_states_setting,
                        snow_in_wetland_setting,
-                       evaporation_from_river_setting)
+                       evaporation_from_river_setting,
+                       old_river_routing_setting)
 
   return(settings_vector)
 

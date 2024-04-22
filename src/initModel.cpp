@@ -22,6 +22,7 @@ int calcLong;
 int useSystemVals;
 int snowInWetland;
 int evaporation_from_river;
+int old_river_routing;
 
 //CONSTANT FILES
 
@@ -118,9 +119,9 @@ int max_degree_days; // NEW (10)
 void defSettings(NumericVector Settings)
 {
 	int entries = Settings.length();
-	if (entries != 10)
+	if (entries != 11)
 	{
-		stop("'Settings' must have 10 entries");
+		stop("'Settings' must have 11 entries");
 	}
 
 	waterUseType = Settings[0];
@@ -133,6 +134,7 @@ void defSettings(NumericVector Settings)
 	useSystemVals = Settings[7];
 	snowInWetland = Settings[8];
 	evaporation_from_river = Settings[9];
+	old_river_routing = Settings[10];
 }
 
 //' @title getLAIdaily
