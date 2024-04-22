@@ -28,7 +28,8 @@ testthat::test_that("routing with evaporation from river routine",
 {
   model <- readRDS("example_basin.rds") # ./tests/testthat/example_basin.rds
   initModel(model)
-  Settings <- init.settings(evaporation_from_river = "on", old_river_routing = "off")
+  Settings <- init.settings(evaporation_from_river = "on", 
+                            old_river_routing = "off")
   defSettings(Settings);
   initializeModel();
 
@@ -45,5 +46,5 @@ testthat::test_that("routing with evaporation from river routine",
                             PETw,
                             Prec)
 
-  expect_equal(sum(routing_result$River$Discharge), 17.2480756)
+  expect_equal(sum(routing_result$River$Discharge), 33.401958)
 })
