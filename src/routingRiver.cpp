@@ -35,7 +35,7 @@ double routingRiver(
 			+ (RiverInflow * (1 - exp(-1./riverVelocity)));
 
 	S_river[cell] = G_riverStoragePrevStep + RiverInflow - Q_out;
-	G_riverOutflow[cell] = Q_out; // immer 0?
+	G_riverOutflow[cell] = Q_out; 
 
 	return(Q_out);
 }

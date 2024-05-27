@@ -303,9 +303,6 @@ List routing(
 						S_river);
 				}
 
-
-
-
 				//adding everything to next cell till outlet
 				downstream_cell = outflowOrder[cell]-1;
 				if (downstream_cell >= 0)
