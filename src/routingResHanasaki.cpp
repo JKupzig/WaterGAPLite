@@ -26,7 +26,8 @@ using namespace std;
 //' @param MeanDemand output of WaterUseCalcMeanDemandDaily(year, GapYearType)
 //' @return total outflow form reservoir: outflow + overflow [mm*km²]
 //' @export
-double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, double PrecWater, double inflow, 
+// [[Rcpp::export]]
+double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, double PrecWater, double inflow,
 							NumericVector Res_outflow, NumericVector Res_overflow, NumericVector S_ResStorage, NumericVector Res_evapo, NumericVector Res_inflow,
 							NumericMatrix dailyUse, NumericVector MeanDemand) {
 
@@ -34,36 +35,36 @@ double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, doub
 	int monthDate = SimDate.getMonth(); // month that is simulated
 	int yearDate = SimDate.getYear(); // year that is simulated
 	int daysInMonth = numberOfDaysInMonth(monthDate, yearDate);
-	
-	double maxStorage; 
-	double totalInflow; 
+
+	double maxStorage;
+	double totalInflow;
 	double outflow;
 	double overflow;
 	double evaporation;
-	
+
 	double gloResEvapoReductionFactor;  //KF *** for new reservoir algorithm
 	double c_ratio;
 	double prov_rel;      //provisional release
 	double release;
 	double dailyUseCell;
-	
+
 	// G_MEAN_INFLOW in km³/month --> mm*km²/day --> *1000 * 1000 / daysInMonth()
 	double meanInflow = G_MEAN_INFLOW[cell]*1000*1000/daysInMonth; //[mm*km²/day]
-	
+
 	//NumericVector annual_release (array_size);
 	NumericVector K_release (array_size);
-		
-		
+
+
 	// define storage capacity to mean annual inflow ratio (c_ratio)
 	// G_mean_inflow:  km³/month,  G_stor_cap:  km3/yr
 	c_ratio = G_STORAGE_CAPACITY[cell]/(G_MEAN_INFLOW[cell]*12);
 	maxStorage = G_STORAGE_CAPACITY[cell] * 0.85 * 1000 *1000; //85 % of storage capacity (from published volume data) [mm km²]
-	
+
 	// ######### CALCULATING WATERBALANCE ANALOG TO ALL WATERBODIES ###############
-	
+
 	//inflow from upstream PLUS lake water balance
 	totalInflow = inflow + ( PrecWater * G_RESAREA[cell]);//[mm km²]
-				
+
 	// add inflow to storage
 	S_ResStorage[cell] += totalInflow;
 
@@ -85,9 +86,9 @@ double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, doub
 		evaporation += S_ResStorage[cell];// [mm km²]
 		S_ResStorage[cell] = 0.;
 	}
-	
+
 	// ######### APPLYING RESERVOIR ALGORITHM AFTER HANASAKI ###############
-	
+
 	//set rules at the beginning of the operational year! (only once per operational year!)
 	if ((dayDate == 1) & (monthDate == G_START_MONTH[cell])){
 		//calculate release coefficient for the actual year:
@@ -99,7 +100,7 @@ double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, doub
 		}
 
 	}
-	
+
 	// algorithm based on water use
 	if (G_RES_TYPE[cell] == 1) {// (irrigation reservoir)
 
@@ -110,7 +111,7 @@ double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, doub
 		// approach to estimate water demand that can be satisfied by reservoir
 		// limits are: 1) 20 routing steps 2) no more donwstream cell (ocean/basin border) 3) another reservoir
 		// at the moment basin outlet is defined with -999 in outflow, needs to be changed when simulating more than one basin!
-		int i=0; 
+		int i=0;
 		int downstreamCell=outflowOrder[cell];
 		while (i < reservoir_dsc && downstreamCell > 0 && downstreamCell < array_size && G_RESAREA[downstreamCell-1] == 0) {
 			//suggestion Jenny: only consider positive values here
@@ -119,7 +120,7 @@ double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, doub
 			downstreamCell = outflowOrder[downstreamCell-1];
 		}
 
-				
+
 		if(MeanDemand[cell] < 0 || dailyUseCell < 0 ){
 			prov_rel = meanInflow;
 		} else if (MeanDemand[cell] >= 0.5 * meanInflow){
@@ -165,14 +166,14 @@ double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, doub
 		outflow += S_ResStorage[cell];
 		S_ResStorage[cell] = 0.;
 	}
-	
-	Res_outflow[cell] = outflow; 
-	Res_overflow[cell] = overflow; 
-	Res_evapo[cell] = evaporation; 
-	Res_inflow[cell] = totalInflow; 
-	
+
+	Res_outflow[cell] = outflow;
+	Res_overflow[cell] = overflow;
+	Res_evapo[cell] = evaporation;
+	Res_inflow[cell] = totalInflow;
+
 	return(outflow+overflow); // mm*km²
-} 
+}
 
 
 

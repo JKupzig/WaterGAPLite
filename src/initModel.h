@@ -22,6 +22,9 @@ extern int ReservoirType;
 extern int splitType;
 extern int calcLong;
 extern int useSystemVals;
+extern int snowInWetland;
+extern int evaporation_from_river;
+extern int old_river_routing;
 
 extern void defSettings(NumericVector Settings);
 extern NumericMatrix getLAIdaily(NumericVector LAI_min, NumericVector LAI_max, NumericVector initDays,
@@ -107,8 +110,10 @@ extern int glo_storageFactor;
 extern int loc_storageFactor;
 extern int reservoir_dsc; //downstream cells that are considered for water use of reservoir (for 5min always the same)
 extern double defaultRiverVelocity;
+extern double lower_threshold_soil; // NEW for dry regions, given in percent of G_Smax
 
-
+extern double snow_threshold;
+extern int max_degree_days;
 
 extern void initModel(List ListConst);
 

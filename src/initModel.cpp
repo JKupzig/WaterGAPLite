@@ -20,6 +20,9 @@ int ReservoirType;
 int splitType;
 int calcLong;
 int useSystemVals;
+int snowInWetland;
+int evaporation_from_river;
+int old_river_routing;
 
 //CONSTANT FILES
 
@@ -81,8 +84,10 @@ NumericVector G_BANKFULL;
 NumericVector G_riverSlope;
 NumericVector G_riverRoughness;
 
+// parameter
 NumericVector Splitfactor;
 
+double lower_threshold_soil; // 0 [%]
 double maxCanopyStoragePerLAI; // 0.3 mm
 double canopyEvapoExp; // 0.6666667 [-]
 int array_size; //
@@ -102,11 +107,23 @@ int loc_storageFactor;
 int reservoir_dsc = 20; //downstream cells that are considered for water use of reservoir (for 5min always the same)
 double defaultRiverVelocity; // = 86.4;	// [km/d] = 1 m/s
 
+double snow_threshold; // NEW (-5.)
+int max_degree_days; // NEW (10)
+
+
 //' @title Declaration of Settings from R Module
 //' @description translates R Settings to global rcpp Settings
 //' @param Settings Settings defined as IntegerVector
 //' @export
-void defSettings(NumericVector Settings){
+// [[Rcpp::export]]
+void defSettings(NumericVector Settings)
+{
+	int entries = Settings.length();
+	if (entries != 11)
+	{
+		stop("'Settings' must have 11 entries");
+	}
+
 	waterUseType = Settings[0];
 	WaterUseAllocationType = Settings[1];
 	flowVelocityType = Settings[2];
@@ -115,9 +132,12 @@ void defSettings(NumericVector Settings){
 	splitType = Settings[5];
 	calcLong = Settings[6];
 	useSystemVals = Settings[7];
+	snowInWetland = Settings[8];
+	evaporation_from_river = Settings[9];
+	old_river_routing = Settings[10];
 }
 
-//' @title detLAIdaily
+//' @title getLAIdaily
 //' @description Definition of interception storage size
 //' @param LAI_min minimal interception storage in mm from LAI_info
 //' @param LAI_max maximal interception storage in mm from LAI_info
@@ -128,7 +148,7 @@ void defSettings(NumericVector Settings){
 //' @param GLCT Landcover information
 //' @return Matrix with interception storage in mm (rows=days, cols=cells)
 //' @export
-
+// [[Rcpp::export]]
 NumericMatrix getLAIdaily(NumericVector LAI_min, NumericVector LAI_max, NumericVector initDays,
 						const NumericMatrix Temp, const NumericMatrix Prec, const IntegerVector aridType, const NumericVector GLCT){
   //Ths function uses the model function as it is implemented iin WG3.1
@@ -237,6 +257,7 @@ NumericMatrix getLAIdaily(NumericVector LAI_min, NumericVector LAI_max, NumericV
 //' @description Sets passed List as global model input
 //' @param ListConst that is defined in R
 //' @export
+// [[Rcpp::export]]
 void initModel(List ListConst){
 
 	SystemValues = as<String>(ListConst["SystemValuesPath"]);
@@ -291,6 +312,7 @@ void initModel(List ListConst){
 	G_riverRoughness = as<NumericVector>(ListConst["G_riverRoughness"]);
 
 	Splitfactor = as<NumericVector>(ListConst["Splitfactor"]);
+	lower_threshold_soil = as<double>(ListConst["lower_threshold_soil"]);
 
 	Info_GW = as<NumericMatrix>(ListConst["Info_GW"]);
 	Info_SW = as<NumericMatrix>(ListConst["Info_SW"]);
@@ -315,11 +337,14 @@ void initModel(List ListConst){
 	loc_storageFactor = as<int>(ListConst["loc_storageFactor"]);
 	cor_row = as<int>(ListConst["cor_row"]);
 
+
 	defaultRiverVelocity = as<double>(ListConst["defaultRiverVelocity"]);
+
+	snow_threshold = as<double>(ListConst["snow_threshold"]);
+	max_degree_days = as<int>(ListConst["max_degree_days"]);
 
 	dailyLaiAll = getLAIdaily(LAI_min, LAI_max, initDays,
 						   Temp, Prec, G_ARID_HUMID, GLCT);
-
 }
 
 
