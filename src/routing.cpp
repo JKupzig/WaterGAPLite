@@ -103,7 +103,7 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 	NumericMatrix InflowRes(ndays, array_size);   // Inflow to Reservoir  Res_overflow
 	NumericMatrix OverflowRes(ndays, array_size); // overflow from Reservoir when precipitation above Reservoir and Inflow are to high
 	NumericVector K_release(array_size); //release factor for reservoirs
-	K_release.fill(1.0);	
+
 	//global wetlands
 	NumericMatrix OverflowgloWetland(ndays, array_size); // special overflow, when S > Smax
 	NumericMatrix OutflowgloWetland(ndays, array_size);  // total outflow
@@ -126,6 +126,22 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 	numbers =  findUniqueValues(routeOrder); //finding unique values in route order (ascending) => routingSteps
 	numbersSorted = sortIt(numbers);
 
+	// If K_release is necessary (ie we use Hanasaki algrithm) then initialize it
+	if (ReservoirType != 1) 
+	{
+		for (int cell = 0; cell < array_size; cell++)
+		{
+			if (S_ResStorage[cell] < G_STORAGE_CAPACITY[cell] * 1000. * 1000. * 0.1)
+			{
+				K_release[cell] = 0.1;
+			}
+			else
+			{
+				K_release[cell] = S_ResStorage[cell] / (G_STORAGE_CAPACITY[cell] * 1000. * 1000.);
+			}
+		}
+
+	}
 	for (int day = 0; day < ndays; day++){
 
 		if (day % 100 == 0) {
