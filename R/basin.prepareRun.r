@@ -98,6 +98,7 @@ basin.prepare_run <- function(basin_object,
   basin_list[["G_RG_max"]] <- basin_object@G_RG_max
   basin_list[["G_STORAGE_CAPACITY"]] <- basin_object@G_STORAGE_CAPACITY
   basin_list[["G_MEAN_INFLOW"]] <- basin_object@G_MEAN_INFLOW
+  basin_list[["G_MEAN_INFLOW_MONTHLY"]] <- basin_object@G_MEAN_INFLOW.12
   basin_list[["G_START_MONTH"]] <- basin_object@G_START_MONTH
   basin_list[["evapoReductionExpReservoir"]] <- basin_object@evapoReductionExpReservoir
   basin_list[["G_RES_TYPE"]] <- basin_object@G_RES_TYPE
@@ -109,6 +110,9 @@ basin.prepare_run <- function(basin_object,
   basin_list[["G_riverRoughness"]] <- basin_object@G_riverRoughness
   basin_list[["G_BANKFULL"]] <- basin_object@G_BANKFULL
 
+  basin_list[["G_7daymin"]] <- basin_object@G_7daymin
+  basin_list[["G_7daymax"]] <- basin_object@G_7daymax
+  
   basin_list[["defaultRiverVelocity"]] <- basin_object@defaultRiverVelocity
 
   basin_list[["Info_GW"]] <- wateruse_object@Info_GW

@@ -131,6 +131,8 @@ init.classes <- function() {
              G_riverSlope = "numeric",
              G_riverRoughness = "numeric",
              G_BANKFULL = "numeric",
+      G_7daymin = "numeric",
+      G_7daymax = "numeric",
 
              G_WG3_WG2WITH5MIN = "numeric",
              G_WG3_WATCH = "numeric"

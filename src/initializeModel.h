@@ -72,6 +72,7 @@ extern NumericVector gloLake_evapo;
 extern NumericVector gloLake_inflow;
 
 extern NumericVector Res_outflow;
+extern NumericVector Res_target;
 extern NumericVector S_ResStorage;
 extern NumericVector Res_evapo;
 extern NumericVector Res_inflow;

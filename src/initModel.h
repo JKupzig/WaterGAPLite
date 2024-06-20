@@ -77,6 +77,7 @@ extern NumericVector G_RESAREA; // km² reservoir area defined in outlet cell of
 extern NumericVector G_LAKAREA; // km² global lake area defined in outlet cell of global lake
 extern NumericVector G_STORAGE_CAPACITY;
 extern NumericVector G_MEAN_INFLOW;
+extern NumericMatrix G_MEAN_INFLOW_MONTHLY;
 extern IntegerVector G_START_MONTH;
 extern IntegerVector G_RES_TYPE;
 extern IntegerVector routeOrder;
@@ -86,6 +87,9 @@ extern NumericVector G_BANKFULL; // BANKFULL flow in m³/s (is simulation produc
 extern NumericVector G_riverLength;
 extern NumericVector G_riverSlope;
 extern NumericVector G_riverRoughness;
+
+extern NumericVector G_7daymin;
+extern NumericVector G_7daymax;
 
 extern NumericVector Splitfactor;
 

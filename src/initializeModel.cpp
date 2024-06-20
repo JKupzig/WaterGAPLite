@@ -63,10 +63,12 @@ NumericVector gloLake_evapo;
 NumericVector gloLake_inflow;
 
 NumericVector Res_outflow;
+NumericVector Res_target;
 NumericVector S_ResStorage;
 NumericVector Res_evapo;
 NumericVector Res_inflow;
 NumericVector Res_overflow;
+NumericVector Res_storage_target;
 
 NumericVector gloWetland_overflow;
 NumericVector gloWetland_outflow;
@@ -142,10 +144,13 @@ void initializeModel(){
 	gloLake_inflow=NumericVector (array_size);
 
 	Res_outflow=NumericVector (array_size);
+	Res_target=NumericVector (array_size);
+	Res_target.fill(0);
 	S_ResStorage=NumericVector (array_size);
 	Res_evapo=NumericVector (array_size);
 	Res_inflow=NumericVector (array_size);
 	Res_overflow=NumericVector (array_size);
+	Res_storage_target=NumericVector (array_size);
 
 	gloWetland_overflow=NumericVector (array_size);
 	gloWetland_outflow=NumericVector (array_size);

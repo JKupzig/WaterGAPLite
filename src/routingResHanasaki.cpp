@@ -28,7 +28,7 @@ using namespace std;
 //' @export
 double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, double PrecWater, double inflow, 
 							NumericVector Res_outflow, NumericVector Res_overflow, NumericVector S_ResStorage, NumericVector Res_evapo, NumericVector Res_inflow,
-							NumericMatrix dailyUse, NumericVector MeanDemand) {
+							NumericMatrix dailyUse, NumericVector MeanDemand, NumericVector K_release) {
 
 	int dayDate = SimDate.getDay(); //day that is simulated
 	int monthDate = SimDate.getMonth(); // month that is simulated
@@ -49,9 +49,7 @@ double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, doub
 	
 	// G_MEAN_INFLOW in km³/month --> mm*km²/day --> *1000 * 1000 / daysInMonth()
 	double meanInflow = G_MEAN_INFLOW[cell]*1000*1000/daysInMonth; //[mm*km²/day]
-	
-	//NumericVector annual_release (array_size);
-	NumericVector K_release (array_size);
+
 		
 		
 	// define storage capacity to mean annual inflow ratio (c_ratio)
@@ -118,8 +116,11 @@ double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, doub
 			// next downstream cell
 			downstreamCell = outflowOrder[downstreamCell-1];
 		}
-
-				
+		if (monthDate % 3 == 0){
+				Rcout << "dailyUseCell: " << dailyUseCell << std::endl;
+				Rcout << "MeanDemand[cell]: " << MeanDemand[cell] << std::endl;
+				Rcout << "meanInflow: " << meanInflow << std::endl;
+				Rcout << endl;}
 		if(MeanDemand[cell] < 0 || dailyUseCell < 0 ){
 			prov_rel = meanInflow;
 		} else if (MeanDemand[cell] >= 0.5 * meanInflow){

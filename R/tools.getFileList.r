@@ -46,7 +46,9 @@ get_file_list <- function(type = "basinInfo") {
                   "G_OUTFLC.UNF4",
                   "G_RIVER_LENGTH.UNF0",
                   "G_RIVERSLOPE.UNF0",
-                  "G_ROUGHNESS.UNF0")
+                  "G_ROUGHNESS.UNF0",
+                  "G_7daymax.UNF0",
+                  "G_7daymin.UNF0")
   }
 
   return(file_list)

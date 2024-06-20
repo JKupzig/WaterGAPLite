@@ -34,9 +34,9 @@ NumericVector WaterUseCalcMeanDemandDaily(int year, int GapYearType){
 	//unit changing from m³/yr to mm*km²/day (to m³/s) --> /= 31536000.
 	for (int cell = 0; cell < array_size; cell++){
 		if (GapYearType == 1) { //avoid somulation of the 29.02 to compare modelling result to WG3
-			G_mean_demand[cell] = G_mean_demand[cell] / 1000. *365.; //[mm*km²/day]
+			G_mean_demand[cell] = G_mean_demand[cell] / 1000. / 365.; //[mm*km²/day]
 		} else {
-			G_mean_demand[cell] = G_mean_demand[cell] / 1000. * numberOfDaysInYear(year); //[mm*km²/day]
+			G_mean_demand[cell] = G_mean_demand[cell] / 1000. / numberOfDaysInYear(year); //[mm*km²/day]
 		}
 	}
 	

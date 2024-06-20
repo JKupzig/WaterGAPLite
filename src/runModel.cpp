@@ -45,10 +45,11 @@ List runModel(DateVector SimPeriod, List ListConst, NumericVector Settings, int 
 	List WaterBalanceOutput = createWaterBalance(SimPeriod); //calculates WaterBalance
 	
 	List Fluxes = as<List>(WaterBalanceOutput["Fluxes"]);
-		NumericMatrix surfaceRunoff = as<NumericMatrix>(Fluxes["dailyLocalSWRunoff"]);
-		NumericMatrix GroundwaterRunoff = as<NumericMatrix>(Fluxes["dailyLocalGWRunoff"]);
-		NumericMatrix PETw = as<NumericMatrix>(Fluxes["PETw"]);
-		
+	Rcout << "WaterBalanceOutput computed " << endl;
+	NumericMatrix surfaceRunoff = as<NumericMatrix>(Fluxes["dailyLocalSWRunoff"]);
+	NumericMatrix GroundwaterRunoff = as<NumericMatrix>(Fluxes["dailyLocalGWRunoff"]);
+	NumericMatrix PETw = as<NumericMatrix>(Fluxes["PETw"]);
+	
 	
 	List RoutingOutput = routing(SimPeriod, surfaceRunoff, GroundwaterRunoff, PETw, Prec); // is quite slow - mm/day - excecutes routing
 	List L = List::create(Named("daily") = WaterBalanceOutput, Named("routing") = RoutingOutput);

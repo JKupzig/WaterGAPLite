@@ -8,9 +8,88 @@
 //whin geht return flow. d.h. wenn water use hat negatives VZ
 // geht immer in river!
 
+// double AbstractFromCell(int cell, double remainingUse, NumericVector G_actualUse,
+// 						NumericVector S_river, NumericVector S_ResStorage, NumericVector S_gloLakeStorage,
+// 						NumericVector S_locLakeStorage);
+
+
+
+//' @title AbstractFromCell
+//' @description function that abstracts water use from storages 
+//' @param cell cell in basin that is used for abstraction
+//' @param remainingUse remainingUse of cell that needs to be satisfied with storages
+//' @param G_actualUse actual use in cell in mm*km²/day
+//' @param S_river river storage to satisfy uses (1)
+//' @param S_ResStorage reservoir storage to satisfy uses (2)
+//' @param S_gloLakeStorage global lake storage to satisfy uses (3)
+//' @param S_locLakeStorage local lake storage to satisfy uses (4)
+//' @return remainingUse after intention to satisfy uses with water storages mm
+//' @export
 double AbstractFromCell(int cell, double remainingUse, NumericVector G_actualUse,
 						NumericVector S_river, NumericVector S_ResStorage, NumericVector S_gloLakeStorage,
-						NumericVector S_locLakeStorage);
+						NumericVector S_locLakeStorage) {
+	
+	int StartVal = remainingUse;
+	// first step: water is taken out of the river (or returned to river!)
+	if (remainingUse < S_river[cell]) {
+		S_river[cell] -= remainingUse;
+		remainingUse = 0.;
+	} else {
+		remainingUse -= S_river[cell];
+		S_river[cell] = 0.;
+	}
+	
+	
+	// second step: take water out of reservoirs!
+	if (remainingUse > 0) {
+		if ((G_RESAREA[cell] > 0) && (S_ResStorage[cell] > (G_STORAGE_CAPACITY[cell] * 0.1))) {
+			// storage volume of the reservoir has to be more than 10% of capacity
+			// otherwise no water is taken out of the reservoir
+			// do not allow water use below the 10% level!
+			if (remainingUse < (S_ResStorage[cell] - (G_STORAGE_CAPACITY[cell] * 0.1))) {
+				S_ResStorage[cell] -= remainingUse;
+				remainingUse = 0;
+			} else {
+				remainingUse -= (S_ResStorage[cell] - (G_STORAGE_CAPACITY[cell] * 0.1));
+				S_ResStorage[cell] = G_STORAGE_CAPACITY[cell] * 0.1;
+			}
+		}
+	}
+	
+	
+	// third step: take water from global lakes
+	if (remainingUse > 0) {
+		if (((G_LAKAREA[cell]) > 0) && (S_gloLakeStorage[cell] > 0)) {
+			// water level of the lake has to be above 0 m
+			// otherwise no water is taken out of the global lake
+			if (remainingUse < S_gloLakeStorage[cell]) {
+				S_gloLakeStorage[cell] -= remainingUse;
+				remainingUse = 0;
+			} else {
+				remainingUse -= S_gloLakeStorage[cell];
+				S_gloLakeStorage[cell] = 0;
+			}
+		}
+	}
+
+	// fourth step: take water from local lakes
+	if (remainingUse > 0) {
+		if ((G_LOCLAK[cell] > 0)	&& (S_locLakeStorage[cell] > 0)) {
+			if (remainingUse < S_locLakeStorage[cell]) {
+				S_locLakeStorage[cell] -= remainingUse;
+				remainingUse = 0;
+			} else {
+				remainingUse -= S_locLakeStorage[cell];
+				S_locLakeStorage[cell] = 0;
+			}
+		}
+	}
+	
+	G_actualUse[cell] += (StartVal - remainingUse);
+	
+	return(remainingUse);
+}
+
 
 //' @title SubtractWaterConsumSW
 //' @description function that distributes water use spatial and/or temporal, needs helper function AbstractFromCell for water use abstraction
@@ -129,80 +208,3 @@ void SubtractWaterConsumSW(int WaterUseAllocationType, NumericMatrix dailyUse, N
 		
 } 
 
-
-//' @title AbstractFromCell
-//' @description function that abstracts water use from storages 
-//' @param cell cell in basin that is used for abstraction
-//' @param remainingUse remainingUse of cell that needs to be satisfied with storages
-//' @param G_actualUse actual use in cell in mm*km²/day
-//' @param S_river river storage to satisfy uses (1)
-//' @param S_ResStorage reservoir storage to satisfy uses (2)
-//' @param S_gloLakeStorage global lake storage to satisfy uses (3)
-//' @param S_locLakeStorage local lake storage to satisfy uses (4)
-//' @return remainingUse after intention to satisfy uses with water storages mm
-//' @export
-double AbstractFromCell(int cell, double remainingUse, NumericVector G_actualUse,
-						NumericVector S_river, NumericVector S_ResStorage, NumericVector S_gloLakeStorage,
-						NumericVector S_locLakeStorage) {
-	
-	int StartVal = remainingUse;
-	
-	// first step: water is taken out of the river (or returned to river!)
-	if (remainingUse < S_river[cell]) {
-		S_river[cell] -= remainingUse;
-		remainingUse = 0.;
-	} else {
-		remainingUse -= S_river[cell];
-		S_river[cell] = 0.;
-	}
-	
-	
-	// second step: take water out of reservoirs!
-	if (remainingUse > 0) {
-		if ((G_RESAREA[cell] > 0) && (S_ResStorage[cell] > (G_STORAGE_CAPACITY[cell] * 0.1))) {
-			// storage volume of the reservoir has to be more than 10% of capacity
-			// otherwise no water is taken out of the reservoir
-			// do not allow water use below the 10% level!
-			if (remainingUse < (S_ResStorage[cell] - (G_STORAGE_CAPACITY[cell] * 0.1))) {
-				S_ResStorage[cell] -= remainingUse;
-				remainingUse = 0;
-			} else {
-				remainingUse -= (S_ResStorage[cell] - (G_STORAGE_CAPACITY[cell] * 0.1));
-				S_ResStorage[cell] = G_STORAGE_CAPACITY[cell] * 0.1;
-			}
-		}
-	}
-	
-	
-	// third step: take water from global lakes
-	if (remainingUse > 0) {
-		if (((G_LAKAREA[cell]) > 0) && (S_gloLakeStorage[cell] > 0)) {
-			// water level of the lake has to be above 0 m
-			// otherwise no water is taken out of the global lake
-			if (remainingUse < S_gloLakeStorage[cell]) {
-				S_gloLakeStorage[cell] -= remainingUse;
-				remainingUse = 0;
-			} else {
-				remainingUse -= S_gloLakeStorage[cell];
-				S_gloLakeStorage[cell] = 0;
-			}
-		}
-	}
-
-	// fourth step: take water from local lakes
-	if (remainingUse > 0) {
-		if ((G_LOCLAK[cell] > 0)	&& (S_locLakeStorage[cell] > 0)) {
-			if (remainingUse < S_locLakeStorage[cell]) {
-				S_locLakeStorage[cell] -= remainingUse;
-				remainingUse = 0;
-			} else {
-				remainingUse -= S_locLakeStorage[cell];
-				S_locLakeStorage[cell] = 0;
-			}
-		}
-	}
-	
-	G_actualUse[cell] += (StartVal - remainingUse);
-	
-	return(remainingUse);
-}

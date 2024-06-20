@@ -71,6 +71,7 @@ NumericVector G_RESAREA; // km² reservoir area defined in outlet cell of reserv
 NumericVector G_LAKAREA; // km² global lake area defined in outlet cell of global lake
 NumericVector G_STORAGE_CAPACITY;
 NumericVector G_MEAN_INFLOW;
+NumericMatrix G_MEAN_INFLOW_MONTHLY;
 IntegerVector G_START_MONTH;
 IntegerVector G_RES_TYPE;
 IntegerVector routeOrder;
@@ -80,6 +81,9 @@ NumericVector G_riverLength;
 NumericVector G_BANKFULL;
 NumericVector G_riverSlope;
 NumericVector G_riverRoughness;
+
+NumericVector G_7daymin;
+NumericVector G_7daymax;
 
 NumericVector Splitfactor;
 
@@ -280,6 +284,7 @@ void initModel(List ListConst){
 	G_LAKAREA = as<NumericVector>(ListConst["G_LAKAREA"]);
 	G_STORAGE_CAPACITY = as<NumericVector>(ListConst["G_STORAGE_CAPACITY"]);
 	G_MEAN_INFLOW = as<NumericVector>(ListConst["G_MEAN_INFLOW"]);
+	G_MEAN_INFLOW_MONTHLY = as<NumericMatrix>(ListConst["G_MEAN_INFLOW_MONTHLY"]);
 	G_START_MONTH = as<IntegerVector>(ListConst["G_START_MONTH"]);
 	G_RES_TYPE = as<IntegerVector>(ListConst["G_RES_TYPE"]);
 	routeOrder = as<IntegerVector>(ListConst["routeOrder"]);
@@ -289,6 +294,9 @@ void initModel(List ListConst){
 	G_BANKFULL = as<NumericVector>(ListConst["G_BANKFULL"]);
 	G_riverSlope = as<NumericVector>(ListConst["G_riverSlope"]);
 	G_riverRoughness = as<NumericVector>(ListConst["G_riverRoughness"]);
+
+	G_7daymin = as<NumericVector>(ListConst["G_7daymin"]);
+	G_7daymax = as<NumericVector>(ListConst["G_7daymax"]);
 
 	Splitfactor = as<NumericVector>(ListConst["Splitfactor"]);
 

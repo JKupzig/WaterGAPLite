@@ -23,10 +23,19 @@ basin.get_routing_info <- function(basin_object) {
                                 name = "routing", cont = cont_name)
 
   #Needs to be created based on FlowDir!
-  flow_acc <-reading_unf("G_FLOW_ACC.UNF4", data_dir, trans_matrix,
+  flow_acc <-reading_unf(sprintf("G_FLOW_ACC_%s.UNF4", cont_name),
+                        #"G_FLOW_ACC.UNF2",
+                        data_dir, trans_matrix,
                         basin_index, name="routing", cont=cont_name)
   #gcrc-ID in basin - sorted as all input files 
   outflow <-reading_unf("G_OUTFLC.UNF4", data_dir, trans_matrix,
+                        basin_index, name="routing", cont=cont_name)
+
+  #minimum and maximum flows for Schneider's algorithm
+  min_flow <-reading_unf("G_7daymin.UNF0", data_dir, trans_matrix,
+                        basin_index, name="routing", cont=cont_name)
+
+  max_flow <-reading_unf("G_7daymax.UNF0", data_dir, trans_matrix,
                         basin_index, name="routing", cont=cont_name)
 
   route_order <- rep(NA, length(flow_acc))
@@ -56,7 +65,8 @@ basin.get_routing_info <- function(basin_object) {
   basin_object@G_riverRoughness <- river_roughness
   basin_object@routeOrder <- route_order
   basin_object@outflow <- outflow_new
-
+  basin_object@G_7daymin <- min_flow
+  basin_object@G_7daymax <- max_flow
   return(basin_object)
 
 }
