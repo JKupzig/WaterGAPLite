@@ -89,12 +89,9 @@ double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, doub
 	if ((dayDate == 1) & (monthDate == G_START_MONTH[cell])){
 		//calculate release coefficient for the actual year:
 		//reduce release coefficent in this year to refill storage volume in reservoir
-		if (S_ResStorage[cell] < (G_STORAGE_CAPACITY[cell]*1000*1000 * 0.1)) {
-			K_release[cell] = 0.1;
-		} else {
-			K_release[cell] = S_ResStorage[cell] / (G_STORAGE_CAPACITY[cell]*1000*1000);
-		}
-
+		double MIN_RELEASE = 0.1;
+		double KM3_to_MMKM2 = 1000. * 1000.;
+		K_release[cell] = max(S_ResStorage[cell] / (G_STORAGE_CAPACITY[cell] * KM3_to_MMKM2 ), MIN_RELEASE );
 	}
 	
 	// algorithm based on water use
