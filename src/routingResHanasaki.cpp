@@ -28,7 +28,7 @@ using namespace std;
 //' @export
 double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, double PrecWater, double inflow, 
 							NumericVector Res_outflow, NumericVector Res_overflow, NumericVector S_ResStorage, NumericVector Res_evapo, NumericVector Res_inflow,
-							NumericMatrix dailyUse, NumericVector MeanDemand) {
+							NumericMatrix dailyUse, NumericVector MeanDemand, NumericVector K_release) {
 
 	int dayDate = SimDate.getDay(); //day that is simulated
 	int monthDate = SimDate.getMonth(); // month that is simulated
@@ -50,10 +50,7 @@ double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, doub
 	// G_MEAN_INFLOW in km³/month --> mm*km²/day --> *1000 * 1000 / daysInMonth()
 	double meanInflow = G_MEAN_INFLOW[cell]*1000*1000/daysInMonth; //[mm*km²/day]
 	
-	//NumericVector annual_release (array_size);
-	NumericVector K_release (array_size);
-		
-		
+
 	// define storage capacity to mean annual inflow ratio (c_ratio)
 	// G_mean_inflow:  km³/month,  G_stor_cap:  km3/yr
 	c_ratio = G_STORAGE_CAPACITY[cell]/(G_MEAN_INFLOW[cell]*12);
@@ -92,12 +89,9 @@ double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, doub
 	if ((dayDate == 1) & (monthDate == G_START_MONTH[cell])){
 		//calculate release coefficient for the actual year:
 		//reduce release coefficent in this year to refill storage volume in reservoir
-		if (S_ResStorage[cell] < (G_STORAGE_CAPACITY[cell]*1000*1000 * 0.1)) {
-			K_release[cell] = 0.1;
-		} else {
-			K_release[cell] = S_ResStorage[cell] / (G_STORAGE_CAPACITY[cell]*1000*1000);
-		}
-
+		double MIN_RELEASE = 0.1;
+		double KM3_to_MMKM2 = 1000. * 1000.;
+		K_release[cell] = max(S_ResStorage[cell] / (G_STORAGE_CAPACITY[cell] * KM3_to_MMKM2 ), MIN_RELEASE );
 	}
 	
 	// algorithm based on water use

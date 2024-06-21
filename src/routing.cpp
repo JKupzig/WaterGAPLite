@@ -102,6 +102,7 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 	NumericMatrix EvapoRes(ndays, array_size);    // Evaporatiom from Reservoir
 	NumericMatrix InflowRes(ndays, array_size);   // Inflow to Reservoir  Res_overflow
 	NumericMatrix OverflowRes(ndays, array_size); // overflow from Reservoir when precipitation above Reservoir and Inflow are to high
+	NumericVector K_release(array_size); //release factor for reservoirs
 
 	//global wetlands
 	NumericMatrix OverflowgloWetland(ndays, array_size); // special overflow, when S > Smax
@@ -125,6 +126,17 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 	numbers =  findUniqueValues(routeOrder); //finding unique values in route order (ascending) => routingSteps
 	numbersSorted = sortIt(numbers);
 
+	// If K_release is necessary (ie we use Hanasaki algrithm) then initialize it
+	if (ReservoirType != 1) 
+	{
+		for (int cell = 0; cell < array_size; cell++)
+		{
+			double MIN_RELEASE = 0.1;
+			double KM3_to_MMKM2 = 1000. * 1000.;
+			K_release[cell] = max(S_ResStorage[cell] / (G_STORAGE_CAPACITY[cell] * KM3_to_MMKM2 ), MIN_RELEASE );
+		}
+
+	}
 	for (int day = 0; day < ndays; day++){
 
 		if (day % 100 == 0) {
@@ -208,7 +220,7 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 				if (G_RESAREA[cell] > 0) {
 					out_res = routingResHanasaki(day, cell, SimDate, PETWater, PrecWater, out_glolake,
 							Res_outflow, Res_overflow, S_ResStorage, Res_evapo, Res_inflow,
-							dailyUse, MeanDemand);
+							dailyUse, MeanDemand, K_release);
 				} else {
 					out_res = out_glolake;
 				}

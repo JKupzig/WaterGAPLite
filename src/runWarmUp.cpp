@@ -35,7 +35,8 @@ void runWarmUp(DateVector timestring, int nYears){
 	double out_res;
 	double RiverInflow;
 	double RoutedOutflowCell;
-	
+	NumericVector K_release(array_size);
+	K_release.fill(0.1);
 	//fill up all waterbodies 
 	if ((useSystemVals != 1) & (useSystemVals != 3)) {
 		// if no System Values are used waterbody storages are filled up at the beginning of simulation
@@ -187,7 +188,7 @@ void runWarmUp(DateVector timestring, int nYears){
 				if (G_RESAREA[cell] > 0) {
 					out_res = routingResHanasaki(count, cell, SimDate, PETWater, PrecWater, out_glolake, 
 							Res_outflow, Res_overflow, S_ResStorage, Res_evapo, Res_inflow,
-							dailyUse, MeanDemand);
+							dailyUse, MeanDemand, K_release);
 				} else {
 					out_res = out_glolake;
 				}
