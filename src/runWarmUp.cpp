@@ -36,7 +36,7 @@ void runWarmUp(DateVector timestring, int nYears){
 	double RiverInflow;
 	double RoutedOutflowCell;
 	NumericVector K_release(array_size);
-	K_release.fill(1);
+	K_release.fill(0.1);
 	
 	//fill up all waterbodies 
 	if ((useSystemVals != 1) & (useSystemVals != 3)) {

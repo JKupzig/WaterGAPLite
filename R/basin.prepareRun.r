@@ -112,7 +112,7 @@ basin.prepare_run <- function(basin_object,
 
   basin_list[["G_7daymin"]] <- basin_object@G_7daymin
   basin_list[["G_7daymax"]] <- basin_object@G_7daymax
-  
+  basin_list[["flow_acc"]] <- basin_object@flow_acc
   basin_list[["defaultRiverVelocity"]] <- basin_object@defaultRiverVelocity
 
   basin_list[["Info_GW"]] <- wateruse_object@Info_GW

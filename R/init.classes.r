@@ -133,7 +133,7 @@ init.classes <- function() {
              G_BANKFULL = "numeric",
       G_7daymin = "numeric",
       G_7daymax = "numeric",
-
+      flow_acc = "numeric",
              G_WG3_WG2WITH5MIN = "numeric",
              G_WG3_WATCH = "numeric"
            ), where = class_cache

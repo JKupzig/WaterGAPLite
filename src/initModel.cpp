@@ -84,7 +84,7 @@ NumericVector G_riverRoughness;
 
 NumericVector G_7daymin;
 NumericVector G_7daymax;
-
+NumericVector flow_acc;
 NumericVector Splitfactor;
 
 double maxCanopyStoragePerLAI; // 0.3 mm
@@ -297,7 +297,7 @@ void initModel(List ListConst){
 
 	G_7daymin = as<NumericVector>(ListConst["G_7daymin"]);
 	G_7daymax = as<NumericVector>(ListConst["G_7daymax"]);
-
+	flow_acc = as<NumericVector>(ListConst["flow_acc"]);
 	Splitfactor = as<NumericVector>(ListConst["Splitfactor"]);
 
 	Info_GW = as<NumericMatrix>(ListConst["Info_GW"]);

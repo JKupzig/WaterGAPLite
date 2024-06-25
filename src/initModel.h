@@ -90,6 +90,7 @@ extern NumericVector G_riverRoughness;
 
 extern NumericVector G_7daymin;
 extern NumericVector G_7daymax;
+extern NumericVector flow_acc;
 
 extern NumericVector Splitfactor;
 

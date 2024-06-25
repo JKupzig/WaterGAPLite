@@ -144,7 +144,6 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 			if (S_ResStorage[cell] < (G_STORAGE_CAPACITY[cell] * 1000 * 1000 * 0.1))
 			{
 				K_release[cell] = 0.1;
-				Rcout << "set to 0.1" << endl;
 			}
 			else
 			{

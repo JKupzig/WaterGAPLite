@@ -67,6 +67,7 @@ basin.get_routing_info <- function(basin_object) {
   basin_object@outflow <- outflow_new
   basin_object@G_7daymin <- min_flow
   basin_object@G_7daymax <- max_flow
+  basin_object@flow_acc <- flow_acc
   return(basin_object)
 
 }
