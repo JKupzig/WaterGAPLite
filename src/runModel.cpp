@@ -27,35 +27,6 @@ using namespace Rcpp;
 //' @export
 // [[Rcpp::export]]
 List runModel(DateVector SimPeriod, List ListConst, NumericVector Settings, int nYears){
-	
-	//check for correct settings input
-	if (Settings.size() != 8){
-		stop("Settings should be a vector of length 8");
-	}
-	if (Settings[0] != 2  && Settings[0] != 1 && Settings[0] != 0){
-		stop("WaterUseType should be 0, 1 or 2");
-	}
-	if (Settings[1] != 0  && Settings[1] != 1 && Settings[1] != 2){
-		stop("WaterUseAllocationType should be 0, 1 or 2");
-	}
-	if (Settings[2] != 0  && Settings[2] != 1){
-		stop("flowVelocityType should be 0 or 1");
-	}
-	if (Settings[3] != 0  && Settings[3] != 1){
-		stop("GapYearType should be 0 or 1");
-	}
-	if (Settings[4] != 0  && Settings[4] != 1){
-		stop("ReservoirType should be 0 or 1");
-	}
-	if (Settings[5] != 0  && Settings[5] != 1){
-		stop("splitttingFactor parameter should be 0 or 1");
-	}
-	if (Settings[6] != 0  && Settings[6] != 1){
-		stop("calculation LongWave parameter should be 0 or 1");
-	}
-	if (Settings[7] != 0  && Settings[7] != 1 && Settings[7] != 2 && Settings[7] != 3){
-		stop("useSystemVals should be 0, 1, 2 or 3");
-	}
 
 	defSettings(Settings); //defines Settings
 	initModel(ListConst); // defines Variables and Input data
