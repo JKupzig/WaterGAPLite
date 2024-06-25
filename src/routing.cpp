@@ -12,7 +12,7 @@
 #include "routingResHanasaki.h"
 #include "routingResSchneider.h"
 #include "WaterUseConsumSW.h"
-
+#include "routingResHanasaki2022.h"
 using namespace Rcpp;
 using namespace std;
 
@@ -102,7 +102,6 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 	NumericMatrix InflowRes(ndays, array_size);				  // Inflow to Reservoir  Res_overflow
 	NumericMatrix OverflowRes(ndays, array_size);			  // overflow from Reservoir when precipitation above Reservoir and Inflow are too high
 	NumericMatrix targetRes(ndays, array_size);				  // For Schneideir's algorithm
-	NumericVector targetStorageRes(array_size);				  // target storage of Reservoir for Schneidder's algorithm
 	NumericVector accumulated_daily_month_inflow(array_size); // to compensate for prediction errors of inflow, prec and AET when computing release for Schneider's algorithm
 	accumulated_daily_month_inflow.fill(0);
 	NumericVector K_release(array_size); // release factor for Hanasaki
@@ -129,12 +128,11 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 	// TO DO : only compute for cells with reservoirs
 	NumericMatrix Prec_forecast(array_size, 12);
 	NumericMatrix PET_forecast(array_size, 12);
-	NumericMatrix inflow_forecast(array_size, 12);
 	NumericMatrix denominator(array_size, 12);
+	NumericVector drainage_area(array_size);
 	denominator.fill(0);
 	Prec_forecast.fill(0);
 	PET_forecast.fill(0);
-	inflow_forecast.fill(0);
 	int month;
 
 	if (ReservoirType == 0 || ReservoirType == 2)
@@ -152,7 +150,7 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 		}
 	}
 
-	if (ReservoirType == 2)
+	if (ReservoirType == 2 || ReservoirType == 3)
 	{
 		for (int cell = 0; cell < array_size; cell++)
 		{
@@ -164,7 +162,6 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 					month = SimDate.getMonth();
 					Prec_forecast(cell, month - 1) += Prec(day_counter, cell) * G_RESAREA[cell];
 					PET_forecast(cell, month - 1) += PETw(day_counter, cell) * G_RESAREA[cell];
-					inflow_forecast(cell, month - 1) += (GroundwaterRunoff(day_counter, cell) + surfaceRunoff(day_counter, cell)) * GAREA[cell] * landfrac[cell]; // mm * km²
 					denominator(cell, month - 1)++;
 				}
 
@@ -173,7 +170,6 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 				{
 					Prec_forecast(cell, month) /= denominator(cell, month);
 					PET_forecast(cell, month) /= denominator(cell, month);
-					inflow_forecast(cell, month) /= denominator(cell, month);
 				}
 			}
 		}
@@ -227,6 +223,13 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 			{
 				cell = cellIDs[i];
 				InflowUpstream = 0.0;
+
+				if (ReservoirType == 3 && day == 0){ // compute drainage area
+					drainage_area[cell] += GAREA[cell];
+					if (routeOrder[cell] > 0){
+						drainage_area[routeOrder[cell] - 1] += drainage_area[cell];
+					}
+				}
 
 				const double PrecWater = Prec(day, cell);
 				const double PETWater = PETw(day, cell);
@@ -295,7 +298,6 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 							out_glolake,
 							Res_outflow,
 							Res_overflow,
-							Res_target,
 							S_ResStorage,
 							Res_evapo,
 							Res_inflow,
@@ -304,8 +306,25 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 							Prec_forecast(cell, _), // still in mm.km2
 							PET_forecast(cell, _),
 							G_MEAN_INFLOW_MONTHLY(_, cell),
-							targetStorageRes(cell),
+							Res_target(cell),
 							accumulated_daily_month_inflow(cell));
+					}
+					else if (ReservoirType == 3 && (G_RES_TYPE[cell] != 1 || G_RES_TYPE[cell] != 2))
+					{
+						out_res = routingResHanasaki2022(
+							day,
+							cell,
+							SimDate,
+							PETWater,
+							PrecWater,
+							out_glolake,
+							Res_outflow,
+							Res_overflow,
+							S_ResStorage,
+							Res_evapo,
+							Res_inflow,
+							Res_target,
+							drainage_area(cell));
 					}
 					else
 					{

@@ -17,9 +17,10 @@ double routingResHanasaki2022(int day,
                               NumericVector Res_overflow,
                               NumericVector S_ResStorage,
                               NumericVector Res_evapo,
-                              NumericVector Res_inflow)
+                              NumericVector Res_inflow,
+                              NumericVector temp_check_drainage_area_value,
+                              double drainage_area)
 {
-    int dayDate = SimDate.getDay();     // day that is simulated
     int monthDate = SimDate.getMonth(); // month that is simulated
     int yearDate = SimDate.getYear();   // year that is simulated
     int februaryDays = 28;
@@ -32,7 +33,6 @@ double routingResHanasaki2022(int day,
 
     double totalInflow; 
 	double outflow;
-	double overflow;
 	double evaporation;
 	double gloResEvapoReductionFactor;
 
@@ -43,8 +43,6 @@ double routingResHanasaki2022(int day,
 
     double Qflood = G_BANKFULL[cell] / 1000. * 3600. * 24.; // [m3/s] => [mm*km²/day]
     double Qnormal = G_MEAN_INFLOW[cell] * 1000. * 1000. / daysInMonth; // [km3/month] => [mm*km²/day]
-
-    double drainage_area = 0;
     
 
     double k = max(1 - 5 * (Vtotal - Vflood)/drainage_area, 0.);
@@ -68,7 +66,7 @@ double routingResHanasaki2022(int day,
 		S_ResStorage[cell] = 0.;
 	}
     // Algorithm
-    if (totalInflow >= G_BANKFULL[cell]) // case A
+    if (totalInflow >= Qflood) // case A
     {
         if (S_ResStorage[cell] <= Vcontrol){
             outflow = Qnormal * S_ResStorage[cell] / Vflood;
@@ -77,20 +75,31 @@ double routingResHanasaki2022(int day,
         } else if (S_ResStorage[cell] <= Vemergency){
             outflow = Qflood + k * (S_ResStorage[cell] - Vflood) / (Vemergency - Vflood) * (totalInflow - Qflood);
         } else {
-            outflow = Qflood + (S_ResStorage[cell] - Vemergency) / (Vtotal - Vemergency) * (Qflood - Qnormal);
-
+            outflow = totalInflow;
         }
     } else // case B
     {
+        if (S_ResStorage[cell] <= Vcontrol){
+            outflow = Qnormal * S_ResStorage[cell] / Vflood;
+        } else if (S_ResStorage[cell] <= Vflood){
+            outflow = Qnormal / 2 + pow((S_ResStorage[cell] - Vcontrol) / (Vflood - Vcontrol), 2) * (Qflood - Qnormal);
+        } else if (S_ResStorage[cell] <= Vemergency){
+            outflow = Qflood / 2 + pow((S_ResStorage[cell] - Vflood) / (Vemergency - Vcontrol), 2) * (Qflood - Qnormal);
+        } else {
+            outflow = Qflood;
+        }
 
     }
 
 
     // end algo
-
+    S_ResStorage[cell] -= outflow;
+    // Rcout << "drainage: " << drainage_area << " cell: " << cell << endl;  
 	Res_outflow[cell] = outflow; 
     Res_evapo[cell] = evaporation; 
 	Res_inflow[cell] = totalInflow; 
+    Res_overflow[cell] = 0.0;
+    temp_check_drainage_area_value[cell] = drainage_area;
 
     return outflow;
 };

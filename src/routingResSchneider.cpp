@@ -415,7 +415,6 @@ double routingResSchneider(
 	double inflow,
 	NumericVector Res_outflow,
 	NumericVector Res_overflow,
-	NumericVector Res_target,
 	NumericVector S_ResStorage,
 	NumericVector Res_evapo,
 	NumericVector Res_inflow,
@@ -619,7 +618,7 @@ double routingResSchneider(
 	Res_overflow[cell] = overflow;
 	Res_evapo[cell] = evaporation;
 	Res_inflow[cell] = totalInflow;
-	Res_target[cell] = Res_storage_target;
+	// the target is passed as reference so updated in the function at the beginning of each month
 
 	return outflow + overflow;
 }
