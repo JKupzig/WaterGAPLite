@@ -109,10 +109,7 @@ void WaterUseCalcDaily(int waterUseType, NumericMatrix dailyUse, int year, int m
 					dailyUse(1,i) = SW_day[i] + TF_day[i];
 		}
 				break;
-
-		//no water use is considered
-		case 0: dailyUse.fill(0); // Should not happen
-	
+		default: Rcerr << "Error: WaterUseType should be 0, 1 or 2." << endl;
 	}
 	
 }
