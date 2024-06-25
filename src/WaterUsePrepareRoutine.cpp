@@ -109,7 +109,7 @@ void WaterUseCalcDaily(int waterUseType, NumericMatrix dailyUse, int year, int m
 					dailyUse(1,i) = SW_day[i] + TF_day[i];
 		}
 				break;
-		default: Rcerr << "Error: WaterUseType should be 0, 1 or 2." << endl;
+		default: stop("Error: WaterUseType should be 0, 1 or 2."); // It was already checked, should not happen
 	}
 	
 }
