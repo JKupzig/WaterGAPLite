@@ -22,7 +22,7 @@ Imports: Rcpp (>= 1.0.3),
 Suggests: optimx,
 		  minqa,
 LinkingTo: Rcpp
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 Encoding: UTF-8
 LazyData: true
-LazyDataCompression:xz
+LazyDataCompression: xz

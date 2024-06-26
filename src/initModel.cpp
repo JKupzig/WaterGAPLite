@@ -106,6 +106,7 @@ double defaultRiverVelocity; // = 86.4;	// [km/d] = 1 m/s
 //' @description translates R Settings to global rcpp Settings
 //' @param Settings Settings defined as IntegerVector
 //' @export
+// [[Rcpp::export]]
 void defSettings(NumericVector Settings){
 
 	// check for correct settings input
