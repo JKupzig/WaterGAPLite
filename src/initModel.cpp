@@ -113,7 +113,7 @@ void defSettings(NumericVector Settings){
 	{
 		stop("Settings should be a vector of length 8");
 	}
-	if (Settings[0] != 2 && Settings[0] != 1 && Settings[0] != 0)
+	if (Settings[0] != 0 && Settings[0] != 1 && Settings[0] != 2)
 	{
 		stop("WaterUseType should be 0, 1 or 2");
 	}
