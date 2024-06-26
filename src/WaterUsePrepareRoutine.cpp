@@ -59,14 +59,18 @@ NumericVector WaterUseCalcMeanDemandDaily(int year, int GapYearType){
 void WaterUseCalcDaily(int waterUseType, NumericMatrix dailyUse, int year, int month, int StartYear, 
 						NumericMatrix Info_GW, NumericMatrix Info_SW, NumericMatrix Info_TF){
 	
+	if (waterUseType == 0) { // No waterUse, matrices were initialized to 0 and should not change
+		return;
+	}
+	
 	NumericVector GW_day (array_size);
 	NumericVector SW_day (array_size);
 	NumericVector TF_day (array_size);	
 	
 	
 	//Note that with Lists is more flexible because SimPeriod can change and it still can be calculated withput the need of reading everythin in again
-	int index = year-StartYear + month - 1; //Matrix for SW and GW starts by StartYear and January (monthly Data)
-	int indexTF = year-StartYear; //Matrix for TF starts by StartYear (annual data)
+	int index = 12 * (year - StartYear) + month - 1; //Matrix for SW and GW starts by StartYear and January (monthly Data)
+	int indexTF = year - StartYear; //Matrix for TF starts by StartYear (annual data)
 
 	GW_day = Info_GW(index, _ );
 	SW_day = Info_SW(index, _ );
@@ -84,11 +88,6 @@ void WaterUseCalcDaily(int waterUseType, NumericMatrix dailyUse, int year, int m
 
 	switch(waterUseType) {
 		
-		//no water use is considered
-		case 0: GW_day.fill(0); 
-				dailyUse(0,_) = GW_day;
-				dailyUse(1,_) = GW_day;
-				
 		// only water use without Transport to cities is considered
 		case 1: for (int i=0; i < array_size; i ++){
 					// changing values from m³/year or month to mm*km²/day
@@ -98,6 +97,7 @@ void WaterUseCalcDaily(int waterUseType, NumericMatrix dailyUse, int year, int m
 					dailyUse(0,i) = GW_day[i];
 					dailyUse(1,i) = SW_day[i];
 		}
+				break;
 		// water use including Transport to cities is considered
 		case 2: for (int i=0; i < array_size; i ++){
 					// changing values from m³/year or month to mm*km²/day
@@ -108,7 +108,8 @@ void WaterUseCalcDaily(int waterUseType, NumericMatrix dailyUse, int year, int m
 					dailyUse(0,i) = GW_day[i];
 					dailyUse(1,i) = SW_day[i] + TF_day[i];
 		}
-	
+				break;
+		default: stop("Error: WaterUseType should be 0, 1 or 2."); // It was already checked, should not happen
 	}
 	
 }

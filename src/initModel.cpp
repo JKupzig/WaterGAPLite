@@ -106,7 +106,47 @@ double defaultRiverVelocity; // = 86.4;	// [km/d] = 1 m/s
 //' @description translates R Settings to global rcpp Settings
 //' @param Settings Settings defined as IntegerVector
 //' @export
+// [[Rcpp::export]]
 void defSettings(NumericVector Settings){
+
+	// check for correct settings input
+	if (Settings.size() != 8)
+	{
+		stop("Settings should be a vector of length 8");
+	}
+	if (Settings[0] != 0 && Settings[0] != 1 && Settings[0] != 2)
+	{
+		stop("WaterUseType should be 0, 1 or 2");
+	}
+	if (Settings[1] != 0 && Settings[1] != 1 && Settings[1] != 2)
+	{
+		stop("WaterUseAllocationType should be 0, 1 or 2");
+	}
+	if (Settings[2] != 0 && Settings[2] != 1)
+	{
+		stop("flowVelocityType should be 0 or 1");
+	}
+	if (Settings[3] != 0 && Settings[3] != 1)
+	{
+		stop("GapYearType should be 0 or 1");
+	}
+	if (Settings[4] != 0 && Settings[4] != 1)
+	{
+		stop("ReservoirType should be 0 or 1");
+	}
+	if (Settings[5] != 0 && Settings[5] != 1)
+	{
+		stop("splitttingFactor parameter should be 0 or 1");
+	}
+	if (Settings[6] != 0 && Settings[6] != 1)
+	{
+		stop("calculation LongWave parameter should be 0 or 1");
+	}
+	if (Settings[7] != 0 && Settings[7] != 1 && Settings[7] != 2 && Settings[7] != 3)
+	{
+		stop("useSystemVals should be 0, 1, 2 or 3");
+	}
+
 	waterUseType = Settings[0];
 	WaterUseAllocationType = Settings[1];
 	flowVelocityType = Settings[2];

@@ -27,7 +27,7 @@ using namespace Rcpp;
 //' @export
 // [[Rcpp::export]]
 List runModel(DateVector SimPeriod, List ListConst, NumericVector Settings, int nYears){
-	
+
 	defSettings(Settings); //defines Settings
 	initModel(ListConst); // defines Variables and Input data
 	initializeModel(); // initializes Vectors that defines fluxes and states in Model

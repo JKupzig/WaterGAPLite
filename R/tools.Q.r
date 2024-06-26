@@ -218,7 +218,7 @@ Q.plot_timeseries <- function(df_obs, df_sim, df_prec,
   kge_List <- Q.calc_quality(df_obs, df_sim, type = "KGE")
   sub_title = sprintf("KGE: %f.2. - b: %f.2 - a: %f.2 - r: %f.2",
                       kge_List$KGE, kge_List$b, kge_List$a, kge_List$r)
-  
+
 
   ymin <- 0
   ymax <- round(max(max(df_obs$Value, na.rm = TRUE),
@@ -349,8 +349,7 @@ Q.create_monthly_plot <- function(df_obs, df_sim) {
               mapping = aes(x = date, y = sum_qsim, color = "Qsim")) +
 
     labs(subtitle = sprintf("KGE: %.3f - b: %.3f - a: %.3f - r: %.3f",
-                            KGE_List[[1]], KGE_List[[2]],
-                            KGE_List[[3]], KGE_List[[4]]),
+                            kge, b, a, r),
          caption = "only days within simulation period
                     and with observation data are considered")   +
     xlab("Dates") +

@@ -176,6 +176,16 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// defSettings
+void defSettings(NumericVector Settings);
+RcppExport SEXP _WaterGAPLite_defSettings(SEXP SettingsSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type Settings(SettingsSEXP);
+    defSettings(Settings);
+    return R_NilValue;
+END_RCPP
+}
 // routing
 List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix GroundwaterRunoff, NumericMatrix PETw, NumericMatrix Prec);
 RcppExport SEXP _WaterGAPLite_routing(SEXP SimPeriodSEXP, SEXP surfaceRunoffSEXP, SEXP GroundwaterRunoffSEXP, SEXP PETwSEXP, SEXP PrecSEXP) {
