@@ -9,8 +9,8 @@ Description: Catchment model version of the global hydrological model WaterGAP3.
 License: GPL (>= 2)
 Depends: R (>= 3.6.0)
 Imports: Rcpp (>= 1.0.3),
-         ggplot2, 
-         raster, 
+         ggplot2,
+         raster,
 		 methods,
 		 utils,
 		 stats,
@@ -21,6 +21,7 @@ Imports: Rcpp (>= 1.0.3),
 		 data.table,
 Suggests: optimx,
 		  minqa,
+		  testthat (>= 3.0.0)
 LinkingTo: Rcpp
 RoxygenNote: 7.2.3
 Encoding: UTF-8
