@@ -9,4 +9,4 @@
 library(testthat)
 library(WaterGAPLite)
 
-test_check(WaterGAPLite)
+test_check("WaterGAPLite")
