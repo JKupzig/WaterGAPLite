@@ -185,7 +185,10 @@ ma <- function(x, n = 7) {
 #' @param add_args NULL (not used, but implemented to be useable for Q.calcSI)
 #' @return float
 Q.__calc_mgn_l_1__ <- function(discharge, add_args = NULL) {
-  return(max(stats::quantile(discharge, 0.05),min(discharge[discharge > 0])))
+    if (sum(discharge > 0) == 0){
+        return(0) # complete year has 0 entries..
+    }
+  return(max(stats::quantile(discharge, 0.05), min(discharge[discharge > 0])))
 }
 
 #' @title Calculate Baseflow Index after Richter et al. (1998)
