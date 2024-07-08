@@ -201,6 +201,9 @@ Q.__calc_mgn_l_1__ <- function(discharge, add_args = NULL) {
 #' @return A numeric value representing the BFI of the numeric vector provided
 Q.__calc_mgn_l_2__ <- function(discharge, add_args = NULL) {
   rollmean <- ma(discharge)
+  if (mean(discharge) == 0){
+     return(0)
+  }
   return(min(rollmean, na.rm = TRUE) / mean(discharge))
 }
 
@@ -214,6 +217,9 @@ Q.__calc_mgn_l_2__ <- function(discharge, add_args = NULL) {
 #' @param add_args NULL (not used, but implemented to be useable for Q.calcSI)
 #' @return A numeric value representing the BFI of the numeric vector provided
 Q.__calc_mgn_a_1__ <- function(discharge, add_args = NULL) {
+  if (stats::median(discharge) == 0){
+     return(0)
+  }
   return(mean(discharge) / stats::median(discharge))
 }
 
@@ -225,6 +231,9 @@ Q.__calc_mgn_a_1__ <- function(discharge, add_args = NULL) {
 #' @param area of basin defined in km² as float or integer
 #' @return return mean flow in mm/d as float
 Q.__calc_mgn_a_2__ <- function(discharge, area) {
+  if (area == 0){
+    stop("basin area 0!")
+  }
   return(mean(discharge) * 60 * 60 * 24 / area / 1000)
 }
 
@@ -253,6 +262,10 @@ Q.__calc_mgn_h_1__ <- function(discharge, add_args = NULL) {
 #' @return float Q10_year/Q50_total
 Q.__calc_mgn_h_2__ <- function(discharge, complete_discharge) {
   # Q10/Q50 	Clausen and Biggs 2000
+  if (stats::quantile(complete_discharge, 0.5) == 0){
+    return(0)
+  }
+  
   return(stats::quantile(discharge, 0.9) /
         stats::quantile(complete_discharge, 0.5))
 }
