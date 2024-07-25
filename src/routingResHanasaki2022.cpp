@@ -7,6 +7,8 @@
 using namespace Rcpp;
 using namespace std;
 
+// Compute reservoir operation according to Hanasaki et al. 2022
+
 double routingResHanasaki2022(int day,
                               int cell,
                               Date SimDate,
@@ -18,7 +20,6 @@ double routingResHanasaki2022(int day,
                               NumericVector S_ResStorage,
                               NumericVector Res_evapo,
                               NumericVector Res_inflow,
-                              NumericVector temp_check_drainage_area_value,
                               double drainage_area)
 {
     int monthDate = SimDate.getMonth(); // month that is simulated
@@ -65,7 +66,8 @@ double routingResHanasaki2022(int day,
 		evaporation += S_ResStorage[cell];// [mm km²]
 		S_ResStorage[cell] = 0.;
 	}
-    // Algorithm
+
+    // following Hanasaki et al. 2022
     if (totalInflow >= Qflood) // case A
     {
         if (S_ResStorage[cell] <= Vcontrol){
@@ -82,9 +84,9 @@ double routingResHanasaki2022(int day,
         if (S_ResStorage[cell] <= Vcontrol){
             outflow = Qnormal * S_ResStorage[cell] / Vflood;
         } else if (S_ResStorage[cell] <= Vflood){
-            outflow = Qnormal / 2 + pow((S_ResStorage[cell] - Vcontrol) / (Vflood - Vcontrol), 2) * (Qflood - Qnormal);
+            outflow = Qnormal / 2 + pow((S_ResStorage[cell] - Vcontrol) / (Vemergency - Vcontrol), 2) * (Qflood - Qnormal);
         } else if (S_ResStorage[cell] <= Vemergency){
-            outflow = Qflood / 2 + pow((S_ResStorage[cell] - Vflood) / (Vemergency - Vcontrol), 2) * (Qflood - Qnormal);
+            outflow = Qnormal / 2 + pow((S_ResStorage[cell] - Vcontrol) / (Vemergency - Vcontrol), 2) * (Qflood - Qnormal);
         } else {
             outflow = Qflood;
         }
@@ -92,14 +94,19 @@ double routingResHanasaki2022(int day,
     }
 
 
-    // end algo
     S_ResStorage[cell] -= outflow;
-    // Rcout << "drainage: " << drainage_area << " cell: " << cell << endl;  
+    if (S_ResStorage[cell] < 0.){
+        outflow += S_ResStorage[cell];
+        S_ResStorage[cell] = 0.;
+    }
+    if (S_ResStorage[cell] > Vtotal){ // impossible
+        Res_overflow[cell] = S_ResStorage[cell] - Vtotal;
+        S_ResStorage[cell] = Vtotal;
+    }
+
 	Res_outflow[cell] = outflow; 
     Res_evapo[cell] = evaporation; 
 	Res_inflow[cell] = totalInflow; 
-    Res_overflow[cell] = 0.0;
-    temp_check_drainage_area_value[cell] = drainage_area;
 
     return outflow;
 };

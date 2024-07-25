@@ -45,7 +45,6 @@ List runModel(DateVector SimPeriod, List ListConst, NumericVector Settings, int 
 	List WaterBalanceOutput = createWaterBalance(SimPeriod); //calculates WaterBalance
 	
 	List Fluxes = as<List>(WaterBalanceOutput["Fluxes"]);
-	Rcout << "WaterBalanceOutput computed " << endl;
 	NumericMatrix surfaceRunoff = as<NumericMatrix>(Fluxes["dailyLocalSWRunoff"]);
 	NumericMatrix GroundwaterRunoff = as<NumericMatrix>(Fluxes["dailyLocalGWRunoff"]);
 	NumericMatrix PETw = as<NumericMatrix>(Fluxes["PETw"]);

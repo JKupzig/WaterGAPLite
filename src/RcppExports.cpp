@@ -92,31 +92,31 @@ BEGIN_RCPP
 END_RCPP
 }
 // WaterUseCalcMeanDemandDaily
-NumericVector WaterUseCalcMeanDemandDaily(int year, int GapYearType);
-RcppExport SEXP _WaterGAPLite_WaterUseCalcMeanDemandDaily(SEXP yearSEXP, SEXP GapYearTypeSEXP) {
+NumericVector WaterUseCalcMeanDemandDaily(int nbrDaysInYear, int elapsed_years);
+RcppExport SEXP _WaterGAPLite_WaterUseCalcMeanDemandDaily(SEXP nbrDaysInYearSEXP, SEXP elapsed_yearsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type year(yearSEXP);
-    Rcpp::traits::input_parameter< int >::type GapYearType(GapYearTypeSEXP);
-    rcpp_result_gen = Rcpp::wrap(WaterUseCalcMeanDemandDaily(year, GapYearType));
+    Rcpp::traits::input_parameter< int >::type nbrDaysInYear(nbrDaysInYearSEXP);
+    Rcpp::traits::input_parameter< int >::type elapsed_years(elapsed_yearsSEXP);
+    rcpp_result_gen = Rcpp::wrap(WaterUseCalcMeanDemandDaily(nbrDaysInYear, elapsed_years));
     return rcpp_result_gen;
 END_RCPP
 }
 // WaterUseCalcDaily
-void WaterUseCalcDaily(int waterUseType, NumericMatrix dailyUse, int year, int month, int StartYear, NumericMatrix Info_GW, NumericMatrix Info_SW, NumericMatrix Info_TF);
-RcppExport SEXP _WaterGAPLite_WaterUseCalcDaily(SEXP waterUseTypeSEXP, SEXP dailyUseSEXP, SEXP yearSEXP, SEXP monthSEXP, SEXP StartYearSEXP, SEXP Info_GWSEXP, SEXP Info_SWSEXP, SEXP Info_TFSEXP) {
+void WaterUseCalcDaily(int waterUseType, NumericMatrix dailyUse, int year, int month, int startYear, NumericMatrix Info_GW, NumericMatrix Info_SW, NumericMatrix Info_TF);
+RcppExport SEXP _WaterGAPLite_WaterUseCalcDaily(SEXP waterUseTypeSEXP, SEXP dailyUseSEXP, SEXP yearSEXP, SEXP monthSEXP, SEXP startYearSEXP, SEXP Info_GWSEXP, SEXP Info_SWSEXP, SEXP Info_TFSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type waterUseType(waterUseTypeSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type dailyUse(dailyUseSEXP);
     Rcpp::traits::input_parameter< int >::type year(yearSEXP);
     Rcpp::traits::input_parameter< int >::type month(monthSEXP);
-    Rcpp::traits::input_parameter< int >::type StartYear(StartYearSEXP);
+    Rcpp::traits::input_parameter< int >::type startYear(startYearSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type Info_GW(Info_GWSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type Info_SW(Info_SWSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type Info_TF(Info_TFSEXP);
-    WaterUseCalcDaily(waterUseType, dailyUse, year, month, StartYear, Info_GW, Info_SW, Info_TF);
+    WaterUseCalcDaily(waterUseType, dailyUse, year, month, startYear, Info_GW, Info_SW, Info_TF);
     return R_NilValue;
 END_RCPP
 }

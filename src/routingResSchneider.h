@@ -41,7 +41,8 @@ long optimiseDamOperation(
 	int month_current,
 	double *PET_forecast,
 	double *Prec_forecast,
-	bool eFlow);
+	bool eFlow,
+	int cell);
 
 							
 

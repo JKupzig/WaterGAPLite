@@ -4,17 +4,11 @@
 #include "initModel.h"
 #include "routingResSchneider.h"
 
-// help functions to use from ModelTools:
-// IntegerVector findNumberInVector(int number, IntegerVector vec);
-// IntegerVector findUniqueValues(IntegerVector vec);
-// IntegerVector sortIt(IntegerVector vec);
-// double sumVector(NumericVector vec);
-// int numberOfDaysInMonth(int month, int year);
-// int numberOfDaysInYear(int year);
-
 using namespace Rcpp;
 using namespace std;
 
+// Optimisation function which computes the target every first day of the month
+// (copy pasted and adapted from WaterGAP 3)
 long optimiseDamOperation(
 	int res_type,
 	int yearDate, // for leap years only
@@ -27,18 +21,19 @@ long optimiseDamOperation(
 	double Sstart,
 	NumericVector inflow_forecast, // [km3/month]
 	int month_current,
-	NumericVector PET_forecast, // [mm.km2/d]
+	NumericVector PET_forecast,	 // [mm.km2/d]
 	NumericVector Prec_forecast, // [mm.km2/d]
-	bool eFlow)
+	bool eFlow,
+	int cell)
 {
 	long int DELTA_T = 86400; // (24h * 60min * 60sec)
-	
+
 	short februaryDays = 28;
 	if (GapYearType != 1)
 	{
 		februaryDays = numberOfDaysInMonth(2, yearDate);
 	}
-	const short DAYSPERMONTH[12] = {31, februaryDays, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}; 
+	const short DAYSPERMONTH[12] = {31, februaryDays, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 	///--- Series of forecasted monthly inflow for the next 12 month---------------------------------------------
 	double inflow_series[12];
@@ -54,9 +49,9 @@ long optimiseDamOperation(
 		{
 			month_next = month_next - 12;
 		}
-		inflow_series[m] = inflow_forecast(month_next - 1)/ DAYSPERMONTH[month_next - 1] / DELTA_T * 1000. * 1000. * 1000.; // [km3/month] => [m3/s]
-		evapo_series[m] = PET_forecast(month_next - 1)* 1000. / DELTA_T; // [mm.km2/d] => [m3/s]
-		prec_series[m] = Prec_forecast(month_next - 1)* 1000. / DELTA_T; // [mm.km2/d] => [m3/s]
+		inflow_series[m] = inflow_forecast(month_next - 1) / DAYSPERMONTH[month_next - 1] / DELTA_T * 1000. * 1000. * 1000.; // [km3/month] => [m3/s]
+		evapo_series[m] = PET_forecast(month_next - 1) * 1000. / DELTA_T;													 // [mm.km2/d] => [m3/s]
+		prec_series[m] = Prec_forecast(month_next - 1) * 1000. / DELTA_T;													 // [mm.km2/d] => [m3/s]
 	}
 	///----  Definition of variables  ---------------------------------------------------------------------------
 	int nr_of_classes = 80;
@@ -64,7 +59,6 @@ long optimiseDamOperation(
 	long int Smean = 0;
 	double evapo_reduction = 1.;
 
-	
 	///---- Calculation of mean annual inflow -------------------------------------------------------------------
 	double annual_inflow = 0.0;
 	double Qmean = 0.0;
@@ -83,10 +77,10 @@ long optimiseDamOperation(
 	double class_border_low = 0.;
 	double class_border_high = 0.;
 
-	long int **class_table = new long int *[nr_of_classes + 1];
+	double **class_table = new double *[nr_of_classes + 1];
 	for (class_id = 1; class_id <= (nr_of_classes + 1); class_id++)
 	{
-		class_table[class_id - 1] = new long int[4];
+		class_table[class_id - 1] = new double[4];
 		if (!class_table[class_id - 1])
 		{
 			Rcerr << "memory error class_table\n";
@@ -359,8 +353,20 @@ long optimiseDamOperation(
 
 	if (class_start == 0)
 	{
-		S_target = class_table[0][3];
-		Rcerr << "optimiseDamOperation() ERROR: S_target =\t" << S_target << "\tclass_start:\t" << class_start << "\tSstart:\t" << Sstart << endl;
+		if (Sstart <= class_table[nr_of_classes][2] * 1.01)
+		{ // Had to change class table to type double rather than long because it was overflowing,
+		  // so need to account for floating point error
+			class_start = class_table[nr_of_classes][0];
+		}
+		else
+		{
+			S_target = class_table[0][3];
+			Rcerr << "optimiseDamOperation() ERROR: S_target = " << S_target << ", class_start: " << class_start << ", Sstart: " << Sstart << ", class max: " << class_table[nr_of_classes][2] << endl;
+			for (int i = 1; i <= (nr_of_classes + 1); i++)
+			{
+				Rcerr << "class_table[" << i << "][1] : " << class_table[i - 1][1] << ", class_table[" << i << "][2] : " << class_table[i - 1][2] << endl;
+			}
+		}
 	}
 	else
 	{
@@ -406,6 +412,10 @@ long optimiseDamOperation(
 	return S_target;
 }
 
+// Dam operation computation based on Schneider et al. 2015
+// Takes for input forecasted inflow, PET and Precipitation and calls optimiseDamOperation() every first day
+// in month to compute the target storage for the reservoir
+// (copy pasted and adapted from WaterGAP 3, should be used for irrigation and water supply)
 double routingResSchneider(
 	int day,
 	int cell,
@@ -420,8 +430,8 @@ double routingResSchneider(
 	NumericVector Res_inflow,
 	NumericMatrix dailyUse,
 	NumericVector MeanDemand,
-	NumericVector Prec_forecast, // [mm.km2/d]
-	NumericVector PET_forecast, // [mm.km2/d]
+	NumericVector Prec_forecast,   // [mm.km2/d]
+	NumericVector PET_forecast,	   // [mm.km2/d]
 	NumericVector inflow_forecast, // [km3/month]
 	double &Res_storage_target,
 	double &accumulated_daily_month_inflow)
@@ -438,7 +448,6 @@ double routingResSchneider(
 	int daysInMonthArray[12] = {31, februaryDays, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 	//  here to put back in case of it failed
-
 
 	///---- Optimization of the reservoir operation  ---------------------------------------------------------
 	double day_max = G_7daymax[cell];	// [m3/s]
@@ -470,11 +479,11 @@ double routingResSchneider(
 									  monthDate,										// [1:12]
 									  PET_forecast,										// [mm.km2/d] conversion is done in optimiseDamOperation
 									  Prec_forecast,									// [mm.km2/d] conversion is done in optimiseDamOperation
-									  false);	//eFlOw										// bool = true
+									  false,
+									  cell); // eFlOw										// bool = true
 		// Rcout << "start of month :" << monthDate << ", target : " << (double) target << " m3" << ", inflow : " << inflow*1000./3600./24 << " m3/s" << endl;
 		// Rcout << "test Inflow forecast" << inflow_forecast[monthDate - 1] / daysInMonthArray[monthDate - 1] / 3600. / 24. * 1000000000. + ( Prec_forecast[monthDate - 1] - PET_forecast[monthDate - 1]) * 1000. / (3600 * 24) << endl;
-		Res_storage_target = (double) target / 1000.; // [m3] => [mm.km2]
-
+		Res_storage_target = (double)target / 1000.; // [m3] => [mm.km2]
 	}
 
 	double maxStorage;
@@ -483,13 +492,13 @@ double routingResSchneider(
 	double overflow = 0.;
 	double evaporation;
 	double gloResEvapoReductionFactor;
-	// CALCULATING WATERBALANCE ANALOG TO ALL WATERBODIES 
+	// CALCULATING WATERBALANCE ANALOG TO ALL WATERBODIES
 
 	// inflow from upstream PLUS lake water balance
 	totalInflow = inflow + (PrecWater * G_RESAREA[cell]); //[mm km²]
 
 	maxStorage = G_STORAGE_CAPACITY[cell] * 1000 * 1000; // [mm km²] (not taking into account the litterature's 85% limit)
-	
+
 	// ET: same as gloLakeEvapo
 	if (S_ResStorage[cell] > maxStorage)
 		gloResEvapoReductionFactor = 1.; // []
@@ -499,20 +508,17 @@ double routingResSchneider(
 	// calculate evaporation from global lakes
 	evaporation = (PETWater * gloResEvapoReductionFactor) * G_RESAREA[cell]; // [mm km²]
 
-	
-
-
 	// Calculate daily release
-	short int days_elapsed;		 // elapsed days in the current month
-	long int storage_deviation;	 // Deviation current storage to target storage
-	double Qmi;					 // expected inflow for the day calculated with the average of what was expected for the remainder of the month 
-								 // and the mean of what has flown this month [mm.km2/d]
-	double release;				 // daily release [m3/s]
+	short int days_elapsed;		// elapsed days in the current month
+	long int storage_deviation; // Deviation current storage to target storage
+	double Qmi;					// expected inflow for the day calculated with the average of what was expected for the remainder of the month
+								// and the mean of what has flown this month [mm.km2/d]
+	double release;				// daily release [m3/s]
 	double losses;
 
 	days_elapsed = dayDate - 1;
 	storage_deviation = S_ResStorage[cell] - Res_storage_target; // [mm.km2]
- 	// Diff with WG3 : Res_storage is updated here before the calculation of the release
+																 // Diff with WG3 : Res_storage is updated here before the calculation of the release
 
 	if (dayDate == 1)
 	{
@@ -530,8 +536,9 @@ double routingResSchneider(
 	losses = (PrecWater * G_RESAREA[cell]) - evaporation; // [mm.km2/d]
 
 	// Update of daily release
-	release = (storage_deviation / (daysInMonthArray[monthDate - 1] - days_elapsed) + (Qmi + losses)); // [mm.km2/d]
-	// release = (storage_deviation / (daysInMonthArray[monthDate - 1] - days_elapsed)*(daysInMonthArray[monthDate - 1] - days_elapsed)/30 + (Qmi + losses)); // [mm.km2/d] test, maybe it's better
+	release = (storage_deviation / (daysInMonthArray[monthDate - 1] - days_elapsed) + (Qmi + losses));				
+	// Rcout << "test : " << pow(daysInMonthArray[monthDate - 1] - days_elapsed, 2)  / 30 << endl;											 // [mm.km2/d]
+	// release = (storage_deviation / (pow(daysInMonthArray[monthDate - 1] - days_elapsed, 2) / 30) + (Qmi + losses)); // [mm.km2/d] test, maybe it's better
 
 	if (release < 0.)
 	{
@@ -539,16 +546,16 @@ double routingResSchneider(
 	}
 	// The daily release should be within the limits of Qmin (7daymin) and Qmax (bankfull flow)
 	bankfull *= 3600. * 24. / 1000.; // [m3/s] => [mm.km2/d]
-	if (release > bankfull) // [mm.km2/d]
+	if (release > bankfull)			 // [mm.km2/d]
 	{
 		release = bankfull;
 	}
 	day_min *= 3600. * 24. / 1000.; // [m3/s] => [mm.km2/d]
-	if (release < day_min) // [mm.km2/d]
+	if (release < day_min)			// [mm.km2/d]
 	{
 		release = day_min;
 	}
-	
+
 	// add inflow to storage
 	S_ResStorage[cell] += totalInflow; // [mm km²]
 

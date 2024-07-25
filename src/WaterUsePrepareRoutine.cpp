@@ -11,21 +11,30 @@
 //' @return G_mean_demand as numericVector for the sepcified year in [mm*km²/day]
 //' @export
 // [[Rcpp::export]]
-NumericVector WaterUseCalcMeanDemandDaily(int year, int GapYearType){
+NumericVector WaterUseCalcMeanDemandDaily(int nbrDaysInYear, int elapsed_years){
 	// info is used in reservoir
 	NumericVector G_mean_demand(array_size); //longterm water demand of cell itself
-	
+	NumericVector SW_mean(array_size);
+	int startIndex = 12*(elapsed_years);
+	for (int month = 0; month < 12; month++){
+		for (int j = 0; j < array_size; j++){
+			SW_mean[j] += Info_SW(startIndex+month, j)/1000./30.;
+		}
+	}
+
 	//calculate MEAN demand of downstream area
 	for (int cell = 0; cell < array_size; cell++){
 		
-		G_mean_demand[cell] = YearlyMeanDemand[cell];
-		
+		//G_mean_demand[cell] = YearlyMeanDemand[cell];
+		G_mean_demand[cell] = SW_mean[cell];
+
 		int i=0; 
 		int downstreamCell=outflowOrder[cell];
 		
 		while (i < reservoir_dsc && downstreamCell > 0 && downstreamCell < array_size && G_RESAREA[downstreamCell-1] == 0) {
 			//suggestion Jenny: only consider positive values here
-			G_mean_demand[cell] += YearlyMeanDemand[downstreamCell-1] * G_ALLOC_COEFF(i++, cell);
+			//G_mean_demand[cell] += YearlyMeanDemand[downstreamCell-1] * G_ALLOC_COEFF(i++, cell);
+			G_mean_demand[cell] += SW_mean[downstreamCell-1] * G_ALLOC_COEFF(i++, cell);
 			// next downstream cell
 			downstreamCell = outflowOrder[downstreamCell-1];
 		}
@@ -33,10 +42,10 @@ NumericVector WaterUseCalcMeanDemandDaily(int year, int GapYearType){
 	
 	//unit changing from m³/yr to mm*km²/day (to m³/s) --> /= 31536000.
 	for (int cell = 0; cell < array_size; cell++){
-		if (GapYearType == 1) { //avoid somulation of the 29.02 to compare modelling result to WG3
-			G_mean_demand[cell] = G_mean_demand[cell] / 1000. / 365.; //[mm*km²/day]
+		if (true || GapYearType == 1) { //avoid somulation of the 29.02 to compare modelling result to WG3
+			G_mean_demand[cell] = G_mean_demand[cell] / 12.; //[mm*km²/day]
 		} else {
-			G_mean_demand[cell] = G_mean_demand[cell] / 1000. / numberOfDaysInYear(year); //[mm*km²/day]
+			// G_mean_demand[cell] = G_mean_demand[cell] / 1000. / numberOfDaysInYear(year); //[mm*km²/day]
 		}
 	}
 	
@@ -56,17 +65,22 @@ NumericVector WaterUseCalcMeanDemandDaily(int year, int GapYearType){
 //' @param Info_TF read water use information for transport to cities
 //' @export
 // [[Rcpp::export]]
-void WaterUseCalcDaily(int waterUseType, NumericMatrix dailyUse, int year, int month, int StartYear, 
+void WaterUseCalcDaily(int waterUseType, NumericMatrix dailyUse, int year, int month, int startYear, 
 						NumericMatrix Info_GW, NumericMatrix Info_SW, NumericMatrix Info_TF){
 	
+	if (waterUseType == 0){ // no Water Use, matrices were initialized to 0 and should not change
+		Rcout << "No Water Use is considered" << endl;
+		return;
+	}
+
 	NumericVector GW_day (array_size);
 	NumericVector SW_day (array_size);
 	NumericVector TF_day (array_size);	
 	
 	
 	//Note that with Lists is more flexible because SimPeriod can change and it still can be calculated withput the need of reading everythin in again
-	int index = year-StartYear + month - 1; //Matrix for SW and GW starts by StartYear and January (monthly Data)
-	int indexTF = year-StartYear; //Matrix for TF starts by StartYear (annual data)
+	int index = 12*(year-startYear) + month - 1; //Matrix for SW and GW starts by StartYear and January (monthly Data)
+	int indexTF = year-startYear; //Matrix for TF starts by StartYear (annual data)
 
 	GW_day = Info_GW(index, _ );
 	SW_day = Info_SW(index, _ );
@@ -84,10 +98,6 @@ void WaterUseCalcDaily(int waterUseType, NumericMatrix dailyUse, int year, int m
 
 	switch(waterUseType) {
 		
-		//no water use is considered
-		case 0: GW_day.fill(0); 
-				dailyUse(0,_) = GW_day;
-				dailyUse(1,_) = GW_day;
 				
 		// only water use without Transport to cities is considered
 		case 1: for (int i=0; i < array_size; i ++){
@@ -98,6 +108,7 @@ void WaterUseCalcDaily(int waterUseType, NumericMatrix dailyUse, int year, int m
 					dailyUse(0,i) = GW_day[i];
 					dailyUse(1,i) = SW_day[i];
 		}
+		break;
 		// water use including Transport to cities is considered
 		case 2: for (int i=0; i < array_size; i ++){
 					// changing values from m³/year or month to mm*km²/day
@@ -108,7 +119,9 @@ void WaterUseCalcDaily(int waterUseType, NumericMatrix dailyUse, int year, int m
 					dailyUse(0,i) = GW_day[i];
 					dailyUse(1,i) = SW_day[i] + TF_day[i];
 		}
-	
+		break;
+		
+		default: stop("Error: WaterUseType should be 0, 1 or 2."); // It was already checked, should not happen
 	}
 	
 }

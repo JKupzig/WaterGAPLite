@@ -19,7 +19,6 @@ double routingResHanasaki2022(int day,
 	NumericVector S_ResStorage,
 	NumericVector Res_evapo,
 	NumericVector Res_inflow,
-	NumericVector temp_check_drainage_area_value,
 	double drainage_area);
 
 #endif

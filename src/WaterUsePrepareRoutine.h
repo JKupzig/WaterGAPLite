@@ -7,7 +7,7 @@ using namespace std;
 using namespace Rcpp;
 
 
-NumericVector WaterUseCalcMeanDemandDaily(int year, int GapYearType);
+NumericVector WaterUseCalcMeanDemandDaily(int nbrOfDaysInYear, int years_elapsed);
 void WaterUseCalcDaily(int waterUseType, NumericMatrix dailyUse, int year, int month, int StartYear, NumericMatrix Info_GW, NumericMatrix Info_SW, NumericMatrix Info_TF);
  
 #endif

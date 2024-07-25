@@ -13,6 +13,7 @@
 #include "routingResSchneider.h"
 #include "WaterUseConsumSW.h"
 #include "routingResHanasaki2022.h"
+#include "routingResRunOfTheRiver.h"
 using namespace Rcpp;
 using namespace std;
 
@@ -46,7 +47,6 @@ void setLakeWetlandToMaximum(NumericVector S_locLakeStorage, NumericVector S_loc
 List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix GroundwaterRunoff,
 			 NumericMatrix PETw, NumericMatrix Prec)
 {
-	Rcout << "Start routing" << endl;
 	const int ndays = SimPeriod.length();
 	const double landSize = sumVector(GAREA); // basinArea (only landfraction is considered)
 
@@ -135,22 +135,17 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 	PET_forecast.fill(0);
 	int month;
 
-	if (ReservoirType == 0 || ReservoirType == 2)
+	// initialize K_release for Hanasaki dam scheme
+	if (ReservoirType != 1)
 	{
 		for (int cell = 0; cell < array_size; cell++)
 		{
-			if (S_ResStorage[cell] < (G_STORAGE_CAPACITY[cell] * 1000 * 1000 * 0.1))
-			{
-				K_release[cell] = 0.1;
-			}
-			else
-			{
-				K_release[cell] = S_ResStorage[cell] / (G_STORAGE_CAPACITY[cell] * 1000 * 1000);
-			}
+			K_release[cell] = max(0.1, S_ResStorage[cell] / (G_STORAGE_CAPACITY[cell] * 1000. * 1000.));
 		}
 	}
 
-	if (ReservoirType == 2 || ReservoirType == 3)
+	// Compute forecasts for Schneider dam scheme
+	if (ReservoirType == 2)
 	{
 		for (int cell = 0; cell < array_size; cell++)
 		{
@@ -181,6 +176,7 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 				G_BANKFULL[cell] = 0.05;
 		}
 	}
+
 	// have to use routing order to be consistent
 	numbers = findUniqueValues(routeOrder); // finding unique values in route order (ascending) => routingSteps
 	numbersSorted = sortIt(numbers);
@@ -199,11 +195,15 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 		int year = SimDate.getYear();
 		int month = SimDate.getMonth();
 		int dayDate = SimDate.getDay();
-
-		NumericVector MeanDemand = WaterUseCalcMeanDemandDaily(year, GapYearType);
+		int nbrOfDayInYear = 365;
+		if (GapYearType == 0)
+		{
+			nbrOfDayInYear = numberOfDaysInYear(year);
+		}
+		NumericVector MeanDemand = WaterUseCalcMeanDemandDaily(nbrOfDayInYear, year - startYear);
 
 		if (GapYearType == 1)
-		{ // avoid somulation of the 29.02 to compare modelling result to WG3
+		{ // avoid simulation of the 29.02 to compare modelling result to WG3
 			if ((dayDate == 29) && (month == 2))
 			{
 				continue;
@@ -224,10 +224,14 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 				cell = cellIDs[i];
 				InflowUpstream = 0.0;
 
-				if (ReservoirType == 3 && day == 0){ // compute drainage area
+				// Compute drainage area at the beginning of the simulation for Hanasaki 2022 dam scheme
+				// Comutation is here because it needs the computation of the routing order
+				if (day == 0 && (ReservoirType == 3 || ReservoirType == 4))
+				{
 					drainage_area[cell] += GAREA[cell];
-					if (routeOrder[cell] > 0){
-						drainage_area[routeOrder[cell] - 1] += drainage_area[cell];
+					if (outflowOrder[cell] > 0)
+					{
+						drainage_area[outflowOrder[cell] - 1] += drainage_area[cell];
 					}
 				}
 
@@ -287,53 +291,109 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 				// reserviors
 				if (G_RESAREA[cell] > 0 && ReservoirType != 1)
 				{
-					if (ReservoirType == 2 && G_RES_TYPE[cell] != 1)
-					{
-						out_res = routingResSchneider(
-							day,
-							cell,
-							SimDate,
-							PETWater,
-							PrecWater,
-							out_glolake,
-							Res_outflow,
-							Res_overflow,
-							S_ResStorage,
-							Res_evapo,
-							Res_inflow,
-							dailyUse,
-							MeanDemand,
-							Prec_forecast(cell, _), // still in mm.km2
-							PET_forecast(cell, _),
-							G_MEAN_INFLOW_MONTHLY(_, cell),
-							Res_target(cell),
-							accumulated_daily_month_inflow(cell));
-					}
-					else if (ReservoirType == 3 && (G_RES_TYPE[cell] != 1 || G_RES_TYPE[cell] != 2))
-					{
-						out_res = routingResHanasaki2022(
-							day,
-							cell,
-							SimDate,
-							PETWater,
-							PrecWater,
-							out_glolake,
-							Res_outflow,
-							Res_overflow,
-							S_ResStorage,
-							Res_evapo,
-							Res_inflow,
-							Res_target,
-							drainage_area(cell));
-					}
-					else
+					if (ReservoirType == 0) // original WGLite
 					{
 						out_res = routingResHanasaki(day, cell, SimDate, PETWater, PrecWater, out_glolake,
 													 Res_outflow, Res_overflow, S_ResStorage, Res_evapo, Res_inflow,
 													 dailyUse, MeanDemand, K_release);
 					}
+					else if (ReservoirType == 2) // current WG3 param, Hanasaki (2006) for irrigation, Schneider for the rest
+					{ 
+						if (G_RES_TYPE[cell] == 1)
+						{
+							out_res = routingResHanasaki(day, cell, SimDate, PETWater, PrecWater, out_glolake,
+														 Res_outflow, Res_overflow, S_ResStorage, Res_evapo, Res_inflow,
+														 dailyUse, MeanDemand, K_release);
+						}
+						else
+						{
+							out_res = routingResSchneider( 
+								day,
+								cell,
+								SimDate,
+								PETWater,
+								PrecWater,
+								out_glolake,
+								Res_outflow,
+								Res_overflow,
+								S_ResStorage,
+								Res_evapo,
+								Res_inflow,
+								dailyUse,
+								MeanDemand,
+								Prec_forecast(cell, _), // still in mm.km2
+								PET_forecast(cell, _),
+								G_MEAN_INFLOW_MONTHLY(_, cell),
+								Res_target(cell),
+								accumulated_daily_month_inflow(cell));
+						}
+					}
+					else if (ReservoirType == 3) // First new param : hana 2006 for irrigation and water supply
+					// hanna 2022 for the rest
+					{
+						if (G_RES_TYPE[cell] == 1 || G_RES_TYPE[cell] == 2) 
+						{
+							out_res = routingResHanasaki(day, cell, SimDate, PETWater, PrecWater, out_glolake,
+														 Res_outflow, Res_overflow, S_ResStorage, Res_evapo, Res_inflow,
+														 dailyUse, MeanDemand, K_release);
+						}
+						else
+						{
+							out_res = routingResHanasaki2022(
+								day,
+								cell,
+								SimDate,
+								PETWater,
+								PrecWater,
+								out_glolake,
+								Res_outflow,
+								Res_overflow,
+								S_ResStorage,
+								Res_evapo,
+								Res_inflow,
+								drainage_area(cell));
+						}
+					}
+					else  // ReservoirType == 4 Same as Type 3 but run of the river for "small" hydro power and recreation
+					{
+						if (G_RES_TYPE[cell] == 1 || G_RES_TYPE[cell] == 2)
+						{
+							out_res = routingResHanasaki(day, cell, SimDate, PETWater, PrecWater, out_glolake,
+														 Res_outflow, Res_overflow, S_ResStorage, Res_evapo, Res_inflow,
+														 dailyUse, MeanDemand, K_release);
+						}
+						else if (G_RES_TYPE[cell] != 6 && (G_RES_TYPE[cell] != 3 || G_STORAGE_CAPACITY[cell] / (G_MEAN_INFLOW[cell] * 12) > 0.5))
+						{
+							out_res = routingResHanasaki2022(
+								day,
+								cell,
+								SimDate,
+								PETWater,
+								PrecWater,
+								out_glolake,
+								Res_outflow,
+								Res_overflow,
+								S_ResStorage,
+								Res_evapo,
+								Res_inflow,
+								drainage_area(cell));
+						}
+						else
+						{
+							out_res = routingResRunOfTheRiver(
+								cell,
+								PETWater,
+								PrecWater,
+								out_glolake,
+								Res_outflow,
+								Res_overflow,
+								S_ResStorage,
+								Res_evapo,
+								Res_inflow);
+						}
+					}
 				}
-				else
+				else // ReservoirType == 1 (then the reservoir was changed to a Glolake) or no reservoir in this cell
 				{
 					out_res = out_glolake;
 				}

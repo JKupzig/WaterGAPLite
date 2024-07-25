@@ -72,8 +72,8 @@ WaterUseConsumGW <- function(cell, GroundwaterStorage, dailyUse) {
 #' @param GapYearType Info from Setting wheter 29.02 is simulated (0) or not (1)
 #' @return G_mean_demand as numericVector for the sepcified year in [mm*km²/day]
 #' @export
-WaterUseCalcMeanDemandDaily <- function(year, GapYearType) {
-    .Call(`_WaterGAPLite_WaterUseCalcMeanDemandDaily`, year, GapYearType)
+WaterUseCalcMeanDemandDaily <- function(nbrDaysInYear, elapsed_years) {
+    .Call(`_WaterGAPLite_WaterUseCalcMeanDemandDaily`, nbrDaysInYear, elapsed_years)
 }
 
 #' @title WaterUseCalcDaily
@@ -87,8 +87,8 @@ WaterUseCalcMeanDemandDaily <- function(year, GapYearType) {
 #' @param Info_SW read water use information from surface water
 #' @param Info_TF read water use information for transport to cities
 #' @export
-WaterUseCalcDaily <- function(waterUseType, dailyUse, year, month, StartYear, Info_GW, Info_SW, Info_TF) {
-    invisible(.Call(`_WaterGAPLite_WaterUseCalcDaily`, waterUseType, dailyUse, year, month, StartYear, Info_GW, Info_SW, Info_TF))
+WaterUseCalcDaily <- function(waterUseType, dailyUse, year, month, startYear, Info_GW, Info_SW, Info_TF) {
+    invisible(.Call(`_WaterGAPLite_WaterUseCalcDaily`, waterUseType, dailyUse, year, month, startYear, Info_GW, Info_SW, Info_TF))
 }
 
 #' @title Calculating waterbalance of basin

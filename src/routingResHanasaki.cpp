@@ -29,7 +29,7 @@ using namespace std;
 double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, double PrecWater, double inflow, 
 							NumericVector Res_outflow, NumericVector Res_overflow, NumericVector S_ResStorage, NumericVector Res_evapo, NumericVector Res_inflow,
 							NumericMatrix dailyUse, NumericVector MeanDemand, NumericVector K_release) {
-
+	
 	int dayDate = SimDate.getDay(); //day that is simulated
 	int monthDate = SimDate.getMonth(); // month that is simulated
 	int yearDate = SimDate.getYear(); // year that is simulated
@@ -95,7 +95,6 @@ double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, doub
 		} else {
 			K_release[cell] = S_ResStorage[cell] / (G_STORAGE_CAPACITY[cell]*1000*1000);
 		}
-
 	}
 	
 	// algorithm based on water use
@@ -116,11 +115,6 @@ double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, doub
 			// next downstream cell
 			downstreamCell = outflowOrder[downstreamCell-1];
 		}
-		if (monthDate % 3 == 0){
-				Rcout << "dailyUseCell: " << dailyUseCell << std::endl;
-				Rcout << "MeanDemand[cell]: " << MeanDemand[cell] << std::endl;
-				Rcout << "meanInflow: " << meanInflow << std::endl;
-				Rcout << endl;}
 		if(MeanDemand[cell] < 0 || dailyUseCell < 0 ){
 			prov_rel = meanInflow;
 		} else if (MeanDemand[cell] >= 0.5 * meanInflow){
@@ -155,9 +149,9 @@ double routingResHanasaki(int day, int cell, Date SimDate, double PETWater, doub
 	S_ResStorage[cell] -= outflow;
 
 	// reduce G_gloResStorage to maximum storage capacity -->when there is a lot of precipitation in this time step
-	if (S_ResStorage[cell] > maxStorage) {
-		overflow = (S_ResStorage[cell] - maxStorage);
-		S_ResStorage[cell] = maxStorage;
+	if (S_ResStorage[cell] > maxStorage/0.85) {
+		overflow = (S_ResStorage[cell] - maxStorage/0.85);
+		S_ResStorage[cell] = maxStorage/0.85;
 	} else {
 		overflow = 0;
 	}

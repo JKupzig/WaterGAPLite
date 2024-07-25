@@ -130,8 +130,12 @@ void runWarmUp(DateVector timestring, int nYears){
 				
 		
 		// ROUTING ######################################################################
-		
-		NumericVector MeanDemand = WaterUseCalcMeanDemandDaily(year, GapYearType);
+		int nbrOfDayInYear = 365;
+		if (GapYearType == 0)
+		{
+			nbrOfDayInYear = numberOfDaysInYear(year);
+		}
+		NumericVector MeanDemand = WaterUseCalcMeanDemandDaily(nbrOfDayInYear, year - StartYear);
 		WaterUseCalcDaily(waterUseType, dailyUse, year, month, StartYear, Info_GW, Info_SW, Info_TF); // first row = GW, second row = SW
 		
 		G_actualUse.fill(0); //clean up actual use from Surface Water Bodies
