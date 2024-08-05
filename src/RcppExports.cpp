@@ -186,6 +186,33 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// getLAIdaily
+NumericMatrix getLAIdaily(NumericVector LAI_min, NumericVector LAI_max, NumericVector initDays, const NumericMatrix Temp, const NumericMatrix Prec, const IntegerVector aridType, const NumericVector GLCT);
+RcppExport SEXP _WaterGAPLite_getLAIdaily(SEXP LAI_minSEXP, SEXP LAI_maxSEXP, SEXP initDaysSEXP, SEXP TempSEXP, SEXP PrecSEXP, SEXP aridTypeSEXP, SEXP GLCTSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type LAI_min(LAI_minSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type LAI_max(LAI_maxSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type initDays(initDaysSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix >::type Temp(TempSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix >::type Prec(PrecSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector >::type aridType(aridTypeSEXP);
+    Rcpp::traits::input_parameter< const NumericVector >::type GLCT(GLCTSEXP);
+    rcpp_result_gen = Rcpp::wrap(getLAIdaily(LAI_min, LAI_max, initDays, Temp, Prec, aridType, GLCT));
+    return rcpp_result_gen;
+END_RCPP
+}
+// initModel
+void initModel(List ListConst);
+RcppExport SEXP _WaterGAPLite_initModel(SEXP ListConstSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type ListConst(ListConstSEXP);
+    initModel(ListConst);
+    return R_NilValue;
+END_RCPP
+}
 // routing
 List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix GroundwaterRunoff, NumericMatrix PETw, NumericMatrix Prec);
 RcppExport SEXP _WaterGAPLite_routing(SEXP SimPeriodSEXP, SEXP surfaceRunoffSEXP, SEXP GroundwaterRunoffSEXP, SEXP PETwSEXP, SEXP PrecSEXP) {
@@ -222,6 +249,34 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type S_gloWetlandStorage(S_gloWetlandStorageSEXP);
     setLakeWetlandToMaximum(S_locLakeStorage, S_locWetlandStorage, S_gloLakeStorage, S_ResStorage, S_gloWetlandStorage);
     return R_NilValue;
+END_RCPP
+}
+// routingLocalWaterBodies
+double routingLocalWaterBodies(bool Type, int cell, double PrecWater, double PETWater, double TempWater, IntegerVector accum_days, NumericVector snow_storage_wetland, double Inflow, NumericVector S_locLakeStorage, NumericVector locLake_overflow, NumericVector locLake_outflow, NumericVector locLake_evapo, NumericVector locLake_inflow, NumericVector S_locWetlandStorage, NumericVector locWetland_overflow, NumericVector locWetland_outflow, NumericVector locWetland_evapo, NumericVector locWetland_inflow);
+RcppExport SEXP _WaterGAPLite_routingLocalWaterBodies(SEXP TypeSEXP, SEXP cellSEXP, SEXP PrecWaterSEXP, SEXP PETWaterSEXP, SEXP TempWaterSEXP, SEXP accum_daysSEXP, SEXP snow_storage_wetlandSEXP, SEXP InflowSEXP, SEXP S_locLakeStorageSEXP, SEXP locLake_overflowSEXP, SEXP locLake_outflowSEXP, SEXP locLake_evapoSEXP, SEXP locLake_inflowSEXP, SEXP S_locWetlandStorageSEXP, SEXP locWetland_overflowSEXP, SEXP locWetland_outflowSEXP, SEXP locWetland_evapoSEXP, SEXP locWetland_inflowSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< bool >::type Type(TypeSEXP);
+    Rcpp::traits::input_parameter< int >::type cell(cellSEXP);
+    Rcpp::traits::input_parameter< double >::type PrecWater(PrecWaterSEXP);
+    Rcpp::traits::input_parameter< double >::type PETWater(PETWaterSEXP);
+    Rcpp::traits::input_parameter< double >::type TempWater(TempWaterSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type accum_days(accum_daysSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type snow_storage_wetland(snow_storage_wetlandSEXP);
+    Rcpp::traits::input_parameter< double >::type Inflow(InflowSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type S_locLakeStorage(S_locLakeStorageSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type locLake_overflow(locLake_overflowSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type locLake_outflow(locLake_outflowSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type locLake_evapo(locLake_evapoSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type locLake_inflow(locLake_inflowSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type S_locWetlandStorage(S_locWetlandStorageSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type locWetland_overflow(locWetland_overflowSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type locWetland_outflow(locWetland_outflowSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type locWetland_evapo(locWetland_evapoSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type locWetland_inflow(locWetland_inflowSEXP);
+    rcpp_result_gen = Rcpp::wrap(routingLocalWaterBodies(Type, cell, PrecWater, PETWater, TempWater, accum_days, snow_storage_wetland, Inflow, S_locLakeStorage, locLake_overflow, locLake_outflow, locLake_evapo, locLake_inflow, S_locWetlandStorage, locWetland_overflow, locWetland_outflow, locWetland_evapo, locWetland_inflow));
+    return rcpp_result_gen;
 END_RCPP
 }
 // routingRiver

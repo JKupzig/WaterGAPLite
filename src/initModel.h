@@ -1,5 +1,3 @@
-
-
 #ifndef INITMODEL_H
 #define INITMODEL_H
 
@@ -22,6 +20,7 @@ extern int ReservoirType;
 extern int splitType;
 extern int calcLong;
 extern int useSystemVals;
+extern int snowInWetland;
 
 extern void defSettings(NumericVector Settings);
 extern NumericMatrix getLAIdaily(NumericVector LAI_min, NumericVector LAI_max, NumericVector initDays,
@@ -109,6 +108,8 @@ extern int reservoir_dsc; //downstream cells that are considered for water use o
 extern double defaultRiverVelocity;
 
 
+extern double snow_threshold;
+extern int max_degree_days;
 
 extern void initModel(List ListConst);
 

@@ -108,78 +108,80 @@ Q.convert_mmday_m3s <- function(timeseries, area) {
 #' @importFrom stats sd
 #' @export
 Q.calc_quality <- function(df_obs, df_sim, type = "NSE", min_data = 0.5) {
-
+  
   df_all <- merge(df_sim, df_obs, by = "Date", all.x = TRUE)
   df_all$Sim[is.na(df_all$Value)] <- NA
-
+  
   #check if it is enough data
-  if (sum(is.na(df_all$Sim)) > min_data * length(df_all$Sim)) {
-    if (type == "QmeanAbs") {
-      val <- list("QmeanAbs" = NA)
-    } else if (type == "NSE") {
-      val <- list("NSE" = NA)
-    } else if (type == "logNSE") {
-      val <- list("logNSE" = NA)
-    } else if (type == "pBias") {
-      val <- list("pBias" = NA)
-    } else if (type == "KGE") {
-      val <- list("KGE" = NA, "b" = NA, "a" = NA, "r" = NA)
-    }
+  if (sum(is.na(df_all$Sim)) <= min_data * length(df_all$Sim)) {
+    return(NULL)
   }
-
+  
+  if (type == "QmeanAbs") {
+    val <- list("QmeanAbs" = NA)
+  } else if (type == "NSE") {
+    val <- list("NSE" = NA)
+  } else if (type == "logNSE") {
+    val <- list("logNSE" = NA)
+  } else if (type == "pBias") {
+    val <- list("pBias" = NA)
+  } else if (type == "KGE") {
+    val <- list("KGE" = NA, "b" = NA, "a" = NA, "r" = NA)
+  } else if (type == "MAE") {
+    val <- list("MAE" = NA)
+  }
+    
   df_all_diff <- df_all$Value - df_all$Sim
   df_all_diff2 <- df_all_diff^2
   df_all_obsdiff <- df_all$Value - mean(df_all$Value, na.rm = TRUE)
-
+  
   if (type == "QmeanAbs") {
     mean_obs <- mean(df_all$Value, na.rm = TRUE)
     mean_sim <- mean(df_all$Sim, na.rm = TRUE)
     val <- list("QmeanAbs" = abs(mean_obs - mean_sim))
-
+  } else if (type == "MAE") {
+    val <- list("MAE" = mean(abs(df_all_diff)))
   } else if (type == "NSE") {
     nse <- 1 - (mean(df_all_diff2, na.rm = TRUE) /
-                mean(df_all_obsdiff^2, na.rm = TRUE))
+                  mean(df_all_obsdiff^2, na.rm = TRUE))
     val <- list("NSE" = nse)
-
   } else if (type == "logNSE") {
     obs <- log(df_all$Value + 1)
     sim <- log(df_all$Sim + 1)
-
+    
     df_all_diff <- obs - sim
     df_all_diff2 <- df_all_diff^2
     df_all_obsdiff <- obs - mean(obs, na.rm = TRUE)
-
+    
     lognse <- 1 - (mean(df_all_diff2, na.rm = TRUE) /
-                mean(df_all_obsdiff^2, na.rm = TRUE))
+                     mean(df_all_obsdiff^2, na.rm = TRUE))
     val <- list("logNSE" = lognse)
-
   } else if (type == "pBias") {
-
+    
     df_all$Value[df_all$Value == 0] <- 0.00000001
     percent_bias <- mean((df_all$Sim - df_all$Value) /
-                         df_all$Value, na.rm = TRUE)
-
+                           df_all$Value, na.rm = TRUE)
+    
     val <- list("pBias" = percent_bias)
-
   }  else if (type == "KGE") {
-
+    
     b <- sd(df_all$Sim, na.rm = TRUE) /
-         sd(df_all$Value, na.rm = TRUE)
+      sd(df_all$Value, na.rm = TRUE)
     a <- mean(df_all$Sim, na.rm = TRUE) /
-         mean(df_all$Value, na.rm = TRUE)
+      mean(df_all$Value, na.rm = TRUE)
     r <- cor(df_all$Sim[!is.na(df_all$Sim)],
              df_all$Value[!is.na(df_all$Sim)],
              method = "pearson")
     kge <- round(1 - sqrt((1 - r)^2 + (a - 1)^2 + (b - 1)^2), 3)
-
+    
     val <- list("KGE" = kge, "b" = b, "a" = a, "r" = r)
-
   } else {
     print("Type is not specified, chose one of the following:
           QmeanAbs, NSE, logNSE, KGE or SFDCE (from Werkhoven et al. 2008)")
   }
   return(val)
 }
+
 
 ################################################################################
 #' @title Plotting daily timeseries
@@ -381,5 +383,4 @@ Q.create_monthly_plot <- function(df_obs, df_sim) {
   print(p)
 
   return(p)
-
 }

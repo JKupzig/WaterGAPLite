@@ -7,12 +7,12 @@
 
 testthat::test_that("test-defSettings in initModel.cpp",
 { 
-  good_settings <- rep(0, 8)
+  good_settings <- rep(0, 9)
   defSettings(good_settings)
   
-  bad_settings <- rep(0, 9)
+  bad_settings <- rep(0, 10)
   testthat::expect_error(defSettings(bad_settings),
-                         "Settings should be a vector of length 8")
+                         "Settings should be a vector of length 9")
   
   error_list <- c(
     "WaterUseType should be 0, 1 or 2",

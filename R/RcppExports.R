@@ -146,7 +146,15 @@ dailySnow <- function(day, daily_prec_to_soil, G_snow, G_snowWaterEquivalent, da
     invisible(.Call(`_WaterGAPLite_dailySnow`, day, daily_prec_to_soil, G_snow, G_snowWaterEquivalent, dailySnowMelt, dailySnowEvapo, thresh_elev, dailyEffPrec, dailySoilPET))
 }
 
-#' @title detLAIdaily
+#' @title Declaration of Settings from R Module
+#' @description translates R Settings to global rcpp Settings
+#' @param Settings Settings defined as IntegerVector
+#' @export
+defSettings <- function(Settings) {
+    invisible(.Call(`_WaterGAPLite_defSettings`, Settings))
+}
+
+#' @title getLAIdaily
 #' @description Definition of interception storage size
 #' @param LAI_min minimal interception storage in mm from LAI_info
 #' @param LAI_max maximal interception storage in mm from LAI_info
@@ -157,20 +165,16 @@ dailySnow <- function(day, daily_prec_to_soil, G_snow, G_snowWaterEquivalent, da
 #' @param GLCT Landcover information
 #' @return Matrix with interception storage in mm (rows=days, cols=cells)
 #' @export
-NULL
+getLAIdaily <- function(LAI_min, LAI_max, initDays, Temp, Prec, aridType, GLCT) {
+    .Call(`_WaterGAPLite_getLAIdaily`, LAI_min, LAI_max, initDays, Temp, Prec, aridType, GLCT)
+}
 
 #' @title initModel
 #' @description Sets passed List as global model input
 #' @param ListConst that is defined in R
 #' @export
-NULL
-
-#' @title Declaration of Settings from R Module
-#' @description translates R Settings to global rcpp Settings
-#' @param Settings Settings defined as IntegerVector
-#' @export
-defSettings <- function(Settings) {
-    invisible(.Call(`_WaterGAPLite_defSettings`, Settings))
+initModel <- function(ListConst) {
+    invisible(.Call(`_WaterGAPLite_initModel`, ListConst))
 }
 
 #' @title routing
@@ -202,6 +206,32 @@ CheckResType <- function() {
 #' @export
 setLakeWetlandToMaximum <- function(S_locLakeStorage, S_locWetlandStorage, S_gloLakeStorage, S_ResStorage, S_gloWetlandStorage) {
     invisible(.Call(`_WaterGAPLite_setLakeWetlandToMaximum`, S_locLakeStorage, S_locWetlandStorage, S_gloLakeStorage, S_ResStorage, S_gloWetlandStorage))
+}
+
+#' @title routingGlobalWetlands
+#' @description function that defines routing through local waterbodies
+#' @param Type 0 (local lake) or 1 (local wetland)
+#' @param cell cell that is simulated
+#' @param PrecWater Pecipitation above cell [mm]
+#' @param PETWater Potential Evaporation form water [mm]
+#' @param TempWater Mean Temperature above cell [mm]
+#' @param accum_days accumulated days below -10 degree[mm]
+#' @param snow_storage_wetland snow storage on wetlands [mm]
+#' @param Inflow inflow to local wb from cell=(GroundwaterRunoff(day, cell) + surfaceRunoff(day, cell))* GAREA[cell] * landfrac[cell] or (for the case of local wetlands) outflow form local lake in the case of local wetland and local lake are present [mm*km²]
+#' @param S_locLakeStorage local lake storage [mmm*km²]
+#' @param locLake_overflow overflow of local lake (locStorage[cell] - maxStorage) [mm*km²]
+#' @param locLake_outflow outflow of local lake (only via routing, overflow is extra) [mm*km²]
+#' @param locLake_evapo evaporation from local lake PETWater * locEvapoReductionFactor * (GAREA[cell] * locPerc[cell] / 100.) [mm*km²]
+#' @param locLake_inflow total inflow to local lake Inflow + PrecWater * (GAREA[cell] * locPerc[cell] / 100.); // mm km²
+#' @param S_locWetlandStorage local wetland storage [mm*km²]
+#' @param locWetland_overflow overflow of local wetland (locStorage[cell] - maxStorage) [mm*km²]
+#' @param locWetland_outflow outflow of local wetland (only via routing, overflow is extra) [mm*km²]
+#' @param locWetland_evapo evaporation from local wetland PETWater * locEvapoReductionFactor * (GAREA[cell] * locPerc[cell] / 100.) [mm*km²]
+#' @param locWetland_inflow inflow to local wetland Inflow + PrecWater * (GAREA[cell] * locPerc[cell] / 100.); // mm km²
+#' @return routed outflow from local waterbody [mm*km²]
+#' @export
+routingLocalWaterBodies <- function(Type, cell, PrecWater, PETWater, TempWater, accum_days, snow_storage_wetland, Inflow, S_locLakeStorage, locLake_overflow, locLake_outflow, locLake_evapo, locLake_inflow, S_locWetlandStorage, locWetland_overflow, locWetland_outflow, locWetland_evapo, locWetland_inflow) {
+    .Call(`_WaterGAPLite_routingLocalWaterBodies`, Type, cell, PrecWater, PETWater, TempWater, accum_days, snow_storage_wetland, Inflow, S_locLakeStorage, locLake_overflow, locLake_outflow, locLake_evapo, locLake_inflow, S_locWetlandStorage, locWetland_overflow, locWetland_outflow, locWetland_evapo, locWetland_inflow)
 }
 
 #' @title routingRiver
