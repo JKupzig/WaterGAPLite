@@ -6,7 +6,7 @@ Date: 2021-07-19
 Author: Jenny Kupzig
 Maintainer: Your Name <your@email.com>
 Description: Catchment model version of the global hydrological model WaterGAP3. It can be used e.g. to test new calibration strategies or excecuting sensitivity and uncertainty analysis.
-License: GPL (>= 2)
+License: GPL (>= 3)
 Depends: R (>= 3.6.0)
 Imports: Rcpp (>= 1.0.3),
          ggplot2,
