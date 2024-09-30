@@ -94,6 +94,8 @@ init.classes <- function() {
              Splitfactor = "numeric",
              defaultRiverVelocity = "numeric",
              evapoReductionExpReservoir = "numeric",
+             snow_threshold = "numeric",
+             max_degree_days = "numeric",
 
              routeOrder = "numeric",
              outflow = "numeric",

@@ -17,13 +17,8 @@ init.setPars <- function(){
   parTable[8,]  <- c("runoffFracBuiltUp", 0.5)
   parTable[9,]  <- c("k_g", 0.01)
   
-  
-  #parTable[9,]  <- c("openWaterAlbedo", 0.08)
-  #parTable[10,] <- c("kc_OpenWater", 1.05)
   parTable[10,] <- c("snowFreezeTemp", 0.0)
   parTable[11,] <- c("snowMeltTemp", 0.0)
-  #parTable[13,] <- c("windError", 1)
-  #parTable[14,] <- c("vapPresError", 1)
   parTable[12,] <- c("pcrit", 12.5) 
   
   #routing parameters
@@ -37,6 +32,8 @@ init.setPars <- function(){
   parTable[20,] <- c("glo_storageFactor", 80) # [days]
   
   parTable[21,] <- c("defaultRiverVelocity", 86.4) # [km/d]
+  parTable[22,] <- c("snow_threshold", -2) # degree celsius
+  parTable[23,] <- c("max_degree_days", 7) # days
   
   return(parTable)
   

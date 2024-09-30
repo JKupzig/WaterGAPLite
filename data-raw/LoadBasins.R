@@ -10,12 +10,13 @@ LoadBasins <- function(grdc_no=NULL, ...){
                1, # reservoirType --> 0: hanasaki, 1: global lakes
                0, # splitting factor --> 0: calculating splitting factor as defined in WG3, 1: setting splitting factor with list (for calibration purpose)
                0, # 0: longwave radiation is read in; 1: Longwave is estimated by incoming shortwave radiaton
-               0) # 0: no system values are used, 1: system values are read in, 2: system values are written out, 3: system values are read in and written out
-
+               0, # 0: no system values are used, 1: system values are read in, 2: system values are written out, 3: system values are read in and written out
+               0)
+  
   #General-Information
   start = "01.01.1980" #global variable - at the moment only month is considered not day
   end   = "31.12.1989" #global variable
-  base <- r"(C:\Users\jenny\MyProject_sciebo\WaterGAPlite)" #"U:/Wissenschaft/MyProject_sciebo/MyProject/WaterGAPlite"
+  base <- r"(C:\Users\jenny\MyProject_sciebo\WaterGAPlite)"
 
 
   kwargs = list(...)
@@ -42,32 +43,39 @@ LoadBasins <- function(grdc_no=NULL, ...){
   }
 
   if (!is.null(grdc_no)) {
-    basinData <- read.csv(r"(C:\Users\jenny\MyProject_sciebo\_SensitvityAnalysis\CaseStudy\Basins\overviewBasins.txt)")
+    basinData <- read.csv(r"(.\data-raw\overviewBasins.txt)")
 
     if (checkList(basinData$grdc_no, grdc_no)){
       stop(sprintf("used basin number %g is not a case study", grdc_no))
     }
 
     i <- which(basinData$grdc_no == grdc_no)
-    bas <- init.model(grdc_number=basinData[i,2], lat=basinData[i,5], long=basinData[i,4], cont=as.character(basinData[i,7]), base)
-    bas.climate <- init.climate(bas, start, end, force2read=F, ClimateFormat = "global")
-    bas.waterUse <- init.waterUse(bas, start, end, WaterUse_Setting=Settings[1])
-    bas.model <- basin.prepareRun(bas, bas.climate, bas.waterUse) #not defined
+    bas <- init.model(grdc_number=basinData[i,2], 
+                      lat=basinData[i,5], 
+                      long=basinData[i,4], 
+                      cont=as.character(basinData[i,7]), base)
+    bas.climate <- init.climate(bas, start, end, force2read=F, climate_format = "global")
+    bas.waterUse <- init.wateruse(bas, start, end, wateruse_setting=Settings[1])
+    bas.model <- basin.prepare_run(bas, bas.climate, bas.waterUse) #not defined
     basinList <- bas.model
 
   } else {
-    print("loading all 6 case study basins")
+    print("loading all 7 case study basins")
     #Get basin Information
-    basinData <- read.csv(r"(C:\Users\jenny\MyProject_sciebo\_SensitvityAnalysis\CaseStudy\Basins\overviewBasins.txt)")
+    basinData <- read.csv(r"(.\data-raw\overviewBasins.txt)")
 
     basinList <- list()
-    for (i in 2:nrow(basinData)) {
+    for (i in 1:nrow(basinData)) {
 
       print(basinData[i,2])
-      bas <- init.model(grdc_number=basinData[i,2], lat=basinData[i,5], long=basinData[i,4], cont=as.character(basinData[i,7]), base)
-      bas.climate <- init.climate(bas, start, end, force2read=F, ClimateFormat = "global")
-      bas.waterUse <- init.waterUse(bas, start, end, WaterUse_Setting=Settings[1])
-      bas.model <- basin.prepareRun(bas, bas.climate, bas.waterUse) #not defined
+      bas <- init.model(grdc_number = basinData[i,2], 
+                        lat = basinData[i,5], 
+                        long = basinData[i,4], 
+                        cont = as.character(basinData[i,7]), 
+                        base)
+      bas.climate <- init.climate(bas, start, end, force2read=F, climate_format = "global")
+      bas.waterUse <- init.wateruse(bas, start, end, wateruse_setting = Settings[1])
+      bas.model <- basin.prepare_run(bas, bas.climate, bas.waterUse)
 
       basinList[[as.character(basinData[i,2])]] <- bas.model
     }
@@ -86,12 +94,12 @@ Basin_2588200 = MockData[["2588200"]]
 Basin_4203410 = MockData[["4203410"]]
 Basin_6340600 = MockData[["6340600"]]
 
-usethis::use_data(Basin_1159511, overwrite = TRUE,compress ="xz")
-usethis::use_data(Basin_1547300, overwrite = TRUE,compress ="xz")
-usethis::use_data(Basin_4147050, overwrite = TRUE,compress ="xz")
-usethis::use_data(Basin_4148955, overwrite = TRUE,compress ="xz")
-usethis::use_data(Basin_2588200, overwrite = TRUE,compress ="xz")
-usethis::use_data(Basin_4203410, overwrite = TRUE,compress ="xz")
-usethis::use_data(Basin_6340600, overwrite = TRUE,compress ="xz")
+usethis::use_data(Basin_1159511, overwrite = TRUE,compress = "xz")
+usethis::use_data(Basin_1547300, overwrite = TRUE,compress = "xz")
+usethis::use_data(Basin_4147050, overwrite = TRUE,compress = "xz")
+usethis::use_data(Basin_4148955, overwrite = TRUE,compress = "xz")
+usethis::use_data(Basin_2588200, overwrite = TRUE,compress = "xz")
+usethis::use_data(Basin_4203410, overwrite = TRUE,compress = "xz")
+usethis::use_data(Basin_6340600, overwrite = TRUE,compress = "xz")
 
 

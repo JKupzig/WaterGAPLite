@@ -30,7 +30,10 @@ basin.prepare_run <- function(basin_object,
                           1)
 
   basin_list <- list() #list to pass to wgl
-
+  
+  basin_list[["snow_threshold"]] <- basin_object@snow_threshold
+  basin_list[["max_degree_days"]] <- basin_object@max_degree_days
+  
   basin_list[["SystemValuesPath"]] <- basin_object@cont@SystemValues
   basin_list[["id"]] <- basin_object@id
 
@@ -70,7 +73,7 @@ basin.prepare_run <- function(basin_object,
 
   basin_list[["runoffFracBuiltUp"]] <- basin_object@runoffFracBuiltUp
   basin_list[["G_GAMMA_HBV"]] <- basin_object@G_GAMMA_HBV
-
+  
   basin_list[["G_Smax"]] <- basin_object@G_Smax
   basin_list[["G_ARID_HUMID"]] <- basin_object@G_ARID_HUMID
   basin_list[["G_TEXTURE"]] <- basin_object@G_TEXTURE
@@ -115,6 +118,7 @@ basin.prepare_run <- function(basin_object,
   basin_list[["Info_SW"]] <- wateruse_object@Info_SW
   basin_list[["Info_TF"]] <- wateruse_object@Info_TF
   basin_list[["G_NUs_7100"]] <- wateruse_object@G_NUs_7100
+  
 
   return(basin_list)
 }
