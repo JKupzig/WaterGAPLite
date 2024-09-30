@@ -90,7 +90,7 @@ List routing(DateVector SimPeriod, NumericMatrix surfaceRunoff, NumericMatrix Gr
 	NumericMatrix StoragelocWetland(ndays, array_size);  // storage of Wetland
 	NumericMatrix EvapolocWetland(ndays, array_size);    // Evaporatiom from Wetland
 	NumericMatrix InflowlocWetland(ndays, array_size);   // Inflow to Wetland
-	NumericMatrix snow_local_wetland(n_days, array_size);
+	NumericMatrix snow_local_wetland(ndays, array_size);
 
 	//global Lakes
 	NumericMatrix OverflowgloLake(ndays, array_size); // special overflow, when S > Smax

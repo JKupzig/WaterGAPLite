@@ -97,9 +97,10 @@ Q.convert_mmday_m3s <- function(timeseries, area) {
 #'   \item QmeanAbs: absolute differenc between mean values of sim and obs
 #'   \item NSE: Nash-Sutcliff-Efficiency
 #'   \item logNSE: NSE of logarithmic values
-#'   \item KGE: Kling-Gupta-efficiency and its components
+#'   \item KGE: Kling-Gupta-efficiency and its components (Gupta et al. (2009))
+#'   \item KGE_2012: mod. Kling-Gupta-efficiency and its components, recommended by Cinkus et al. (2023) (CV is used for variablitity; Gupta et al. (2012))
 #'   \item pBias:  relative bias as described in van Werkhoven et al. 2008
-#'   \item deltaSD: not implemented yet!
+#'   \item mod_index_of_agreement: Modified index of agreement (Willmott et al., 1985), recommended by Cinkus et al. (2023)
 #' }
 #' @param min_data minimum on available observed data in examined timeperiod, \cr
 #' e.g. 0.5 for 50 percent (default)
@@ -127,6 +128,10 @@ Q.calc_quality <- function(df_obs, df_sim, type = "NSE", min_data = 0.5) {
     val <- list("pBias" = NA)
   } else if (type == "KGE") {
     val <- list("KGE" = NA, "b" = NA, "a" = NA, "r" = NA)
+  } else if (type == "KGE_2012") {
+    val <- list("KGE" = NA, "b" = NA, "a" = NA, "r" = NA)
+  } else if (type == "mod_index_of_agreement") {
+    val <- list("index_of_agreement" = NA)
   } else if (type == "MAE") {
     val <- list("MAE" = NA)
   }
@@ -139,12 +144,21 @@ Q.calc_quality <- function(df_obs, df_sim, type = "NSE", min_data = 0.5) {
     mean_obs <- mean(df_all$Value, na.rm = TRUE)
     mean_sim <- mean(df_all$Sim, na.rm = TRUE)
     val <- list("QmeanAbs" = abs(mean_obs - mean_sim))
+    
+  } else if (type == "index_of_agreement") {
+    upper_part <- sum(abs(df_all$Sim - df_all$Value))
+    lower_part <- sum(abs(df_all$Sim - mean(df_all$Value)) + 
+                      abs(df_all$Value - mean(df_all$Value)))
+    val <- list("index_of_agreement" = upper_part / lower_part)
+    
   } else if (type == "MAE") {
     val <- list("MAE" = mean(abs(df_all_diff)))
+    
   } else if (type == "NSE") {
     nse <- 1 - (mean(df_all_diff2, na.rm = TRUE) /
                   mean(df_all_obsdiff^2, na.rm = TRUE))
     val <- list("NSE" = nse)
+    
   } else if (type == "logNSE") {
     obs <- log(df_all$Value + 1)
     sim <- log(df_all$Sim + 1)
@@ -156,26 +170,35 @@ Q.calc_quality <- function(df_obs, df_sim, type = "NSE", min_data = 0.5) {
     lognse <- 1 - (mean(df_all_diff2, na.rm = TRUE) /
                      mean(df_all_obsdiff^2, na.rm = TRUE))
     val <- list("logNSE" = lognse)
+    
   } else if (type == "pBias") {
     
     df_all$Value[df_all$Value == 0] <- 0.00000001
     percent_bias <- mean((df_all$Sim - df_all$Value) /
                            df_all$Value, na.rm = TRUE)
-    
     val <- list("pBias" = percent_bias)
-  }  else if (type == "KGE") {
     
-    b <- sd(df_all$Sim, na.rm = TRUE) /
-      sd(df_all$Value, na.rm = TRUE)
-    a <- mean(df_all$Sim, na.rm = TRUE) /
-      mean(df_all$Value, na.rm = TRUE)
+  }  else if (startsWith(type, "KGE")) {
+    
     r <- cor(df_all$Sim[!is.na(df_all$Sim)],
              df_all$Value[!is.na(df_all$Sim)],
              method = "pearson")
-    kge <- round(1 - sqrt((1 - r)^2 + (a - 1)^2 + (b - 1)^2), 3)
     
+    a <- mean(df_all$Sim, na.rm = TRUE) /
+      mean(df_all$Value, na.rm = TRUE)
+    
+    b <- sd(df_all$Sim, na.rm = TRUE) /
+      sd(df_all$Value, na.rm = TRUE)
+    
+    if (type == "KGE_2012") {
+      b <- (sd(df_all$Sim, na.rm = TRUE) / mean(df_all$Sim, na.rm = TRUE))/
+           (sd(df_all$Value, na.rm = TRUE) / mean(df_all$Value, na.rm = TRUE))
+    }
+    
+    kge <- round(1 - sqrt((1 - r)^2 + (a - 1)^2 + (b - 1)^2), 3)
     val <- list("KGE" = kge, "b" = b, "a" = a, "r" = r)
-  } else {
+  
+    } else {
     print("Type is not specified, chose one of the following:
           QmeanAbs, NSE, logNSE, KGE or SFDCE (from Werkhoven et al. 2008)")
   }
