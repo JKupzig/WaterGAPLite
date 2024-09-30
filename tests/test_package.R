@@ -13,7 +13,8 @@ Settings = c(0, # WaterUse --> 0=off, 1=on 2=on (including water transport to ci
 
 
 
-basins =  list( WaterGAPLite::Basin_6340600,
+basins =  list( WaterGAPLite::Basin_1159511,
+                WaterGAPLite::Basin_6340600,
                 WaterGAPLite::Basin_1547300,
                 WaterGAPLite::Basin_2588200,
                 WaterGAPLite::Basin_4147050,
@@ -23,41 +24,8 @@ basins =  list( WaterGAPLite::Basin_6340600,
 
 for (basin in basins){
   print(basin$id)
-  wb <- runModel(basin$SimPeriod, basin, Settings, 5)
-  df <- data.frame("Date"= basin[["SimPeriod"]], "Sim_mm"=wb$routing$River$Discharge)
-  df$Sim = Q.convert_mmday_m3s(df$Sim_mm, sum(basin$GAREA))
-  Qobs <- Q.read_grdc(basin$id, NA, NA,  
-                     min(basin[["SimPeriod"]]), max(basin[["SimPeriod"]]), 
-                     use_folder="C:/Users/jenny/MyProject_sciebo/GRDC_2020/Rohdaten")
-  
-  
-  plot(df$Date,df$Sim, col="maroon", type="l",
-       ylim = c(0, max(max(df$Sim), max(Qobs$Value, na.rm=T))))
-  lines(Qobs$Date, Qobs$Value, col="cornflowerblue")
-  legend( "topleft", inset=0.05,legend=c("Qsim", "Qobs"),
-         col=c("maroon", "cornflowerblue"), lty=1, cex=0.8,
-         title="legend", text.font=4, bg='grey')
-  
-  (mgn_l_1 = Q.calcSI(df, func_name="Q.__calc_mgn_l_1__"))
-  (mgn_l_2 = Q.calcSI(df, func_name="Q.__calc_mgn_l_2__"))
-  (mgn_a_1 = Q.calcSI(df, func_name="Q.__calc_mgn_a_1__"))
-  (mgn_a_2 = Q.calcSI(df, func_name="Q.__calc_mgn_a_2__", add_args = sum(basin$GAREA)))
-  (mgn_h_1 = Q.calcSI(df, func_name="Q.__calc_mgn_h_1__"))
-  (mgn_h_2 = Q.calcSI(df, func_name="Q.__calc_mgn_h_2__", add_args = df$Sim))
-  (frq_l_1 = Q.calcSI(df, func_name="Q.__calc_frq_l_1__", add_args = df$Sim)) 
-  (frq_l_2 = Q.calcSI(df, func_name="Q.__calc_frq_l_2__", add_args = df$Sim))
-  (frq_h_1 = Q.calcSI(df, func_name="Q.__calc_frq_h_1__", add_args = df$Sim)) 
-  (frq_h_2 = Q.calcSI(df, func_name="Q.__calc_frq_h_2__", add_args = df$Sim))
-  
-  (dur_l_1 = Q.calcSI(df, func_name="Q.__calc_dur_l_1__", add_args = df$Sim)) 
-  (dur_l_2 = Q.calcSI(df, func_name="Q.__calc_dur_l_2__", add_args = df$Sim))
-  (dur_h_1 = Q.calcSI(df, func_name="Q.__calc_dur_h_1__", add_args = df$Sim)) 
-  (dur_h_2 = Q.calcSI(df, func_name="Q.__calc_dur_h_2__", add_args = df$Sim))
-  
-  (timing_1 = Q.calcSI(df, func_name="Q.__calc_timing_1__"))
-  (timing_2 = Q.calcSI(df, func_name="Q.__calc_timing_2__", add_args=df))
-  (timing_3 = Q.calcSI(df, func_name="Q.__calc_timing_3__"))
-  (rchg_1 = Q.calcSI(df, func_name="Q.__calc_rchg_1__"))
-  (rchg_2 = Q.calcSI(df, func_name="Q.__calc_rchg_2__"))
+  model_output <- runModel(basin$SimPeriod, basin, Settings, 5)
+  testthat::expect_equal(sum(is.na(model_output$routing$River$Discharge)), 0)
+  testthat::expect_equal(sum(model_output$routing$River$Discharge < 0), 0)
 }
 
