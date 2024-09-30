@@ -114,7 +114,7 @@ Q.calc_quality <- function(df_obs, df_sim, type = "NSE", min_data = 0.5) {
   df_all$Sim[is.na(df_all$Value)] <- NA
   
   #check if it is enough data
-  if (sum(is.na(df_all$Sim)) <= min_data * length(df_all$Sim)) {
+  if (sum(!is.na(df_all$Sim)) <= min_data * length(df_all$Sim)) {
     return(NULL)
   }
   
