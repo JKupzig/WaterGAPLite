@@ -145,11 +145,11 @@ Q.calc_quality <- function(df_obs, df_sim, type = "NSE", min_data = 0.5) {
     mean_sim <- mean(df_all$Sim, na.rm = TRUE)
     val <- list("QmeanAbs" = abs(mean_obs - mean_sim))
     
-  } else if (type == "index_of_agreement") {
+  } else if (type == "mod_index_of_agreement") {
     upper_part <- sum(abs(df_all$Sim - df_all$Value))
     lower_part <- sum(abs(df_all$Sim - mean(df_all$Value)) + 
                       abs(df_all$Value - mean(df_all$Value)))
-    val <- list("index_of_agreement" = upper_part / lower_part)
+    val <- list("mod_index_of_agreement" = 1 - upper_part / lower_part)
     
   } else if (type == "MAE") {
     val <- list("MAE" = mean(abs(df_all_diff)))

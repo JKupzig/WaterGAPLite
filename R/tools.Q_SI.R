@@ -350,7 +350,7 @@ Q.__calc_frq_h_2__ <- function(discharge, complete_discharge) {
 #' than defined threshold
 Q.__calc_dur_l_1__ <- function(discharge, complete_discharge) {
   threshold <- mean(complete_discharge) * 0.2
-  idx <- (complete_discharge < threshold)
+  idx <- (discharge < threshold)
   df_periods <- get_periods(idx)
   df_periods$delta <- df_periods$period_end - df_periods$period_start
 
