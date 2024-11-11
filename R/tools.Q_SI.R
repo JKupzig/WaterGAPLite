@@ -342,18 +342,30 @@ Q.__calc_frq_h_2__ <- function(discharge, complete_discharge) {
 #' @title Average duration of low-flow events
 #' @description Average duration of low-flow events
 #  (number of consecutive days <0.2 times the
-#  mean daily flow), used in Addor 2018
+#  mean daily flow), used in Addor 2018 - an additional argument is used: minimal_length.
+#  To use it the additonal_args must be defined as list with the named discharge and minimal_length
+#  to avoid that minor low flow events disturb the result!
 #' @param discharge vector in m³/s (usually for one year)
 #' @param complete_discharge vector in m³/s (usually for whole period) -
 #' necessary to define threshold
 #' @return mean number of consecutive days with flow lower
 #' than defined threshold
-Q.__calc_dur_l_1__ <- function(discharge, complete_discharge) {
+Q.__calc_dur_l_1__ <- function(discharge, additonal_args) {
+  if (is.list(additonal_args)){
+    complete_discharge <- additonal_args[["discharge"]]
+	  minimal_length <- additonal_args[["minimal_length"]]
+  } else {
+    complete_discharge <- additonal_args
+	  minimal_length <- 0
+  }
+
   threshold <- mean(complete_discharge) * 0.2
   idx <- (discharge < threshold)
   df_periods <- get_periods(idx)
-  df_periods$delta <- df_periods$period_end - df_periods$period_start
-
+  df_periods$delta <- df_periods$period_end - df_periods$period_start + 1
+	
+  df_periods <- df_periods[df_periods$delta > minimal_length,]
+  
   val <- 0
   if (length(df_periods$delta) != 0) {
     val <- mean(df_periods$delta)
